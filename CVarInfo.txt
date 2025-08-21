@@ -9,3 +9,5 @@ server bool MRGoreParts_Multiplayer = false;
 user bool MRGoreParts_UseCustomColor = false;
 user Color MRGoreParts_Color = "0 96 0";
 server bool MRGoreParts_NoBloodMonsters = true;
+
+server bool MRGoreParts_Debug = false;
