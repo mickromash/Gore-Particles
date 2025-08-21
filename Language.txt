@@ -1,0 +1,45 @@
+[eng enu default en]
+
+MRGoreParts_Title = "Particle Gore";
+MRGoreParts_Draw = "Draw gore particles";
+MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
+MRGoreParts_Wounds = "Bleeding wounds";
+MRGoreParts_FlyingBood = "Blood streams";
+MRGoreParts_BloodMist = "Blood mist";
+
+MRGoreParts_FloorSpots = "Spots on surfaces";
+MRGoreParts_SpotsNothing = "None";
+MRGoreParts_SpotsByWoundsOnly = "Only leaved by wounds";
+MRGoreParts_SpotsAll = "All";
+
+MRGoreParts_Amount = "Blood amount";
+MRGoreParts_AllParticlesAmount = "All particles amount";
+MRGoreParts_OnlyModsBlood = "Remove other gore";
+MRGoreParts_UseCustomColor = "Use custom blood color";
+MRGoreParts_Color = "Custom blood color";
+MRGoreParts_Multiplayer = "Multiplayer friendly";
+MRGoreParts_Tip2 = "If particles amount hit the limit, new particles won't spawn";
+MRGoreParts_Tip3 = "so fully turning blood spots option on is not recomended";
+
+[ru]
+
+MRGoreParts_Title = "Кровавые частицы";
+MRGoreParts_Draw = "Рендер частиц";
+MRGoreParts_NoBloodMonsters = "Отключить кровь для монстров с флагом \"+NOBLOOD\"";
+MRGoreParts_Wounds = "Кровоточащие раны";
+MRGoreParts_FlyingBood = "Струи крови";
+MRGoreParts_BloodMist = "Кровавая дымка";
+
+MRGoreParts_FloorSpots = "Кровь на поверхностях";
+MRGoreParts_SpotsNothing = "Нет";
+MRGoreParts_SpotsByWoundsOnly = "Только кровь из ран";
+MRGoreParts_SpotsAll = "Вся";
+
+MRGoreParts_Amount = "Количество крови";
+MRGoreParts_AllParticlesAmount = "Количество всех частиц";
+MRGoreParts_OnlyModsBlood = "Только кровь из мода";
+MRGoreParts_UseCustomColor = "Кровь одного цвета";
+MRGoreParts_Color = "Цвет крови";
+MRGoreParts_Multiplayer = "Режим игры по сети";
+MRGoreParts_Tip2 = "Если количество частиц превысит лимит, новые частицы перестанут появляться";
+MRGoreParts_Tip3 = "поэтому не рекомендуется включать всю кровь на поверхностях";

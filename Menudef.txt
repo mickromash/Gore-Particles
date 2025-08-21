@@ -1,0 +1,34 @@
+AddOptionMenu "OptionsMenu"
+{
+	SubMenu "$MRGoreParts_Title", "MRGoreParts_Menu"
+}
+
+OptionMenu "MRGoreParts_Menu"
+{
+	Title "$MRGoreParts_Title"
+	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
+	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
+	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
+	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 4, .1
+	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
+	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
+	Option "$MRGoreParts_BloodMist", "MRGoreParts_BloodMist", "OnOff"
+	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
+	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
+	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
+	Option "$MRGoreParts_Multiplayer", "MRGoreParts_Multiplayer", "OnOff"
+	StaticText ""
+	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 100, 10000, 100, 0
+	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
+	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
+	StaticText ""
+	StaticText "$MRGoreParts_Tip2"
+	StaticText "$MRGoreParts_Tip3"
+}
+
+OptionValue "MRGoreParts_SpotsOption"
+{
+	0, "$MRGoreParts_SpotsNothing"
+	1, "$MRGoreParts_SpotsByWoundsOnly"
+	2, "$MRGoreParts_SpotsAll"
+}

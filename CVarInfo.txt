@@ -1,0 +1,11 @@
+user bool MRGoreParts_Draw = true;
+server bool MRGoreParts_Wounds = true;
+user bool MRGoreParts_FlyingBood = true;
+user bool MRGoreParts_BloodMist = true;
+user int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
+user float MRGoreParts_Amount = 1;
+server bool MRGoreParts_OnlyModsBlood = true;
+server bool MRGoreParts_Multiplayer = false;
+user bool MRGoreParts_UseCustomColor = false;
+user Color MRGoreParts_Color = "0 96 0";
+server bool MRGoreParts_NoBloodMonsters = true;

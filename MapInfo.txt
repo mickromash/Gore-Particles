@@ -1,0 +1,1 @@
+GameInfo{AddEventHandlers = "MR_GoreParticlesHandler"}
