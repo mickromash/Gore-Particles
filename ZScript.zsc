@@ -26,7 +26,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Float Dist = 1;
 		Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
-		if(Typ!=1)Return;
+
 		Switch(Typ)
 		{
 			Case 0://"Explode"
@@ -50,7 +50,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						Float Bright = FRandom(.9, 2);
 						Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 						Vector3 Ofst = Vel;
-						Ofst *= Mult/Max(.001, i1);
+						Ofst *= Mult/Max(1, i1);
 						mo.A_SpawnParticle(ColTmp, 0, Life, Size, 0, Ofst.X*FRandom(.3, .7)+Offset.X,Ofst.Y*FRandom(.3, .7)+Offset.Y,5+Ofst.Z*FRandom(.3, .7)+Offset.Z,
 							Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
 					}
@@ -60,11 +60,11 @@ Class MR_GoreParticlesHandler: EventHandler
 				For(int i=0;i<Amount;i++)
 				{
 					Angle += FRandom(-7, 7);
-					Pitch += FRandom(-5, 5);
+					Float PitchRand = FRandom(-5, 5);
 					Double Strn = FRandom(1, 1.6);
 					
-					Vector3 Vel = (Actor.AngleToVector(Angle, Strn)*Cos(Abs(Pitch)), -Sin(Pitch)*Strn);
-					Vel.XY += Actor.AngleToVector(Angle, Strn)*Sin(-Pitch);
+					Vector3 Vel = (Actor.AngleToVector(Angle, Strn)*Cos(Abs(Pitch+PitchRand)), -Sin(Pitch+PitchRand)*Strn);
+					Vel.XY += Actor.AngleToVector(Angle+90+PitchRand, Sin(Angle)*Strn)*-Sin(Pitch+PitchRand);
 					
 					Vel.Z += .4;
 					
@@ -157,7 +157,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			Lump = Lump.Mid(Lump.IndexOf(")")+2);
 		}
-		For(int i=0;i<Monsters.Size();i++)Console.Printf(Monsters[i].." "..Colors[i]);
+		if(MRGoreParts_Debug)For(int i=0;i<Monsters.Size();i++)Console.Printf(Monsters[i].." "..Colors[i]);
 	}
 	
 	
@@ -170,7 +170,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
 			if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
 			if(e.DamageFlags&DMG_INFLICTOR_IS_PUFF)Damage = Damage.."IsPuff|";
-			Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
+			if(MRGoreParts_Debug)Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
 			
 			if(e.Inflictor)
 			{
@@ -225,7 +225,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						{
 							if(Token.Ages[i]<1)
 							{
-								Console.Printf("Targ "..e.Thing.Pos.XY.." inf "..e.Inflictor.Pos.XY);
+								if(MRGoreParts_Debug)Console.Printf("Targ "..e.Thing.Pos.XY.." inf "..e.Inflictor.Pos.XY);
 								Vector3 Dif = LevelLocals.Vec3Diff(e.Inflictor.Pos, e.Thing.Pos);
 				
 								Vector3 Home = (0, 0, 0);
@@ -534,6 +534,7 @@ Class MR_GoreParticlesWoundToken: Thinker
 						Vector2 Pos = (0,0);
 						Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
 						Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
+						
 						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, 0, Random(2, 9), Col, 0, .5, (Pos.X, Pos.Y, Locs[i].Z-5));
 					}
 				}
