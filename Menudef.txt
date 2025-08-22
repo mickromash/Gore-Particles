@@ -7,7 +7,11 @@ OptionMenu "MRGoreParts_Menu"
 {
 	Title "$MRGoreParts_Title"
 	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
-	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
+	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "MRGoreParts_OtherBlood"
+	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
+	StaticText "$MRGoreParts_Quake2Text"
+	StaticText "$MRGoreParts_Quake2Text2"
+	StaticText ""
 	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
 	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 4, .1
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
@@ -31,4 +35,11 @@ OptionValue "MRGoreParts_SpotsOption"
 	0, "$MRGoreParts_SpotsNothing"
 	1, "$MRGoreParts_SpotsByWoundsOnly"
 	2, "$MRGoreParts_SpotsAll"
+}
+
+OptionValue "MRGoreParts_OtherBlood"
+{
+	0, "$MRGoreParts_OnlyModBloodNot"
+	1, "$MRGoreParts_OnlyModBloodHide"
+	2, "$MRGoreParts_OnlyModBloodYes"
 }

@@ -14,7 +14,15 @@ MRGoreParts_SpotsAll = "All";
 
 MRGoreParts_Amount = "Blood amount";
 MRGoreParts_AllParticlesAmount = "All particles amount";
+
 MRGoreParts_OnlyModsBlood = "Remove other gore";
+MRGoreParts_OnlyModBloodNot = "No";
+MRGoreParts_OnlyModBloodHide = "Only hide";
+MRGoreParts_OnlyModBloodYes = "Yes";
+
+MRGoreParts_Quake2 = "Quake 2 blood";
+MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
+MRGoreParts_Quake2Text2 = "Recommended for Universal Gibs's shootable corpses";
 MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
 MRGoreParts_Multiplayer = "Multiplayer friendly";
@@ -37,7 +45,15 @@ MRGoreParts_SpotsAll = "Вся";
 
 MRGoreParts_Amount = "Количество крови";
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
+
 MRGoreParts_OnlyModsBlood = "Только кровь из мода";
+MRGoreParts_OnlyModBloodNot = "Нет";
+MRGoreParts_OnlyModBloodHide = "Скрывать другую кровь, но не уничтожать";
+MRGoreParts_OnlyModBloodYes = "Да";
+
+MRGoreParts_Quake2 = "Кровь из Quake 2";
+MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
+MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами из Universal Gibs";
 MRGoreParts_UseCustomColor = "Кровь одного цвета";
 MRGoreParts_Color = "Цвет крови";
 MRGoreParts_Multiplayer = "Режим игры по сети";
