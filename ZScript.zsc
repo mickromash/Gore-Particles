@@ -50,7 +50,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						Float Bright = FRandom(.9, 2);
 						Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 						Vector3 Ofst = Vel;
-						Ofst *= Mult/Max(1, i1);
+						Ofst *= Mult/(i1+1);
 						mo.A_SpawnParticle(ColTmp, 0, Life, Size, 0, Ofst.X*FRandom(.3, .7)+Offset.X,Ofst.Y*FRandom(.3, .7)+Offset.Y,5+Ofst.Z*FRandom(.3, .7)+Offset.Z,
 							Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
 					}
@@ -471,6 +471,17 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if(MRGoreParts_OnlyModsBlood && (e.Thing is 'Blood'||Actor.GetReplacee("Blood") == e.Thing.GetClass()))
 		{
+			Color Col = Gameinfo.DefaultBloodColor;
+			if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+			{
+				Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			}
+			
+			For(Int i=0;i<Random(6, 9)*CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();i++)
+			{
+				Float Bright = FRandom(.6, 1.5);
+				E.Thing.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel, 20, FRandom(1.5, 2.5), e.Thing.AngleTo(Players[ConsolePlayer].Camera), FRandom(-1.5, 1.5), FRandom(-1.5, 1.5), FRandom(4, 7), .1,0,.5, 0,0,-.1);
+			}
 			e.Thing.Destroy();
 		}
 	}
@@ -535,7 +546,7 @@ Class MR_GoreParticlesWoundToken: Thinker
 						Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
 						Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
 						
-						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, 0, Random(2, 9), Col, 0, .5, (Pos.X, Pos.Y, Locs[i].Z-5));
+						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, 0, Random(2, 9), Col, 0, .5, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
 					}
 				}
 				
