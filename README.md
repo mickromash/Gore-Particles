@@ -18,7 +18,6 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 ## TO DO
 
-* Improve shading
 * Add blood mist for gibbing
 * Add more effects for gibbing
 * Add effect for squishing
@@ -34,3 +33,5 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Hideous Destructor compatibility
 * Blood amount and size based on damage
 * Wounds size based on damage
+* Configurable blood brightness and transparancy
+* Partially invisible blood
