@@ -28,7 +28,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Float Dist = 1;
 		Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
-		//if(Typ==1)Typ=3;
+		//if(Typ==1)
+		//Typ=3;
 		Switch(Typ)
 		{
 			Case 0://"Explode"
@@ -121,7 +122,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					Pitch -= FRandom(5, 7);
 					Angle += FRandomPick(-FRandom(11, 17),  FRandom(11, 18));
 					Double Forw = FRandom(1.4, 2);
-					Vector3 Strn;// Cos(Ang)*Leng, Sin(Ang)*Leng);
+					Vector3 Strn;
 					Double Size = FRandom(1.7, 2.5)*Dist*1.5;
 					Double Life = FRandom(30, 35);
 					For(float j=.1;j<1.1;j+=.01)
@@ -304,9 +305,9 @@ Class MR_GoreParticlesHandler: EventHandler
 
 							Home.Z = -Dif.Z+5;
 							
-							Token.Locs[i]=Home;
-							Token.Angles[i]=e.Thing.AngleTo(e.Inflictor);
-							Token.Ages[i]=35*15;
+							Token.Locs[0]=Home;
+							Token.Angles[0]=e.Thing.AngleTo(e.Inflictor);
+							Token.Ages[0]=35*15;
 						}
 					}
 					else
