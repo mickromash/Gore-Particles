@@ -12,5 +12,6 @@ user bool MRGoreParts_UseCustomColor = false;
 user Color MRGoreParts_Color = "0 96 0";
 server bool MRGoreParts_NoBloodMonsters = true;
 user bool MRGoreParts_FuzzyBlood = true;
+user bool MRGoreParts_Voxel = false;
 
 server bool MRGoreParts_Debug = false;
