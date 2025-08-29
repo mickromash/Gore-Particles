@@ -117,18 +117,21 @@ Class MR_GoreParticlesHandler: EventHandler
 				}
 				Break;
 			Case 3://"Beautiful" spray
-				For(int i=0;i<1;i++)
 				{
-					Pitch -= FRandom(5, 7);
-					Angle += FRandomPick(-FRandom(11, 17),  FRandom(11, 18));
-					Double Forw = FRandom(1.4, 2);
+					Pitch -= FRandom(5, 8);
+					Angle += Random(-30, 30);
+					Double Forw = FRandom(1.4, 3);
 					Vector3 Strn;
-					Double Size = FRandom(1.7, 2.5)*Dist*1.5;
-					Double Life = FRandom(30, 35);
-					For(float j=.1;j<1.1;j+=.01)
+					Double Size = FRandom(3, 4)*Dist*1.5;
+					Double Life = FRandom(35, 40);
+					
+					Float Bright = FRandom(.9, 2);
+					
+					
+					For(float j=.1;j<1.1;j+=.025)
 					{
 						Double Ang = Random(0, 360);
-						Double Leng = FRandom(0, .15*j);
+						Double Leng = FRandom(0, .3*j);
 						Strn.X = Forw*j*.5;
 						Strn.Y = Cos(Ang)*Leng;
 						Strn.Z = Sin(Ang)*Leng;
@@ -136,14 +139,23 @@ Class MR_GoreParticlesHandler: EventHandler
 						Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 						Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 						
-						
+						Color ColTmp = Color(int(Col.R*(Strn.Z/(.7*j)+.75)*2), int(Col.G*(Strn.Z/(.7*j)+.75)*2), int(Col.B*(Strn.Z/(.7*j)+.75)*2));
 						Vel *= Dist;
 						Vel *= Scale;
 						
-						Float Bright = FRandom(.9, 2);
-						Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-						mo.A_SpawnParticle(ColTmp, 0, Life+5, Size+j/6, 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
-							Vel.X, Vel.Y, Vel.Z, 0,0,-j*.005, 1, 0, -(Size/Life));
+						Vector3 Accel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z + -Sin(Pitch)*Strn.X);
+						Accel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+						Accel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+						
+						Accel = -Accel;
+						Accel *= FRandom(.01, .02);
+						Accel *= Dist;
+						Accel *= Scale;
+						
+						
+						mo.A_SpawnParticle(ColTmp, 0, Life+5, Size-j, 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+							Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-j*.005, 1, 0, -((Size-j)/Life));
+						Life-=.5;
 					}
 				}
 				Break;
@@ -333,7 +345,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				
 				if(e.Inflictor != e.Thing)
 				{
-					int SplashType = Random(0, 1);
+					int SplashType = Random(0, 2);
 					if(!e.DamageSource)Return;
 					Double Pitch = 0;
 					if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
@@ -346,6 +358,9 @@ Class MR_GoreParticlesHandler: EventHandler
 							Break;
 						Case 1:
 							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(10, 15), Col, 0);
+							Break;
+						Case 2:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, 1, Col, 3);
 							Break;
 					}
 					MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(0, 4)*2, Col, 2);
@@ -362,7 +377,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
 						Vector3 Ofst = (Actor.AngleToVector(Angle, 1)*abs(Cos(Pitch)), Sin(Pitch))*Dist;
 								
-						if(i%2==0 && MRGPartsDraw())
+						if(i%2==0 && MRGPartsDraw() && CVar.GetCVar("MRGoreParts_DripOnImpact", Players[ConsolePlayer]).GetBool())
 						{
 							Ang = Random(140, 220)*Dist;
 							Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
@@ -515,7 +530,8 @@ Class MR_GoreParticlesWoundToken: Thinker
 		Vector2 Size = Texman.GetScaledOffset(Sprt);
 		
 		Double Angle = Owner.Angle;
-		if(Owner.Health<1)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
+		if(Owner.Health<1 && !MRGoreParts_Voxel)
+			Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
 		
 		For(int i=0;i<Locs.Size();i++)
 		{
@@ -537,7 +553,7 @@ Class MR_GoreParticlesWoundToken: Thinker
 					if(CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>0 && MRGPartsDraw())
 					{
 						Vector2 Pos = Owner.Pos.XY;
-						if(Owner.Health>0)
+						if(Owner.Health>0||MRGoreParts_Voxel)
 						{
 							Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
 							Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
@@ -556,7 +572,7 @@ Class MR_GoreParticlesWoundToken: Thinker
 					{
 						Double Angl = VectorAngle(Locs[i].X, Locs[i].Y);
 						Vector2 Pos = (0,0);
-						if(Owner.Health>0)
+						if(Owner.Health>0||MRGoreParts_Voxel)
 						{
 							Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
 							Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
@@ -567,7 +583,7 @@ Class MR_GoreParticlesWoundToken: Thinker
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
 						}
 						
-						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, 0, Random(2, 9), Col, 0, .5, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
+						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, Owner.Health>0?0:-90, Random(2, 9), Col, 0, .5, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
 					}
 				}
 				
@@ -581,6 +597,13 @@ Class MR_GoreParticlesDeathToken: Inventory
 {
 	Color Bld;
 	Bool Sos, Artery;
+	Float Mid;
+	
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		Mid = Owner.Height*.5;
+	}
 
 	Override Void DoEffect()
 	{
@@ -590,7 +613,7 @@ Class MR_GoreParticlesDeathToken: Inventory
 		
 		if(Sprt.IsValid())
 		{
-			Float Mid = Owner.Height*.5;
+			
 			Float y = Texman.CheckRealHeight(Sprt)*.9;
 			y *= Owner.Scale.Y;
 			
@@ -598,10 +621,12 @@ Class MR_GoreParticlesDeathToken: Inventory
 			Pitch = -90;
 			if(Mid<Y)
 			{
-				Pitch = -(Mid/y*90)+90;
-				Mid = Pitch;
+				Pitch = -(Mid/y)*90;
+				//Mid = Pitch;
 			}
 			
+			Double Angle = Owner.Angle;
+			if(!MRGoreParts_Voxel)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
 			
 			if(Random(-200+Artery*160, 70)>GetAge())
 			{
@@ -609,16 +634,19 @@ Class MR_GoreParticlesDeathToken: Inventory
 				{
 					MR_GoreParticlesFlyingBloodMultiplayer a = MR_GoreParticlesFlyingBloodMultiplayer(Owner.Spawn("MR_GoreParticlesFlyingBloodMultiplayer", Owner.pos + (0,0,Posy)));
 					a.Col = Bld;
-					a.Vel3DFromAngle(Random(3, 5), Owner.AngleTo(Players[ConsolePlayer].Camera)+Random(-50, 50), -Pitch);
+					a.Vel3DFromAngle(Random(3, 5), Angle+Random(-50, 50), -Pitch);
 				}
 				else
 				{
 					MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(Owner.Spawn("MR_GoreParticlesFlyingBlood", Owner.pos + (0,0,y)));
 					a.Col = Bld;
-					a.Vel3DFromAngle(Random(3, 5), Owner.AngleTo(Players[ConsolePlayer].Camera)+Random(-50, 50), -Pitch);
+					a.Vel3DFromAngle(Random(3, 5), Angle+Random(-50, 50), -Pitch);
 				}
 			}
-			if(GetAge()<60)MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, AngleTo(Players[ConsolePlayer].Camera), Pitch, Random(-25+Artery*17, 1)*Random(3, 14), Bld, 0, 1, (0,0,Posy));
+			if(GetAge()<60)
+			{
+				MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angle, Pitch, Random(-25+Artery*17, 1)*Random(3, 14), Bld, 0, 1, (0,0,Posy));
+			}
 		}
 	}
 }
