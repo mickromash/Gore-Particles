@@ -18,6 +18,7 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 ## TO DO
 
+* Improve shading
 * Add blood mist for gibbing
 * Add more effects for gibbing
 * Add effect for squishing
