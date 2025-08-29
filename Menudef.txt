@@ -1,11 +1,12 @@
 AddOptionMenu "OptionsMenu"
 {
-	SubMenu "$MRGoreParts_Title", "MRGoreParts_Menu"
+	StaticText "$MRGoreParts_Title", "Red"
+	SubMenu "$MRGoreParts_Settings", "MRGoreParts_Menu"
 }
 
 OptionMenu "MRGoreParts_Menu"
 {
-	Title "$MRGoreParts_Title"
+	Title "$MRGoreParts_Settings"
 	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
 	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "MRGoreParts_OtherBlood"
 	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
@@ -18,6 +19,7 @@ OptionMenu "MRGoreParts_Menu"
 	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
 	Option "$MRGoreParts_BloodMist", "MRGoreParts_BloodMist", "OnOff"
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
+	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
 	Option "$MRGoreParts_Multiplayer", "MRGoreParts_Multiplayer", "OnOff"
