@@ -2,6 +2,7 @@ AddOptionMenu "OptionsMenu"
 {
 	StaticText "$MRGoreParts_Title", "Red"
 	SubMenu "$MRGoreParts_Settings", "MRGoreParts_Menu"
+	StaticText ""
 }
 
 OptionMenu "MRGoreParts_Menu"
@@ -15,9 +16,10 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
 	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 4, .1
-	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
+	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
 	Option "$MRGoreParts_BloodMist", "MRGoreParts_BloodMist", "OnOff"
+	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"

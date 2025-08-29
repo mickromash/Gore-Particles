@@ -4,9 +4,10 @@ MRGoreParts_Title = "Particle Gore";
 MRGoreParts_Settings = "Configure Particle gore";
 MRGoreParts_Draw = "Draw gore particles";
 MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
-MRGoreParts_Wounds = "Bleeding wounds";
+MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_FlyingBood = "Blood streams";
 MRGoreParts_BloodMist = "Blood mist";
+MRGoreParts_Wounds = "Bleeding wounds";
 
 MRGoreParts_FloorSpots = "Spots on surfaces";
 MRGoreParts_SpotsNothing = "None";
@@ -37,9 +38,10 @@ MRGoreParts_Title = "Кровавые частицы";
 MRGoreParts_Settings = "Настроить кровавые частицы";
 MRGoreParts_Draw = "Рендер частиц";
 MRGoreParts_NoBloodMonsters = "Отключить кровь для монстров с флагом \"+NOBLOOD\"";
-MRGoreParts_Wounds = "Кровоточащие раны";
+MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_FlyingBood = "Струи крови";
 MRGoreParts_BloodMist = "Кровавая дымка";
+MRGoreParts_Wounds = "Кровоточащие раны";
 
 MRGoreParts_FloorSpots = "Кровь на поверхностях";
 MRGoreParts_SpotsNothing = "Нет";
