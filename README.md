@@ -32,3 +32,5 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Big splash on entity death
 * Change vanilla monsters blood color on sapwn
 * Hideous Destructor compatibility
+* Blood amount and size based on damage
+* Wounds size based on damage
