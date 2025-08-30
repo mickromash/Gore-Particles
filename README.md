@@ -3,7 +3,7 @@ GZDoom mini mod that adds fancy blood particles animations
 
 ## Features
 
-* Various blood effects based on GZDoom particles
+* Various volumetric blood effects based on GZDoom particles
 * Bleeding wounds
 * Built in blood colours for vanilla monsters (like green blood for hell knight or blue for cacodemon)
 * Customizable blood colour
