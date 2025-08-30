@@ -10,7 +10,7 @@ GZDoom mini mod that adds fancy blood particles animations
 * Compatibility with other gameplay, monsters or gore mods
 #
 
-Because most of the blood effects are only made of particles (excluding blood streams and bleeding wounds), mod dosen't create any new actors and has pretty much no effect on the performance.
+Because most of the blood effects are only made of particles (excluding blood streams), mod dosen't create any new actors and has pretty much no effect on the performance.
 
 But because all of the blood is visualized with particles, I highly recommend use other mods in case you want blood puddles and spots.
 
