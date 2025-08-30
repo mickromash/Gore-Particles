@@ -1,6 +1,6 @@
 Version "4.0"
 
-Const MRGP_MaxWounds = 20;
+Const MRGP_MaxWounds = 15;
 
 Class MR_GoreParticlesHandler: EventHandler
 {
@@ -33,37 +33,33 @@ Class MR_GoreParticlesHandler: EventHandler
 		Switch(Typ)
 		{
 			Case 0://"Explode"
-				For(int i=0;i<Amount;i++)
+			
+				Float Mult = Random(0, Amount)*3+1;
+				For(float i1=0;i1<Mult;i1++)
 				{
+					Double Ang = Random(0, 360);
+					Double Leng = FRandom(0, .3);
+					Vector3 Strn = (FRandom(.1, 1), Cos(Ang)*Leng, Sin(Ang)*Leng);
+					Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z + -Sin(Pitch)*Strn.X);
+					Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+					Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+					
+					Vel *= Dist;
+					Vel *= Scale;
+					
+					Float Life = Min(45, 10/Strn.Length())*Scale;
+					Double Size = FRandom(.9, 3)*Dist*1.5*Scale;
+					Vector3 Accel = -Vel*FRandom(.004, .01);
 					
 					
-					Float Mult = Random(0, 3)*3+1;
-					For(float i1=0;i1<Mult;i1++)
-					{
-						Double Ang = Random(0, 360);
-						Double Leng = FRandom(0, .3);
-						Vector3 Strn = (FRandom(.1, 1), Cos(Ang)*Leng, Sin(Ang)*Leng);
-						Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z + -Sin(Pitch)*Strn.X);
-						Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
-						Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
-						
-						Vel *= Dist;
-						Vel *= Scale;
-						
-						Float Life = Min(45, 10/Strn.Length())*Scale;
-						Double Size = FRandom(.9, 3)*Dist*1.5*Scale;
-						Vector3 Accel = -Vel*FRandom(.004, .01);
-						
-						
-						
-						Float Bright = Max(.5, Min(2, 1.5+Vel.Z*1.5));
-						Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-						Vector3 Ofst = Vel;
-						Ofst *= Mult/(i1+1);
-						
-						mo.A_SpawnParticle(ColTmp, 0, Life, Size, 0, Ofst.X*FRandom(.3, .7)+Offset.X,Ofst.Y*FRandom(.3, .7)+Offset.Y,5+Ofst.Z*FRandom(.3, .7)+Offset.Z,
-							Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
-					}
+					
+					Float Bright = Max(.5, Min(2, 1.5+Vel.Z*1.5));
+					Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+					Vector3 Ofst = Vel;
+					Ofst *= Mult/(i1+1);
+					
+					mo.A_SpawnParticle(ColTmp, 0, Life, Size, 0, Ofst.X*FRandom(.3, .7)+Offset.X,Ofst.Y*FRandom(.3, .7)+Offset.Y,5+Ofst.Z*FRandom(.3, .7)+Offset.Z,
+						Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
 				}
 				Break;
 			Case 1://Drops with trails	NEEDS REWORK
@@ -108,7 +104,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					Vel *= Dist;
 					
 					Float Life = Min(50, 11/Strn.Length());
-					Double Size = FRandom(3, 6)*Dist*1.5;
+					Double Size = Scale*FRandom(4, 7)*Dist*1.5;
 					Vector3 Accel = -Vel*FRandom(.004, .01);
 					
 					Float Bright = FRandom(.9, 1.4);
@@ -169,14 +165,17 @@ Class MR_GoreParticlesHandler: EventHandler
 					//Angle += Random(-15, 15);
 					Double Forw = FRandom(.6, 1);
 					Vector3 Strn = (FRandom(.3, 1.2),0,0);
-					Double Size = FRandom(2.8, 3.3)*Dist*1.5;
+					Double Size = FRandom(3.4, 3.7)*Dist*1.5;
 					Double Life = FRandom(25, 30);
 										
 					
 					
 					Double Roll = Random(175, 360);
 					
-					For(float j=-Random(70, 160);j<Random(80, 200);j+=FRandom(2.7, 3.3))
+					int CircleStart = FRandom(0, 360);
+					float CircleLength = Random(120, 270);
+					
+					For(float j=CircleStart;j<CircleLength;j+=Size*.75)
 					{
 						Double Ang = Angle+(j+FRandom(-1.5, 1.5))*Cos(Roll);
 						Double Pit = Pitch+(j+FRandom(-1.5, 1.5))*Sin(Roll);
@@ -397,10 +396,11 @@ Class MR_GoreParticlesHandler: EventHandler
 						Case 1:
 						Case 2:
 						Case 3:
-							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(10, 15), Col, 0);
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(5, 10), Col, 0);
 							Break;
 						Case 4:
 						Case 5:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(3, 6), Col, 0);
 						Case 6:
 						Case 7:
 							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, 1, Col, 3);
@@ -433,7 +433,7 @@ Class MR_GoreParticlesHandler: EventHandler
 							e.Inflictor.A_SpawnParticle(ColTmp, 0, Random(29, 40), Size*1.3, 0, Ofst.X*2,Ofst.Y*2,5,
 									0,0,FRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
 						}
-						if(Random(0, 100)>98)
+						if(Random(0, 100)==1)
 						{
 							Float Bright = FRandom(1, 2);
 							/*if(MRGoreParts_Multiplayer)
@@ -580,6 +580,8 @@ Class MR_GoreParticlesWound: Thinker
 		if(Owner.Health<1 && !MRGoreParts_Voxel)
 			Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
 		
+		int MaxBlood = MRGP_MaxWounds;
+		
 		For(int i=0;i<Locs.Size();i++)
 		{
 			if(Ages[i]>0)
@@ -592,9 +594,11 @@ Class MR_GoreParticlesWound: Thinker
 						Owner.Vel.X, Owner.Vel.Y, Owner.Vel.Z);
 				}
 				
-				if(35*Random(3, 40)<Ages[i])
+				int Rand = Random(0, 5);
+				
+				if(35*Random(3, 40)<Ages[i] && Rand>0 && MaxBlood>0)
 				{
-					
+					MaxBlood--;
 					if(MRGPartsDraw())For(float j=0;j<Random(1, 5);j++)Owner.A_SpawnParticle(Col, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X, Locs[i].Y, Min(Z, Locs[i].Z-j*.5*(Ages[i]/(35*15))),
 						Owner.Vel.X, Owner.Vel.Y, Owner.Vel.Z, 0,0,-.3);
 					if(CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>0 && MRGPartsDraw())
@@ -630,7 +634,7 @@ Class MR_GoreParticlesWound: Thinker
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
 						}
 						
-						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, Owner.Health>0?0:-90, Random(2, 9), Col, 0, .5, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
+						MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angl, Owner.Health>0?0:-90, 1, Col, 0, .5, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
 					}
 				}
 				
@@ -740,7 +744,7 @@ Class MR_GoreParticlesFlyingBlood: Actor
 					
 					Float InterBright = Brightnes;
 					Vector3 Dif = LevelLocals.Vec3Diff(Pos, Prev);
-					For(int i=0;i<Dif.Length();i++)
+					For(float i=0;i<Dif.Length();i+=Scale.X*.25)
 					{
 						Float Step = i;
 						Step /= Dif.Length();
@@ -748,9 +752,9 @@ Class MR_GoreParticlesFlyingBlood: Actor
 						Brightnes = FRandom(.5, 2);
 						CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 						
-						Float Rand = FRandom(-Scale.X*.25, Scale.X*.25);
+						Float Rand = FRandom(-Scale.X*.2, Scale.X*.2);
 						
-						A_SpawnParticle(CurCol, 0, 25, Scale.X*.9, 0, Dif.X*Step+Vel.X*.5+Rand,Dif.Y*Step+Vel.Y*.5+Rand,Dif.Z*Step+Vel.Z*.5+Rand, 0,0,0, 0,0,-Gravity*.5, 1, -1, -Scale.X*.9*.05);
+						A_SpawnParticle(CurCol, 0, 25, Scale.X, 0, Dif.X*Step+Vel.X*.5+Rand,Dif.Y*Step+Vel.Y*.5+Rand,Dif.Z*Step+Vel.Z*.5+Rand, 0,0,0, 0,0,-Gravity*.5, 1, -1, -Scale.X*.9*.05);
 						//else A_SpawnParticle(Col, 0, 1, Scale.X, 0, Dif.X*Step,Dif.Y*Step,Dif.Z*Step, Vel.X, Vel.Y, Vel.Z);
 					}
 				}
