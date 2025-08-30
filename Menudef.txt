@@ -21,6 +21,7 @@ OptionMenu "MRGoreParts_Menu"
 	Option "$MRGoreParts_BloodMist", "MRGoreParts_BloodMist", "OnOff"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
+	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 60, 2
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"

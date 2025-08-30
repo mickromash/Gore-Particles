@@ -14,6 +14,8 @@ MRGoreParts_SpotsNothing = "None";
 MRGoreParts_SpotsByWoundsOnly = "Only leaved by wounds";
 MRGoreParts_SpotsAll = "All";
 
+MRGoreParts_SpotsTime = "Spots life time in seconds";
+
 MRGoreParts_Amount = "Blood amount";
 MRGoreParts_AllParticlesAmount = "All particles amount";
 
@@ -47,6 +49,8 @@ MRGoreParts_FloorSpots = "Кровь на поверхностях";
 MRGoreParts_SpotsNothing = "Нет";
 MRGoreParts_SpotsByWoundsOnly = "Только кровь из ран";
 MRGoreParts_SpotsAll = "Вся";
+
+MRGoreParts_SpotsTime = "Удалять пятна спустя * секунд";
 
 MRGoreParts_Amount = "Количество крови";
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
