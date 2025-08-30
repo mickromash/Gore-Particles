@@ -5,7 +5,7 @@ MRGoreParts_Settings = "Configure Particle gore";
 MRGoreParts_Draw = "Draw gore particles";
 MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
-MRGoreParts_FlyingBood = "Blood streams";
+MRGoreParts_FlyingBood = "Quake gibs style blood streams";
 MRGoreParts_BloodMist = "Blood mist";
 MRGoreParts_Wounds = "Bleeding wounds";
 
@@ -24,7 +24,7 @@ MRGoreParts_OnlyModBloodNot = "No";
 MRGoreParts_OnlyModBloodHide = "Only hide";
 MRGoreParts_OnlyModBloodYes = "Yes";
 
-MRGoreParts_Quake2 = "Quake blood";
+MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
 MRGoreParts_Voxel = "Voxel enemies";
@@ -41,7 +41,7 @@ MRGoreParts_Settings = "Настроить кровавые частицы";
 MRGoreParts_Draw = "Рендер частиц";
 MRGoreParts_NoBloodMonsters = "Отключить кровь для монстров с флагом \"+NOBLOOD\"";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
-MRGoreParts_FlyingBood = "Струи крови";
+MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
 MRGoreParts_BloodMist = "Кровавая дымка";
 MRGoreParts_Wounds = "Кровоточащие раны";
 
@@ -60,7 +60,7 @@ MRGoreParts_OnlyModBloodNot = "Нет";
 MRGoreParts_OnlyModBloodHide = "Скрывать другую кровь, но не уничтожать";
 MRGoreParts_OnlyModBloodYes = "Да";
 
-MRGoreParts_Quake2 = "Кровь из Quake";
+MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
 MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами";
 MRGoreParts_Voxel = "Воксельные враги";
