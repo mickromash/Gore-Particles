@@ -446,7 +446,7 @@ Class MR_GoreParticlesHandler: EventHandler
 							{*/
 							MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(e.Inflictor.Spawn("MR_GoreParticlesFlyingBlood", e.Inflictor.Pos));
 							a.Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-							a.Vel3DFromAngle(Random(4, 6), e.Inflictor.AngleTo(e.Thing)+Random(-50, 50), -Random(0, 60));
+							a.Vel3DFromAngle(Random(4, 6), e.Inflictor.AngleTo(e.DamageSource)+Random(-50, 50), -Random(0, 60));
 							a.Scale *= FRandom(1, 2);
 							//}
 						}
@@ -656,7 +656,7 @@ Class MR_GoreParticlesDeathHandler: Thinker
 
 	Override Void Tick()
 	{
-		if(Age>60){Destroy();Return;}
+		if(Age>60||!Owner){Destroy();Return;}
 		Age++;
 		Super.Tick();
 		
