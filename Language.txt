@@ -4,10 +4,12 @@ MRGoreParts_Title = "Particle Gore";
 MRGoreParts_Settings = "Configure Particle gore";
 MRGoreParts_Draw = "Draw gore particles";
 MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
+MRGoreParts_Blacklist = "Monsters black list:";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_FlyingBood = "Quake gibs style blood streams";
 MRGoreParts_BloodMist = "Blood mist";
 MRGoreParts_Wounds = "Bleeding wounds";
+MRGoreParts_CorpseWounds = "Wounds on corpses";
 
 MRGoreParts_FloorSpots = "Spots on surfaces";
 MRGoreParts_SpotsNothing = "None";
@@ -30,7 +32,11 @@ MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
 MRGoreParts_Voxel = "Voxel enemies";
 MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
+
 MRGoreParts_Multiplayer = "Multiplayer friendly";
+
+MRGoreParts_CheckLimit = "Particles limit display";
+
 MRGoreParts_Tip2 = "If particles amount hit the limit, new particles won't spawn";
 MRGoreParts_Tip3 = "so fully turning blood spots option on is not recomended";
 
@@ -40,10 +46,12 @@ MRGoreParts_Title = "Кровавые частицы";
 MRGoreParts_Settings = "Настроить кровавые частицы";
 MRGoreParts_Draw = "Рендер частиц";
 MRGoreParts_NoBloodMonsters = "Отключить кровь для монстров с флагом \"+NOBLOOD\"";
+MRGoreParts_Blacklist = "Отключить кровь для этих монстров:";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
 MRGoreParts_BloodMist = "Кровавая дымка";
 MRGoreParts_Wounds = "Кровоточащие раны";
+MRGoreParts_CorpseWounds = "Раны на трупах";
 
 MRGoreParts_FloorSpots = "Кровь на поверхностях";
 MRGoreParts_SpotsNothing = "Нет";
@@ -66,6 +74,10 @@ MRGoreParts_Quake2Text2 = "Рекомендуется включить при и
 MRGoreParts_Voxel = "Воксельные враги";
 MRGoreParts_UseCustomColor = "Кровь одного цвета";
 MRGoreParts_Color = "Цвет крови";
+
 MRGoreParts_Multiplayer = "Режим игры по сети";
+
+MRGoreParts_CheckLimit = "Показатель лимита частиц";
+
 MRGoreParts_Tip2 = "Если количество частиц превысит лимит, новые частицы перестанут появляться";
 MRGoreParts_Tip3 = "поэтому не рекомендуется включать всю кровь на поверхностях";
