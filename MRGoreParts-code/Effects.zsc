@@ -1,0 +1,154 @@
+Class MR_GoreParticlesFlyingBlood: Actor
+{
+	Default{
+		-Solid
+		+ThruActors
+		+Missile
+		-SKYEXPLODE
+		Gravity .3;
+		Scale 3;
+		Radius 3;
+		Height 3;
+	}
+	
+	Color Col;
+	//Float Brightnes;
+	
+	Bool MRGPartsCheckDraw()
+	{
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return false;
+		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		
+		
+		Return CheckSight(Plr.Camera) && abs(DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Self)))<120;
+	}
+	
+	//Override Void PostBeginPlay(){Super.PostBeginPlay();Brightnes = 1.5;}
+	
+	States
+	{
+		Spawn:
+			TNT1 A 1{
+				if(MRGPartsCheckDraw())
+				{
+					Float Brightnes = FRandom(.5, 2);
+					
+					Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
+					
+					A_SpawnParticle(CurCol, 0, 1, Scale.X, 0, 0,0,0, Vel.X, Vel.Y, Vel.Z);
+					
+					Float InterBright = Brightnes;
+					Vector3 Dif = LevelLocals.Vec3Diff(Pos, Prev);
+					For(float i=0;i<Dif.Length();i+=Scale.X*.25)
+					{
+						Float Step = i;
+						Step /= Dif.Length();
+						//if(i%2==0)
+						Brightnes = FRandom(.5, 2);
+						CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
+						
+						Float Rand = FRandom(-Scale.X*.2, Scale.X*.2);
+						
+						A_SpawnParticle(CurCol, 0, 25, Scale.X, 0, Dif.X*Step+Vel.X*.5+Rand,Dif.Y*Step+Vel.Y*.5+Rand,Dif.Z*Step+Vel.Z*.5+Rand, 0,0,0, 0,0,-Gravity*.5, 1, -1, -Scale.X*.9*.05);
+						//else A_SpawnParticle(Col, 0, 1, Scale.X, 0, Dif.X*Step,Dif.Y*Step,Dif.Z*Step, Vel.X, Vel.Y, Vel.Z);
+					}
+				}
+			}
+			Wait;
+		
+		Death:
+			TNT1 A 0{
+			if(!CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()<2)Return;
+			if(Pos.Z>FloorZ+1 && Pos.Z+Height<CeilingZ)//Hit wall
+			{
+				FLineTraceData data;
+				LineTrace(Angle, Radius*3, 0, TRF_THRUACTORS, 0, -Radius, 0, data);
+				if(data.HitLine!=Null)
+				{
+					Float DeltaX = data.HitLine.V2.p.X - data.HitLine.V1.p.X;
+					Float DeltaY = data.HitLine.V2.p.Y - data.HitLine.V1.p.Y;
+					
+					Angle = atan2(DeltaY, DeltaX) + 90;
+					SetOrigin(data.HitLocation, false);
+				}
+				else {Destroy();Return;}
+				if(MRGPartsCheckDraw() && CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>1)For(int i=0;i<9;i+=Random(1, 2))
+				{
+					Float Size = FRandom(.8, 2);
+					A_SpawnParticle(Col, SPF_RELATIVE, CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt()*35, Size, 0, -1, Random(-7, 7), Random(-6, 6),
+						VelX:0, 0, 0, 0, 0, -FRandom(.00002, .00004));
+				}
+			}
+			else
+			{
+				if(Pos.Z+Height>=CeilingZ)//Hit ceiling
+				{
+					Destroy();
+				}
+				else//Hit floor
+				{
+					For(int i=Random(0, 5);i<11;i++)
+					{
+						Float Size = FRandom(.8, 2);
+						
+						Vector2 Posy = Pos.XY;
+						Vector2 Par = (Random(-5, 5), Random(-5, 5));
+						Posy += Par;
+						
+						Float Floory = LevelLocals.PointInSector(Posy).FloorPlane.ZatPoint(Posy);
+						
+						
+						if(MRGPartsCheckDraw())A_SpawnParticle(Col, 0, 800, Size, 0, Par.X, Par.Y, 1-(Pos.Z-Floory),
+							VelX:0,0,0, 0,0,0, 1, 1./800.);
+					}
+					Destroy();
+				}
+			}
+		}
+		Stop;
+	}
+}
+
+Class MR_GoreParticlesFlyingBloodMultiplayer: Actor
+{
+	Default{
+		-Solid
+		+ThruActors
+		+Missile
+		-SKYEXPLODE
+		+NOINTERACTION
+		Gravity 1;
+		Scale 3;
+		Radius 3;
+		Height 3;
+		}
+	
+	Color Col;
+	Float Brightnes;
+	
+	Bool MRGPartsCheckDraw()
+	{
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return false;
+		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		
+		
+		Return CheckSight(Plr.Camera) && abs(DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Self)))<120;
+	}
+	
+	States
+	{
+		Spawn:
+			TNT1 A 1{
+				Vel.Z -= Gravity*.5;
+				if(MRGPartsCheckDraw()){
+					Brightnes += Vel.Z*.1;
+					Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
+					
+					A_SpawnParticle(CurCol, 0, 1, Scale.X, 0, 0,0,0, Vel.X, Vel.Y, Vel.Z);
+					A_SpawnParticle(CurCol, 0, 25, Scale.X*.9, 0, 0,0,0, 0,0,0, 0,0,-Gravity*.5, 1, -1, -Scale.X*.9*.05);}
+				}
+			Wait;
+	}
+}

@@ -1,0 +1,629 @@
+Class MR_GoreParticlesHandler: EventHandler
+{
+	Double Dif(Double a, Double b)
+	{
+		if(a>b)Return a-b;
+		
+		Return b-a;
+	}
+	
+	Array<Actor> Wounded;
+	Array<MR_GoreParticlesWound> Wounds;
+	
+	Array<Class <Actor> > BlackList;
+
+	
+	Array<String> Monsters;
+	Color Colors[40];
+	
+	/*
+		MRPRTCOL (MickRomash's gore PaRTiCle COLours) lump stores information
+		about blood colours for specific monster classes
+		
+		Syntax:
+		MonsterClassName (R G B)
+		
+		example:
+		HellKnight (0 90 0)
+		Cacodemon (0 0 120)
+	*/
+	
+	Override Void OnRegister()
+	{
+		int LumpNum = 0;
+		While(LumpNum>-1)
+		{
+			int TempLump = Wads.FindLump("MRPRTCOL", LumpNum+1);
+			if(TempLump==-1)Break;
+			else LumpNum = TempLump;
+		}
+		
+		String Lump = Wads.ReadLump(LumpNum);
+		Lump.Replace("\n", "");
+		While(Lump.IndexOf("(")>-1)
+		{
+			Monsters.Push(Lump.Left(Lump.IndexOf(" ")));
+
+			String Cols = Lump.Mid(Lump.IndexOf("("), Lump.IndexOf(")")).." ";
+			int Vals[3];
+			
+			For(int i=0;i<3;i++)
+			{
+				String Temp = Cols.Left(Cols.IndexOf(" "));
+				Vals[i] = Temp.ToInt();
+				Cols = Cols.Mid(Cols.IndexOf(" ")+1);
+			}
+			
+			Colors[Monsters.Size()-1] = Color(Vals[0], Vals[1], Vals[2]);
+			
+			Lump = Lump.Mid(Lump.IndexOf(")")+2);
+		}
+		if(MRGoreParts_Debug){
+			Console.Printf("\cdBlood color override:");
+			For(int i=0;i<Monsters.Size();i++)Console.Printf(Monsters[i].." "..Colors[i]);
+		}
+		String BList = MRGoreParts_BlackList;
+		BList.Replace(" ", "");
+		While(BList.Length()>2)
+		{
+			String Monst;
+			if(BList.IndexOf(",")>-1)
+			{
+				Monst = BList.Left(BList.IndexOf(","));
+				BList = BList.Mid(BList.IndexOf(",")+1);
+			}
+			else 
+			{
+				Monst = BList;
+				Blist = "";
+			}
+			
+			
+			Class<Actor> MonstCls = Monst;
+			if(MonstCls)BlackList.Push(MonstCls);
+		}
+		
+		if(MRGoreParts_Debug){
+			Console.Printf("\cdBlacklist:");
+			For(int i=0;i<BlackList.Size();i++)Console.Printf("\cg"..BlackList[i].GetClassName());
+		}
+	}
+	
+	Override Void RenderOverlay(RenderEvent e)
+	{
+		Return;
+		Let Sb = StatusBar;
+		
+		Bool WhyOffsetS = Sb.FullscreenOffsets;
+		Sb.FullscreenOffsets = true;
+		
+		HUDFont BigFnt = HUDFont.Create("BIGFONT");
+		
+		Sb.DrawString(BigFnt, "Wounds: "..Wounds.Size(), (0,3), Sb.DI_SCREEN_LEFT_TOP, Scale:(.75,.75));
+		Sb.DrawString(BigFnt, "Wounded: "..Wounded.Size(), (0,13), Sb.DI_SCREEN_LEFT_TOP, Scale:(.75,.75));
+		
+		
+		Sb.FullscreenOffsets = WhyOffsetS;
+	}
+	
+	Float ViewBob;
+	
+	Override Void WorldTick()
+	{
+		if(!CVar.GetCVar("MRGoreParts_CheckLimit", Players[ConsolePlayer]).GetBool())Return;
+		Let Plr = Players[ConsolePlayer].Camera;
+		
+		Vector3 Pos = (0,0, Plr.Player.ViewZ-Plr.Pos.Z);
+		Pos.XY += Actor.AngleToVector(Plr.Angle+90, 5 + 1*Abs(Sin(Plr.Pitch)));
+		
+		Float NewBob = Plr.Player.ViewZ - Plr.Pos.Z - Plr.Player.ViewHeight;
+		Float Bob;
+		Bob = Actor.DeltaAngle(ViewBob, NewBob);
+		
+		Pos += (Actor.AngleToVector(Plr.Angle, 4)*Cos(Abs(Plr.Pitch)),Abs(Cos(Plr.Pitch))*2.3 -Sin(Plr.Pitch)*4);
+		Pos.XY += Actor.AngleToVector(Plr.Angle, 3.4)*Sin(Plr.Pitch);
+		
+		
+		Plr.A_SpawnParticle(Color(0,255,0), SPF_FULLBRIGHT, 1, .5, 0, Pos.X,Pos.Y,Pos.Z-Bob -Plr.Vel.Z*1.3,
+			Plr.Vel.X,Plr.Vel.Y,Bob +Plr.Vel.Z*1.3, FadeStepf:0);
+			
+		ViewBob = NewBob;
+	}
+	
+	
+	Static Bool MRGPartsCheckDraw(Actor mo = Null)
+	{
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return false;
+		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		
+		if(!mo)Return CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool();
+		
+		
+		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
+	}
+	
+	
+	Static Void MRParticleBloodSplash(Actor mo = Null, Double Angle = 0, Double Pitch = 0, double Amount = 1, Color Col = 0, int Typ = 0, Double Scale=1, Vector3 Offset = (0,0,0))
+	{
+		if(!MRGPartsCheckDraw(mo))Return;
+		
+		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		
+		Float Dist = 1;
+		Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
+		//if(Typ==2)Return;
+		//Typ=4;
+		Switch(Typ)
+		{
+			Case 0://"Explode"
+			
+				Float Mult = Random(0, Amount)*3+1;
+				For(float i1=0;i1<Mult;i1++)
+				{
+					Double Ang = Random(0, 360);
+					Double Leng = FRandom(0, .3);
+					Vector3 Strn = (FRandom(.1, 1), Cos(Ang)*Leng, Sin(Ang)*Leng);
+					Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z + -Sin(Pitch)*Strn.X);
+					Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+					Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+					
+					Vel *= Dist;
+					Vel *= Scale;
+					
+					Float Life = Min(45, 10/Strn.Length())*Scale;
+					Double Size = FRandom(.9, 3)*Dist*1.5*Scale;
+					Vector3 Accel = -Vel*FRandom(.004, .01);
+					
+					
+					
+					Float Bright = Max(.5, Min(2, 1.5+Vel.Z*1.5));
+					Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+					Vector3 Ofst = Vel;
+					Ofst *= Mult/(i1+1);
+					
+					mo.A_SpawnParticle(ColTmp, 0, Life, Size, 0, Ofst.X*FRandom(.3, .7)+Offset.X,Ofst.Y*FRandom(.3, .7)+Offset.Y,5+Ofst.Z*FRandom(.3, .7)+Offset.Z,
+						Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
+				}
+				Break;
+			Case 1://Drops with trails	NEEDS REWORK
+				For(int i=0;i<Amount;i++)
+				{
+					Angle += FRandom(-7, 7);
+					Float PitchRand = FRandom(-5, 5);
+					Double Strn = FRandom(1, 1.6);
+					
+					Vector3 Vel = (Actor.AngleToVector(Angle, Strn)*Cos(Abs(Pitch+PitchRand)), -Sin(Pitch+PitchRand)*Strn);
+					Vel.XY += Actor.AngleToVector(Angle+90+PitchRand, Sin(Angle)*Strn)*-Sin(Pitch+PitchRand);
+					
+					Vel.Z += .4;
+					
+					Vel *= Dist;
+					
+					Double Size = FRandom(1.9, 2.5)*Dist*1.5;
+					Double Life = FRandom(20, 25);
+					
+					
+					
+					For(float j=0;j>-3;j-=.5)
+					{
+						Float Bright = Max(.5, Min(2, 1.5+Vel.Z+j*.5));
+						Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+					
+						mo.A_SpawnParticle(ColTmp, 0, Life, Size+j/6, 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+							Vel.X, Vel.Y, Vel.Z, 0,0,-.05+(-j/6*(-j/6))*.02, 1, 0, -(Size/Life));
+						Life+=1;
+					}
+				}
+				Break;
+			Case 2://Mist
+				if(!CVar.GetCVar("MRGoreParts_BloodMist", Players[ConsolePlayer]).GetBool())Break;
+				For(int i=0;i<Amount;i++)
+				{
+					Vector3 Strn = (FRandom(.05, .2), FRandom(-.3, .3), FRandom(-.3, .3));
+					Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z + -Sin(Pitch)*Strn.X);
+					Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+					Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+					
+					Vel *= Dist;
+					
+					Float Life = Min(50, 11/Strn.Length());
+					Double Size = Scale*FRandom(4, 7)*Dist*1.5;
+					Vector3 Accel = -Vel*FRandom(.004, .01);
+					
+					Float Bright = FRandom(.9, 1.4);
+					Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+					
+					Float Alpha = FRandom(.2, .4);
+					
+					mo.A_SpawnParticle(ColTmp, 0, Life, Size, 0, 0+Offset.X,0+Offset.Y,5+Offset.Z,
+						Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alpha, Alpha/Life, .25);
+				}
+				Break;
+			Case 3://"Beautiful" spray
+				{
+					Pitch -= FRandom(5, 8);
+					Angle += Random(-30, 30);
+					Double Forw = FRandom(1.4, 3);
+					Vector3 Strn;
+					Double Size = FRandom(1.2, 1.6)*Dist*1.5;
+					Double Life = FRandom(35, 40);
+										
+					Float Bright = FRandom(.9, 2);
+					
+					
+					For(float j=.1;j<1.1;j+=.05/Amount)
+					{
+						Double Ang = Random(0, 360);
+						Double Leng = FRandom(0, .1*j);
+						Strn.X = Forw*j*.5;
+						Strn.Y = -Cos(Ang)*Leng;
+						Strn.Z = -Sin(Ang)*Leng;
+						Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+						Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+						Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+						
+						Color ColTmp = Color(int(Col.R*(Strn.Z/(.3*j)+.75)*2), int(Col.G*(Strn.Z/(.3*j)+.75)*2), int(Col.B*(Strn.Z/(.3*j)+.75)*2));
+						Vel *= Dist;
+						Vel *= Scale;
+						
+						Vector3 Accel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+						Accel *= FRandom(.01, .02);
+						Accel.XY += Actor.AngleToVector(Angle+90, -Strn.Y*.1);
+						Accel.XY += Actor.AngleToVector(Angle, -Strn.Z)*Sin(Pitch);
+						
+						Accel = -Accel;
+						Accel *= Dist;
+						Accel *= Scale;
+						
+						
+						mo.A_SpawnParticle(ColTmp, 0, Life+5, (Size+j*3)*FRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+							Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 0, -((Size+j*3)/Life));
+						Life-=.5;
+					}
+				}
+				Break;
+			Case 4://
+				{
+					Pitch -= Random(5, 40);
+					//Angle += Random(-15, 15);
+					Double Forw = FRandom(.6, 1);
+					Vector3 Strn = (FRandom(.3, 1.2),0,0);
+					Double Size = FRandom(3.4, 3.7)*Dist*1.5;
+					Double Life = FRandom(25, 30);
+										
+					
+					
+					Double Roll = Random(175, 360);
+					
+					int CircleStart = FRandom(0, 360);
+					float CircleLength = Random(120, 270);
+					
+					For(float j=CircleStart;j<CircleLength;j+=Size*.75/Amount)
+					{
+						Double Ang = Angle+(j+FRandom(-1.5, 1.5))*Cos(Roll);
+						Double Pit = Pitch+(j+FRandom(-1.5, 1.5))*Sin(Roll);
+						
+						Vector3 Vel = (Actor.AngleToVector(Ang, Strn.X)*Cos(-Abs(Pit)), -Sin(Pit)*Strn.X);
+						Vel += (Actor.AngleToVector(-Angle, Forw)*Cos(Abs(Pitch)), -Sin(Pitch)*Forw);
+						Vel.XY += Actor.AngleToVector(Ang, Strn.X)*Sin(Pit);
+						//Vel.XY += Actor.AngleToVector(Ang+90, Strn.Y);
+						//Vel.XY += Actor.AngleToVector(Ang, Strn.Z)*Sin(Pit);
+						Float Bright = Max(.5, Min(2, 1.2+Sin(-Pit)*.5));
+						Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+						
+						mo.A_SpawnParticle(ColTmp, 0, Life+5, Size*FRandom(.9, 1.1), 0, FRandom(-.5,.5),FRandom(-.5,.5),FRandom(-.5,.5),//Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+							Vel.X, Vel.Y, Vel.Z, FRandom(-.001,.001),FRandom(-.001,.001),FRandom(-.001,.001)-.025+Vel.Z*.01 /*Accel.X,Accel.Y,Accel.Z-(j-.1)*.01*/, 1, 0, -(Size/Life));
+						//Life-=.5;
+					}
+				}
+				Break;
+			}
+	}
+	
+	////
+	//// EVENTS
+	////
+	
+	Override Void WorldThingDamaged(WorldEvent e)
+	{
+		if((e.Thing.bIsMonster||e.Thing Is 'PlayerPawn') && !(e.Thing.bNoBlood && MRGoreParts_NoBloodMonsters) && BlackList.Find(e.Thing.GetClass())==BlackList.Size())
+		{
+			For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
+			String Damage = "";
+			if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
+			if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
+			if(e.DamageFlags&DMG_INFLICTOR_IS_PUFF)Damage = Damage.."IsPuff|";
+			if(MRGoreParts_Debug)Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
+			if(MRGoreParts_Debug && e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
+			if(MRGoreParts_Debug && e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
+			
+			if(e.Inflictor)
+			{
+				//Console.Printf("\cdHealth: \c-"..e.Thing.Health.." \cgDamage: \c-"..e.Damage);
+				//Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
+				Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+				
+				Color Col = e.Thing.BloodColor;
+				if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+				{
+					Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+				}
+				else
+				{
+					if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+					For(int i=0;i<Monsters.Size();i++)
+					{
+						if(Monsters[i]==e.Thing.GetClassName())
+						{
+							Col = Colors[i];
+							Break;
+						}
+					}
+				}
+				
+				if(Random(0, 10)>4 && MRGoreParts_Wounds && !PlayerPawn(e.Thing) && Wounds.Size()<MRGP_MaxWOundsGlobal)
+				{
+					MR_GoreParticlesWound Token;
+					if(Wounded.Find(e.Thing)==Wounded.Size())
+					{
+						Wounded.Push(e.Thing);
+						MR_GoreParticlesWound a = New('MR_GoreParticlesWound');
+						a.Owner = e.Thing;
+						Wounds.Push(a);
+						Token = a;
+					}
+					else
+					{
+						For(int i=0;i<Wounds.Size();i++)
+						{
+							//if(!Wounds[i]||Wounds[i].bDestroyed)Continue;
+							if(Wounds[i].Owner==e.Thing){Token = Wounds[i];Break;}
+						}
+					}
+					
+					Token.Col = Col;
+					
+					if(e.Inflictor != e.Thing && e.Inflictor != e.DamageSource)
+					{
+						Bool Replace = true;
+						For(int i=0;i<Token.Ages.Size();i++)
+						{
+							if(Token.Ages[i]<1)
+							{
+								if(MRGoreParts_Debug)Console.Printf("\cdTarget pos:\cc "..e.Thing.Pos.XY.."\cg inflict pos:\cc "..e.Inflictor.Pos.XY);
+								Vector3 Dif = LevelLocals.Vec3Diff(e.Inflictor.Pos, e.Thing.Pos);
+				
+								Vector3 Home = (0, 0, 0);
+								
+								Home.Y -= Dif.X*Cos(e.Thing.Angle-90) + Dif.Y*Sin(e.Thing.Angle-90);
+								Home.X -= Dif.X*Cos(e.Thing.Angle) + Dif.Y*Sin(e.Thing.Angle);
+								
+								Home.XY *= .75;
+								
+								Home.X *= abs(Cos(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+								Home.Y *= abs(Sin(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+
+								Home.Z = -Dif.Z+5;
+								
+								Token.Locs[i]=Home;
+								Token.Angles[i]=e.Thing.AngleTo(e.Inflictor);
+								Token.Ages[i]=35*15;
+								Replace = false;
+								Break;
+							}
+						}
+						if(Replace)
+						{
+							if(MRGoreParts_Debug)Console.Printf("Targ "..e.Thing.Pos.XY.." inf "..e.Inflictor.Pos.XY);
+							Vector3 Dif = LevelLocals.Vec3Diff(e.Inflictor.Pos, e.Thing.Pos);
+			
+							Vector3 Home = (0, 0, 0);
+							
+							Home.Y -= Dif.X*Cos(e.Thing.Angle-90) + Dif.Y*Sin(e.Thing.Angle-90);
+							Home.X -= Dif.X*Cos(e.Thing.Angle) + Dif.Y*Sin(e.Thing.Angle);
+							
+							Home.XY *= .75;
+							
+							Home.X *= abs(Cos(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+							Home.Y *= abs(Sin(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+
+							Home.Z = -Dif.Z+5;
+							
+							Token.Locs[0]=Home;
+							Token.Angles[0]=e.Thing.AngleTo(e.Inflictor);
+							Token.Ages[0]=35*15;
+						}
+					}
+					else
+					{
+						Array<int> Ages;
+						For(int i=0;i<Token.Ages.Size();i++)
+						{
+							if(Token.Ages[i]>0)
+							{
+								Ages.Push(i);
+							}
+						}
+						
+						if(Ages.Size()>0)Token.Ages[Ages[Random(0, Ages.Size()-1)]]=1;
+						
+						else
+						{
+							Token.Ages[0]=35*15;
+							Token.Locs[0]=(Actor.AngleToVector(Random(0, 360), e.Thing.Radius*.3), Random(5, e.Thing.Height));
+						}
+					}
+				}
+				
+				if(e.Inflictor != e.Thing)
+				{
+					int SplashType = Random(1, 8);
+					if(!e.DamageSource)Return;
+					Double Pitch = 0;
+					if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
+					else if(e.DamageSource)Pitch = e.Inflictor.PitchTo(e.DamageSource, 0, e.DamageSource.Height*.9);
+					
+					Switch(SplashType)
+					{
+						Case 0:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(14, 19), Col, 1);
+							Break;
+						Case 1:
+						Case 2:
+						Case 3:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(5, 10), Col, 0);
+							Break;
+						Case 4:
+						Case 5:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(3, 6), Col, 0);
+						Case 6:
+						Case 7:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, 1, Col, 3);
+							Break;
+						Case 8:
+							MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, 1, Col, 4);
+							Break;
+					}
+					MRParticleBloodSplash(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Random(0, 4)*2, Col, 2);//Mist
+					
+					if(Random(0, 100)>95)
+					{
+						Float Bright = FRandom(1, 2);
+						/*if(MRGoreParts_Multiplayer)
+						{
+							MR_GoreParticlesFlyingBloodMultiplayer a = MR_GoreParticlesFlyingBloodMultiplayer(e.Inflictor.Spawn("MR_GoreParticlesFlyingBloodMultiplayer", e.Inflictor.Pos));
+							a.Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+							a.Vel3DFromAngle(Random(3, 5), e.Inflictor.Angle+Random(-50, 50), -Random(60, 90));
+						}
+						else
+						{*/
+						MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(e.Inflictor.Spawn("MR_GoreParticlesFlyingBlood", e.Inflictor.Pos));
+						a.Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+						a.Vel3DFromAngle(Random(4, 6), e.Inflictor.AngleTo(e.DamageSource)+Random(-50, 50), -Random(0, 60));
+						a.Scale *= FRandom(1, 2);
+						//}
+					}
+					
+					For(int i=Random(0, 10)*Amount;i<20*Amount;i++)
+					{
+						Float Dist = 1;
+						if(e.DamageSource)Dist *= 1+(e.Inflictor.Distance3D(e.DamageSource)-80)*.0025;
+						Float Size = FRandom(.8, 1.6)*Dist*1.5;
+						Float Pitch = e.Inflictor.Pos.Z/e.Thing.Height+Random(10, 20);
+						if(e.Inflictor is 'BulletPuff' && e.DamageSource)Pitch = e.DamageSource.Pitch+Random(10, 20);
+						Float Ang = Random(175, 185);
+						Float Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
+						if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
+						Vector3 Ofst = (Actor.AngleToVector(Angle, 1)*abs(Cos(Pitch)), Sin(Pitch))*Dist;
+								
+						if(i%2==0 && MRGPartsCheckDraw(e.Inflictor) && CVar.GetCVar("MRGoreParts_DripOnImpact", Players[ConsolePlayer]).GetBool())
+						{
+							Ang = Random(140, 220)*Dist;
+							Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
+							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
+							Float Bright = FRandom(1, 2);
+							Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+							e.Inflictor.A_SpawnParticle(ColTmp, 0, Random(29, 40), Size*1.3, 0, Ofst.X*2,Ofst.Y*2,5,
+									0,0,FRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	Override Void WorldThingDied(WorldEvent e)
+	{
+		if(!e.Thing||!(e.Thing.bIsMonster || e.Thing is 'PlayerPawn')||(e.Thing.bNoBlood && MRGoreParts_NoBloodMonsters)||
+			BlackList.Find(e.Thing.GetClass())!=BlackList.Size())Return;
+		
+		For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
+		
+		Color Col = e.Thing.BloodColor;
+		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+		{
+			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+		}
+		else
+		{
+			if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			For(int i=0;i<Monsters.Size();i++)
+			{
+				if(Monsters[i]==e.Thing.GetClassName())
+				{
+					Col = Colors[i];
+					Break;
+				}
+			}
+		}
+		
+		Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+
+		if(e.Thing.FindState("XDeath") && e.Thing.Health<-GetDefaultByType(e.Thing.GetClass()).Health)
+		{
+			Vector2 Angle = (0, 360);
+			
+			if(e.Inflictor)Angle = (e.Thing.AngleTo(e.Inflictor)+40, e.Thing.AngleTo(e.Inflictor)+300);
+			
+			
+			
+			For(Float y=0;y<e.Thing.Height;y+=e.Thing.Height/(6*Amount))
+			{
+				if(MRGPartsCheckDraw(e.Thing))For(float i=Angle.X;i<Angle.Y;i+=Dif(Angle.X, Angle.Y)/(50*Amount))
+				{
+					Float Bright = FRandom(1, 2);
+					Float Life = Random(60, 90);
+					Float Vel = FRandom(1, 4);
+					Float Size = Random(1, 6);
+					e.Thing.A_SpawnParticle(Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright)), 0, Life, Size, 0, Cos(i)*2, Sin(i)*2, y+5,
+						Vel*Cos(i), Vel*Sin(i), Random(1, 5), 0,0,-FRandom(.2, .4), FRandom(.8, 1.5), 0, Size/Life);
+				}
+			}
+			
+			if(MRGPartsCheckDraw(e.Thing))For(int i=0;i<e.Thing.Height*2*Amount;i++)
+			{
+				Float Bright = FRandom(1, 2);
+				e.Thing.A_SpawnParticle(Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright)), SPF_RELATIVE, 40, Random(2, 5), Random(0, 360), FRandom(0, e.Thing.Radius), 0, Random(5, e.Thing.Height),
+					Random(-1, 1),0,FRandom(0, 2), 0,0,-FRandom(.3, .4), 1, 0, -FRandom(.006, .01));
+			}
+			
+			if(MRGPartsCheckDraw(e.Thing) && CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>1)For(float i=Angle.X;i<Angle.Y;i+=Dif(Angle.X, Angle.Y)/100*Amount)
+			{
+				Float Bright = FRandom(1, 2);
+				e.Thing.A_SpawnParticle(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), SPF_RELPOS, CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt()*35, Random(1, 3), i, Random(1, 60), 0, 1);
+			}
+		}
+		else if(Random(0, 10)>2)
+		{
+			MR_GoreParticlesDeathHandler a = New('MR_GoreParticlesDeathHandler');
+			a.Owner = e.Thing;
+			a.Bld = Col;
+			if(Random(0, 10)==5)a.Artery = true;
+		}
+	}
+	
+	Override Void WorldThingSpawned(WorldEvent e)
+	{
+		if(MRGoreParts_OnlyModsBlood && (e.Thing is 'Blood'||Actor.GetReplacee("Blood") == e.Thing.GetClass()))
+		{
+			Color Col = Gameinfo.DefaultBloodColor;
+			if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+			{
+				Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			}
+			
+			if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())
+				For(Int i=0;i<Random(6, 9)*CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();i++)
+				{
+					Float Bright = FRandom(.6, 2);
+					E.Thing.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel, 25, FRandom(1.5, 2.5), e.Thing.AngleTo(Players[ConsolePlayer].Camera),
+						Xoff:FRandom(-1.5, 1.5), FRandom(-1.5, 1.5), FRandom(4, 7), .1,0,.5, 0,0,-.05);
+				}
+			
+			if(MRGoreParts_OnlyModsBlood>1){e.Thing.Destroy();Return;}
+			
+			e.Thing.A_SetRenderStyle(0, STYLE_NONE);
+		}
+	}
+}
