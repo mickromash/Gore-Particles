@@ -1,6 +1,9 @@
 # Gore-Particles (WIP)
 GZDoom mini mod that adds fancy blood particles animations
 
+Mod will use loaded gore mods sounds in the future,
+right now you can use [this sfx add-on](https://drive.google.com/file/d/1m2uRR5Aw2YcJhw8IR-lAHvpnnfMVo0fB/view?usp=sharing)
+
 ## Features
 
 * Various volumetric blood effects based on GZDoom particles
