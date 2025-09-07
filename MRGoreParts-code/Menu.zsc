@@ -1,0 +1,528 @@
+/*
+	Effects menu (based on HDest loadout menu code)
+	
+	god help me
+*/
+
+Const MRGP_Menu_EffectsString = 0;
+Const MRGP_Menu_EffectsString2 = 2;
+Const MRGP_Menu_AlwaysEffectsString = 1;
+Const MRGP_Menu_Size = 2;
+
+class MR_GoreParticlesEffectsMenu:GenericMenu
+{
+	Array<string> EffectsNames;
+	Array<string> IncludedEffectsNames;
+
+	string WorkingString[3];
+	
+	int CursX, CursY, CurlY;
+	string Undo;
+	bool ViewList, Editing;
+	
+	override void Init(menu parent){
+		super.Init(parent);
+		
+		EffectsNames.Clear();
+		IncludedEffectsNames.Clear();
+		
+		CursX=0;CursY=0;
+		statustimer=0;
+		
+		UpdateList(true);
+
+		WorkingString[MRGP_Menu_EffectsString]=cvar.findcvar("MRGoreParts_EffectsList").getstring();
+		WorkingString[MRGp_Menu_EffectsString2]=cvar.findcvar("MRGoreParts_EffectsList2").getstring();
+		WorkingString[MRGP_Menu_AlwaysEffectsString]=cvar.findcvar("MRGoreParts_AlwaysEffectsList").getstring();
+		//undo=WorkingString;
+	}
+	
+	override bool MenuEvent(int mkey, bool fromcontroller)
+	{
+		switch(mkey){
+		
+		case MKEY_Left:
+			if(!Editing)Break;
+			CursX=max(0,CursX-1);
+			break;
+		case MKEY_Right:
+			if(!Editing)Break;
+			CursX=min(WorkingString[CursY].length(),CursX+1);
+			break;
+			
+		case MKEY_Clear: //backspace
+			if(!Editing)Break;
+			if(CursX>0){
+				WorkingString[CursY]=WorkingString[CursY].left(CursX-1)..WorkingString[CursY].mid(CursX);
+				CursX--;
+				UpdateList();
+			}
+			break;
+
+		case MKEY_Up:
+			if(Editing)Break;
+			if(CursY>0)
+			{
+				CursY--;
+				UpdateList();
+			}
+			else CursY = MRGP_Menu_Size-1;
+			MenuSound("menu/cursor");
+			break;
+		case MKEY_Down:
+			if(Editing)Break;
+			if(CursY<MRGP_Menu_Size-1)
+			{
+				CursY++;
+				UpdateList();
+			}
+			else CursY = 0;
+			MenuSound("menu/cursor");
+			break;
+			
+		case MKEY_Enter:
+			if(Editing)
+			{
+				SaveChanges();
+			}
+			else
+			{
+				Editing = true;
+				CursX = Min(WorkingString[CursY].Length(), CursX);
+				UpdateList();
+				MenuSound("menu/choose");
+			}
+			break;
+		case MKEY_Back://esc
+			if(editing){
+				MenuSound("menu/dismiss");
+				ResetChanges();
+				return false;
+			}
+			break;
+			
+		case MKEY_PageUp:
+			CurlY=max(0,CurlY -12);
+			break;
+		case MKEY_PageDown:
+			CurlY+=12;
+			break;
+		}
+		return super.menuevent(mkey,fromcontroller);
+	}
+	
+	override bool OnUIEvent(UIEvent ev)
+	{
+		if(ev.Type==UIEvent.Type_KeyDown){
+		
+		switch(ev.KeyChar){
+			case UIEvent.Key_Home:
+				if(ev.IsCtrl)CurlY=0;
+				else CursX=0;
+				break;
+			case UIEvent.Key_End:
+				if(ev.IsCtrl)CurlY=int.MAX;
+				else CursX=WorkingString[CursY].length();
+				break;
+			case UIEvent.Key_Del:
+				WorkingString[CursY]=WorkingString[CursY].left(CursX)..WorkingString[CursY].mid(CursX+1);
+				UpdateList();
+				break;
+			case UIEvent.Key_F1:
+				ViewList = !ViewList;
+				CurlY=0;
+				break;
+			case UIEvent.Key_F2:
+			case UIEvent.Key_F3:
+			case UIEvent.Key_F4:
+			case UIEvent.Key_F5:
+			case UIEvent.Key_F6:
+			case UIEvent.Key_F7:
+			case UIEvent.Key_F8:
+			case UIEvent.Key_F9:
+			case UIEvent.Key_F11:
+			case UIEvent.Key_F12:
+				break;
+			Default:
+				if(editing)Break;
+				string inp="";
+				inp.appendformat("%c",ev.KeyChar);
+				if(inp~=="r"){
+					String ConVar;
+					Switch(CursY)
+					{
+						Case MRGP_Menu_EffectsString:
+							ConVar = "MRGoreParts_EffectsList";
+							Break;
+						Case MRGP_Menu_EffectsString2:
+							ConVar = "MRGoreParts_EffectsList2";
+							Break;
+						Case MRGP_Menu_AlwaysEffectsString:
+							ConVar = "MRGoreParts_AlwaysEffectsList";
+							Break;
+					}
+					CVar.FindCVar(ConVar).resettodefault();
+					
+					WorkingString[CursY] = CVar.FindCVar(ConVar).GetString();
+					UpdateList();
+				}
+			}
+		}else if(ev.Type==UIEvent.Type_Char){
+			if(Editing){
+				WorkingString[CursY]=WorkingString[CursY].left(CursX)..ev.KeyString..WorkingString[CursY].mid(CursX);
+				CursX++;
+				UpdateList();
+			}
+		}
+		else if(ev.type == UIEvent.Type_WheelUp){
+			CurlY=max(0,CurlY-3);
+		}else if (ev.type == UIEvent.Type_WheelDown){
+			CurlY+=3;
+		}
+
+		UpdateList(CursY);
+		return Super.OnUIEvent(ev);
+	}
+	
+	/*void StatusText(string input,int timer=70){
+		statusstring=input;
+		statustimer=timer;
+	}*/
+	
+	void savechanges()
+	{
+		String ConVar;
+		
+		Switch(CursY)
+		{
+			Case MRGP_Menu_EffectsString:
+				ConVar = "MRGoreParts_EffectsList";
+				Break;
+			Case MRGP_Menu_EffectsString2:
+				ConVar = "MRGoreParts_EffectsList2";
+				Break;
+			Case MRGP_Menu_AlwaysEffectsString:
+				ConVar = "MRGoreParts_AlwaysEffectsList";
+				Break;
+		}
+		
+		While(WorkingString[CursY].IndexOf("  ")>-1)
+		{
+			WorkingString[CursY].Replace("  ", " ");
+		}
+		
+		CVar.FindCVar(ConVar).SetString(WorkingString[CursY]);
+		
+		Editing = false;
+		/*if(checkdifferent()){
+			undo=cvar.findcvar("hd_loadout"..CursY).getstring();
+			cvar.findcvar("hd_loadout"..CursY).setstring(WorkingString);
+			statustext(Stringtable.Localize("$LOADOUTMENU_LOADSAVEDTO")..CursY.." -");
+			checkdifferent();
+		}*/
+		//CurlY=0;
+	}
+	
+	Void ResetChanges()
+	{
+		String ConVar;
+		
+		Switch(CursY)
+		{
+			Case MRGP_Menu_EffectsString:
+				ConVar = "MRGoreParts_EffectsList";
+				Break;
+			Case MRGP_Menu_EffectsString2:
+				ConVar = "MRGoreParts_EffectsList2";
+				Break;
+			Case MRGP_Menu_AlwaysEffectsString:
+				ConVar = "MRGoreParts_AlwaysEffectsList";
+				Break;
+		}
+		
+		WorkingString[CursY] = CVar.FindCVar(ConVar).GetString();
+		
+		Editing = false;
+	}
+	
+	Void UpdateList(Bool Init=false)
+	{
+		if(Init)
+		{
+			EffectsNames.Clear();
+			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+		
+			For(int i=0;i<Handler.Effects.Size();i++)
+			{
+				EffectsNames.Push(Handler.Effects[i].GetName());
+			}
+			if(EffectsNames.Size()>0){Return;}
+			
+			MR_GoreParticlesHandler Handle = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		
+			For(int i=0;i<Handle.Effects.Size();i++)
+			{
+				EffectsNames.Push(Handle.Effects[i].GetName());
+			}
+			Return;
+		}
+		
+		if(EffectsNames.Size()<1)Return;
+		
+		IncludedEffectsNames.Clear();
+		
+		String TempStr = WorkingString[CursY];
+		
+		While(TempStr.IndexOf("  ")>-1)
+		{
+			TempStr.Replace("  ", " ");
+		}
+		
+		While(TempStr.Length()>0)
+		{
+			String Num;
+			if(TempStr.IndexOf(" ")>-1){Num = TempStr.Left(TempStr.IndexOf(" "));TempStr = TempStr.Mid(TempStr.IndexOf(" ")+1);}
+			else {Num = TempStr;TempStr = "";}
+			if(Num.ToInt()>=0 && Num.ToInt()<EffectsNames.Size())IncludedEffectsNames.Push(EffectsNames[Num.ToInt()]);
+		}
+		
+		Array<String> TempArray;
+		TempArray.Copy(IncludedEffectsNames);
+		
+		if(CursY==MRGP_Menu_AlwaysEffectsString)
+		{
+			For(int i=0;i<IncludedEffectsNames.Size();i++)IncludedEffectsNames[i] = "\cc"..(i+1).."\c- "..IncludedEffectsNames[i];
+			Return;
+		}
+		Double OneHund = IncludedEffectsNames.Size();
+		
+		For(int i=0;i<TempArray.Size();i++)
+		{
+			Double Amt=0;
+			String TempStr = TempArray[i];
+			
+			While(TempArray.Find(TempStr)!=TempArray.Size())
+			{
+				TempArray.Delete(TempArray.Find(TempStr));
+				Amt++;
+			}
+			
+			Int Index = IncludedEffectsNames.Find(TempStr);
+			Double Precent = Amt/OneHund*100;
+			IncludedEffectsNames[index] = String.Format("\cc%.2f", Precent).."%\c- "..IncludedEffectsNames[index];
+			
+			if(Amt>1)
+			{
+				While(IncludedEffectsNames.Find(TempStr)!=IncludedEffectsNames.Size())
+					IncludedEffectsNames.Delete(IncludedEffectsNames.Find(TempStr));
+			}
+			
+			i--;
+		}
+	}
+	
+	int blinktimer;
+	int statustimer;
+	override void Drawer(){
+		Super.Drawer();
+		playerinfo cplayer=players[consoleplayer];
+		if(!cplayer)return;
+		int vcurs=9;
+		
+		string TempStr=Stringtable.Localize("$MRGoreParts_EffectsListMenu");
+		screen.DrawText(BigFont,
+			OptionMenuSettings.mTitleColor,
+			(screen.GetWidth() - BigFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+			vcurs,
+			TempStr,DTA_CleanNoMove_1,true
+		);
+		vcurs+=BigFont.GetHeight();
+
+
+		TempStr=Stringtable.Localize("$MRGoreParts_EffectsListMenuControls");
+		screen.DrawText(NewSmallFont,
+			OptionMenuSettings.mFontColorValue,
+			(screen.GetWidth() - NewSmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+			vcurs*CleanYfac_1,
+			TempStr,DTA_CleanNoMove_1,true,
+			DTA_Alpha, .75
+		);
+		vcurs+=NewSmallFont.GetHeight();
+		
+		TempStr=Stringtable.Localize("$MRGoreParts_EffectsListGuide");
+		screen.DrawText(NewSmallFont,
+			OptionMenuSettings.mFontColor,
+			(screen.GetWidth() - NewSmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+			vcurs*CleanYfac_1,
+			TempStr,DTA_CleanNoMove_1,true
+		);
+		vcurs+=NewSmallFont.GetHeight()*1.5;
+		
+		
+		Switch(CursY)
+		{
+			Case MRGP_Menu_EffectsString:
+				TempStr=Stringtable.Localize("$MRGoreParts_EffectsListTip");
+				Break;
+			Case MRGP_Menu_AlwaysEffectsString:
+				TempStr=Stringtable.Localize("$MRGoreParts_AlwaysEffectsListTip");
+				Break;
+		}
+		
+		screen.DrawText(NewSmallFont,
+			OptionMenuSettings.mFontColor,
+			(screen.GetWidth() - NewSmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+			vcurs*CleanYfac_1,
+			TempStr,DTA_CleanNoMove_1,true
+		);
+		vcurs+=NewSmallFont.GetHeight()*5;
+		
+		
+		Switch(CursY)
+		{
+			Case MRGP_Menu_EffectsString:
+				TempStr=StringTable.Localize("$MRGoreParts_EffectsListTip");
+				Break;
+			Case MRGP_Menu_EffectsString2:
+				TempStr=StringTable.Localize("$MRGoreParts_EffectsListTip");
+				Break;
+			Case MRGP_Menu_AlwaysEffectsString:
+				TempStr=StringTable.Localize("$MRGoreParts_AlwaysEffectsListTip");
+				Break;
+		}
+		
+		blinktimer++;
+		if(blinktimer>6)blinktimer = 0;
+		//CVars
+		For(int i=0;i<MRGP_MENU_Size;i++)
+		{
+			Switch(i)
+			{
+				Case MRGP_Menu_EffectsString:
+					TempStr=StringTable.Localize("$MRGoreParts_EffectsList");
+					Break;
+				Case MRGP_Menu_EffectsString2:
+					TempStr=StringTable.Localize("$MRGoreParts_EffectsList");
+					Break;
+				Case MRGP_Menu_AlwaysEffectsString:
+					TempStr=StringTable.Localize("$MRGoreParts_AlwaysEffectsList");
+					Break;
+			}
+			
+			screen.DrawText(NewSmallFont,
+				OptionMenuSettings.mFontColor,
+				(screen.GetWidth() - NewSmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+				vcurs*CleanYfac_1,
+				TempStr,DTA_CleanNoMove_1, true
+			);
+			vcurs+=NewSmallFont.GetHeight();
+			
+			string ws=WorkingString[i];
+			int tempCursX=CursX;
+			uint maxwidth=(screen.GetWidth()*3/5)/(SmallFont.StringWidth("_")*CleanXfac_1);
+			int halfmaxwidth=maxwidth/2;
+			int addarrows=0;
+			int textstart=0;
+			int textend=ws.length();
+			
+			if(ws.length()>maxwidth){
+				int wsl=ws.length();
+				if(
+					CursX>=halfmaxwidth
+					&&wsl-CursX>=halfmaxwidth
+				){
+					//enough space on both sides of cursor
+					tempCursX=halfmaxwidth;
+					ws=ws.mid(CursX-halfmaxwidth,maxwidth);
+					addarrows|=1|2;
+					textstart=CursX-halfmaxwidth;
+					textend=CursX+halfmaxwidth;
+				}else if(CursX<halfmaxwidth){
+					//beginning
+					ws=ws.left(maxwidth);
+					addarrows|=2;
+					textend=maxwidth;
+				}else{
+					//end
+					ws=ws.mid(ws.length()-maxwidth);
+					tempCursX-=ws.length()-ws.length();
+					addarrows|=1;
+					textstart=textend-maxwidth;
+				}
+			}
+			int wsline=vcurs*CleanYfac_1;
+			int wswidth=NewSmallFont.StringWidth(ws) * CleanXfac_1;
+			int wsxpos=(screen.GetWidth() - wswidth) / 2;
+			screen.DrawText(NewSmallFont,
+				(i==CursY&&!Editing)?OptionMenuSettings.mFontColorHighlight:OptionMenuSettings.mFontColorValue,
+				wsxpos,wsline,ws,DTA_CleanNoMove_1,true
+			);
+
+			if(Editing && CursY == i)
+			{
+				if(blinktimer>3){
+					screen.DrawText(NewSmallFont,OptionMenuSettings.mFontColorHighlight,
+						wsxpos+NewSmallFont.StringWidth(ws.left(tempCursX))*CleanXfac_1,
+						wsline,
+						"_",DTA_CleanNoMove_1,true
+					);
+				}
+				
+				if(addarrows&&blinktimer>2){
+					if(addarrows&1)screen.DrawText(NewSmallFont,
+						OptionMenuSettings.mFontColor,
+						wsxpos-NewSmallFont.StringWidth("<<  ") * CleanXfac_1,
+						wsline,"<<  ",DTA_CleanNoMove_1, true
+					);
+					if(addarrows&2)screen.DrawText(NewSmallFont,
+						OptionMenuSettings.mFontColor,
+						wsxpos+wswidth,
+						wsline,"  >>",DTA_CleanNoMove_1, true
+					);
+				}
+			}
+			
+			vcurs+=NewSmallFont.GetHeight()*1.5;
+		}
+		//Lists
+		int StrXpos = screen.GetWidth() / 3;
+		TempStr = StringTable.Localize(ViewList?"$MRGoreParts_IncludedEffectsList":"$MRGoreParts_AllEffectsList")..":";
+		screen.DrawText(NewSmallFont,
+			OptionMenuSettings.mFontColorHeader,
+			StrXpos,vcurs*CleanYfac_1,TempStr,DTA_CleanNoMove_1, true
+		);
+		vcurs+=NewSmallFont.GetHeight();
+		
+		TempStr = String.Format(StringTable.Localize("$MRGoreParts_EffectsListListControls"), StringTable.Localize(ViewList?"$MRGoreParts_AllEffectsList":"$MRGoreParts_IncludedEffectsList"));
+		screen.DrawText(NewSmallFont,
+			OptionMenuSettings.mFontColorHeader,
+			StrXpos,vcurs*CleanYfac_1,TempStr,DTA_CleanNoMove_1, true,
+			DTA_Alpha, .5
+		);
+		vcurs+=NewSmallFont.GetHeight()*2;
+		
+		if(ViewList) For(int i=CurlY;i<IncludedEffectsNames.Size();i++)
+		{
+			TempStr = IncludedEffectsNames[i];
+			
+			screen.DrawText(NewSmallFont,
+				Font.CR_RED,
+				StrXpos,vcurs*CleanYfac_1,TempStr,DTA_CleanNoMove_1, true
+			);
+			
+			vcurs+=NewSmallFont.GetHeight();
+		}
+		
+		else For(int i=CurlY;i<EffectsNames.Size();i++)
+		{
+			TempStr = "\cc"..i.."\c- "..EffectsNames[i];
+			
+			screen.DrawText(NewSmallFont,
+				Font.CR_RED,
+				StrXpos,vcurs*CleanYfac_1,TempStr,DTA_CleanNoMove_1, true
+			);
+			
+			vcurs+=NewSmallFont.GetHeight();
+		}
+	}
+}

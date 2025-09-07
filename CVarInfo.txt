@@ -1,8 +1,7 @@
 user bool MRGoreParts_Draw = true;//Doesn't affect anything besides actual particles spawning
 server bool MRGoreParts_Wounds = true;//Bleeding wounds
-user bool MRGoreParts_CorpseWounds = true;
+user int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
 user bool MRGoreParts_FlyingBood = true;//Quake like blood stream
-user bool MRGoreParts_BloodMist = true;
 user int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
 user int MRGoreParts_SpotsTime = 5;//Surface blood life time
 user float MRGoreParts_Amount = 1;
@@ -16,6 +15,12 @@ user bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent enti
 server bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face player
 user bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 server string MRGoreParts_Blacklist = "LostSoul, Revenant";
+server bool MRGoreParts_BlacklistOn = true;
+server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
+
+user string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
+user string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
+user string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
 
 user bool MRGoreParts_CheckLimit = false;
 server bool MRGoreParts_Debug = false;

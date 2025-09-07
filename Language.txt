@@ -1,26 +1,13 @@
 [eng enu default en]
 
-MRGoreParts_Title = "Particle Gore";
 MRGoreParts_Settings = "Configure Particle gore";
+
+MRGoreParts_Title = "Particle Gore";
+//{
 MRGoreParts_Draw = "Draw gore particles";
-MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
-MRGoreParts_Blacklist = "Monsters black list:";
-MRGoreParts_DripOnImpact = "Dripping blood on impact";
-MRGoreParts_FlyingBood = "Quake gibs style blood streams";
-MRGoreParts_BloodMist = "Blood mist";
-MRGoreParts_Wounds = "Bleeding wounds";
-MRGoreParts_CorpseWounds = "Wounds on corpses";
 
-MRGoreParts_FloorSpots = "Spots on surfaces";
-MRGoreParts_SpotsNothing = "None";
-MRGoreParts_SpotsByWoundsOnly = "Only leaved by wounds";
-MRGoreParts_SpotsAll = "All";
-
-MRGoreParts_SpotsTime = "Spots life time in seconds";
-
-MRGoreParts_Amount = "Blood amount";
-MRGoreParts_AllParticlesAmount = "All particles amount";
-
+MRGoreParts_BloodSpawnMenu = "Blood spawn settings";
+////{
 MRGoreParts_OnlyModsBlood = "Remove other gore";
 MRGoreParts_OnlyModBloodNot = "No";
 MRGoreParts_OnlyModBloodHide = "Only hide";
@@ -29,7 +16,50 @@ MRGoreParts_OnlyModBloodYes = "Yes";
 MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
+
+MRGoreParts_Blacklist = "Monsters black list:";
+MRGoreParts_BlacklistOn = "Blacklist:";
+MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
+////}
+
+MRGoreParts_EffectsMenu = "Effects settings";
+////{
+MRGoreParts_Amount = "Blood amount";
+MRGoreParts_DripOnImpact = "Dripping blood on impact";
+MRGoreParts_FlyingBood = "Quake gibs style blood streams";
+
+MRGoreParts_EffectsListMenu = "Configure included effects";
+MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
+MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Reset Changes   \cv[ENTER]\c-: Save Changes   \cv[R]\c-: Reset to Default";
+MRGoreParts_AllEffectsList = "\czAll effects ids";
+MRGoreParts_IncludedEffectsList = "\cbIncluded effects";
+MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- or \cvMouse wheel\c-: scroll the list";
+MRGoreParts_EffectsList = "Random effects list";
+MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effect will appear on impact\nType same effect multiple times to increase its spawn chance";
+MRGoreParts_AlwaysEffectsList = "Constant effects list";
+MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these effects will appear on impact";
+
+////}
+
+MRGoreParts_WoundsMenu = "Wounds settings";
+////{
+MRGoreParts_Wounds = "Bleeding wounds";
+
+MRGoreParts_CorpseWounds = "Wounds on corpses";
+MRGoreParts_CorpseWoundsNone = "None";
+MRGoreParts_CorpseWoundsWoundsOnly = "Only wounds and splashes";
+MRGoreParts_CorpseWoundsAll = "Wounds, splashes and dripping blood";
+
 MRGoreParts_Voxel = "Voxel enemies";
+////}
+
+MRGoreParts_FloorSpots = "Spots on surfaces";
+MRGoreParts_SpotsNothing = "None";
+MRGoreParts_SpotsByWoundsOnly = "Only leaved by wounds";
+MRGoreParts_SpotsAll = "All";
+
+MRGoreParts_SpotsTime = "Spots life time in seconds";
+
 MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
 
@@ -37,32 +67,28 @@ MRGoreParts_Multiplayer = "Multiplayer friendly";
 
 MRGoreParts_CheckLimit = "Particles limit display";
 
+MRGoreParts_AllParticlesAmount = "All particles amount";
+
 MRGoreParts_Tip2 = "If particles amount hit the limit, new particles won't spawn";
 MRGoreParts_Tip3 = "so fully turning blood spots option on is not recomended";
+//}
+
+MR_GoreParticlesEffect_SimpleSplash = "Round blood splash";
+MR_GoreParticlesEffect_Sprays = "Blood sprays";
+MR_GoreParticlesEffect_Mist = "Blood mist";
+MR_GoreParticlesEffect_BeautifulSpray = "\"Beautiful\" blood spray";
+MR_GoreParticlesEffect_CurveLine = "Curve blood spray";
 
 [ru]
 
-MRGoreParts_Title = "Кровавые частицы";
 MRGoreParts_Settings = "Настроить кровавые частицы";
+
+MRGoreParts_Title = "Кровавые частицы";
+//{
 MRGoreParts_Draw = "Рендер частиц";
-MRGoreParts_NoBloodMonsters = "Отключить кровь для монстров с флагом \"+NOBLOOD\"";
-MRGoreParts_Blacklist = "Отключить кровь для этих монстров:";
-MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
-MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
-MRGoreParts_BloodMist = "Кровавая дымка";
-MRGoreParts_Wounds = "Кровоточащие раны";
-MRGoreParts_CorpseWounds = "Раны на трупах";
 
-MRGoreParts_FloorSpots = "Кровь на поверхностях";
-MRGoreParts_SpotsNothing = "Нет";
-MRGoreParts_SpotsByWoundsOnly = "Только кровь из ран";
-MRGoreParts_SpotsAll = "Вся";
-
-MRGoreParts_SpotsTime = "Удалять пятна спустя * секунд";
-
-MRGoreParts_Amount = "Количество крови";
-MRGoreParts_AllParticlesAmount = "Количество всех частиц";
-
+MRGoreParts_BloodSpawnMenu = "Настройки появления крови";
+////{
 MRGoreParts_OnlyModsBlood = "Только кровь из мода";
 MRGoreParts_OnlyModBloodNot = "Нет";
 MRGoreParts_OnlyModBloodHide = "Скрывать другую кровь, но не уничтожать";
@@ -71,7 +97,50 @@ MRGoreParts_OnlyModBloodYes = "Да";
 MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
 MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами";
+
+MRGoreParts_Blacklist = "Чёрный список монстров:";
+MRGoreParts_BlacklistOn = "Чёрный список монстров:";
+MRGoreParts_NoBloodMonsters = "Отключить кровь для монстров с флагом \"+NOBLOOD\"";
+////}
+
+MRGoreParts_EffectsMenu = "Настройки эффектов";
+////{
+MRGoreParts_Amount = "Количество крови";
+MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
+MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
+
+
+MRGoreParts_EffectsListMenu = "Настроить включённые эффекты";
+MRGoreParts_EffectsListGuide = "\cfВводите id эффектов разделяя пробелами";
+MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Отменить изменения   \cv[ENTER]\c-: Сохранить изменения   \cv[R]\c-: Список по умолчанию";
+MRGoreParts_AllEffectsList = "\czid эффектов";
+MRGoreParts_IncludedEffectsList = "\cbВключённые эффекты";
+MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- или \cvКолёсико мыши\c-: листать список";
+MRGoreParts_EffectsList = "Список случайных эффектов";
+MRGoreParts_EffectsListTip = "\cgСписок случайных эффектов\cb - Один из этих эффектов появится при уроне\nВведите один и тот же эффект несколько раз для повышения вероятности его появления";
+MRGoreParts_AlwaysEffectsList = "Список обязательных эффектов";
+MRGoreParts_AlwaysEffectsListTip = "\cgСписок обязательных эффектов\cb - каждый из этих эффектов появится при уроне";
+
+////}
+
+MRGoreParts_WoundsMenu = "Настройки ран";
+////{
+MRGoreParts_Wounds = "Кровоточащие раны";
+
+MRGoreParts_CorpseWounds = "Раны на трупах";
+MRGoreParts_CorpseWoundsNone = "Нет";
+MRGoreParts_CorpseWoundsWoundsOnly = "Только раны и всплески";
+MRGoreParts_CorpseWoundsAll = "Раны и капающая кровь";
 MRGoreParts_Voxel = "Воксельные враги";
+////}
+
+MRGoreParts_FloorSpots = "Кровь на поверхностях";
+MRGoreParts_SpotsNothing = "Нет";
+MRGoreParts_SpotsByWoundsOnly = "Только кровь из ран";
+MRGoreParts_SpotsAll = "Вся";
+
+MRGoreParts_SpotsTime = "Удалять пятна спустя * секунд";
+
 MRGoreParts_UseCustomColor = "Кровь одного цвета";
 MRGoreParts_Color = "Цвет крови";
 
@@ -79,5 +148,14 @@ MRGoreParts_Multiplayer = "Режим игры по сети";
 
 MRGoreParts_CheckLimit = "Показатель лимита частиц";
 
+MRGoreParts_AllParticlesAmount = "Количество всех частиц";
+
 MRGoreParts_Tip2 = "Если количество частиц превысит лимит, новые частицы перестанут появляться";
 MRGoreParts_Tip3 = "поэтому не рекомендуется включать всю кровь на поверхностях";
+//}
+
+MR_GoreParticlesEffect_SimpleSplash = "Взрывообразный всплеск крови";
+MR_GoreParticlesEffect_Sprays = "Кровавые лучи";
+MR_GoreParticlesEffect_Mist = "Кровавая дымка";
+MR_GoreParticlesEffect_BeautifulSpray = "Распадающаяся струя крови";
+MR_GoreParticlesEffect_CurveLine = "Кривая линия крови";

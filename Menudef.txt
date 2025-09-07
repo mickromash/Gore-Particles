@@ -8,25 +8,19 @@ AddOptionMenu "OptionsMenu"
 OptionMenu "MRGoreParts_Menu"
 {
 	Title "$MRGoreParts_Settings"
-	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
-	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "MRGoreParts_OtherBlood"
-	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
-	StaticText "$MRGoreParts_Quake2Text"
-	StaticText "$MRGoreParts_Quake2Text2"
 	StaticText ""
-	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
-	TextField "$MRGoreParts_Blacklist", "MRGoreParts_Blacklist"
-	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 4, .1
-	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
-	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
-	Option "$MRGoreParts_BloodMist", "MRGoreParts_BloodMist", "OnOff"
-	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
-	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "YesNo"
+	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
+	StaticText ""
+	SubMenu "$MRGoreParts_BloodSpawnMenu", "MRGoreParts_BloodSpawnMenu"
+	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
+	SubMenu "$MRGoreParts_WoundsMenu", "MRGoreParts_WoundsMenu"
+	StaticText ""
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
 	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 60, 2
-	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
+	StaticText ""
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
+	StaticText ""
 	Option "$MRGoreParts_Multiplayer", "MRGoreParts_Multiplayer", "OnOff"
 	StaticText ""
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
@@ -35,8 +29,39 @@ OptionMenu "MRGoreParts_Menu"
 	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
 	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
 	StaticText ""
-	StaticText "$MRGoreParts_Tip2"
-	StaticText "$MRGoreParts_Tip3"
+	StaticText "$MRGoreParts_Tip2", "Fire"
+	StaticText "$MRGoreParts_Tip3", "Fire"
+}
+
+
+OptionMenu "MRGoreParts_BloodSpawnMenu"
+{
+	Title "$MRGoreParts_BloodSpawnMenu"
+	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "MRGoreParts_OtherBlood"
+	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
+	StaticText "$MRGoreParts_Quake2Text", "Fire"
+	StaticText "$MRGoreParts_Quake2Text2", "Fire"
+	StaticText ""
+	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
+	TextField "$MRGoreParts_Blacklist", "MRGoreParts_Blacklist"
+	Option "$MRGoreParts_BlacklistOn", "MRGoreParts_BlacklistOn", "OnOff"
+}
+
+OptionMenu "MRGoreParts_EffectsMenu"
+{
+	Title "$MRGoreParts_EffectsMenu"
+	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 4, .1
+	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
+	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
+	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
+}
+
+OptionMenu "MRGoreParts_WoundsMenu"
+{
+	Title "$MRGoreParts_WoundsMenu"
+	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
+	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption"
+	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
 }
 
 OptionValue "MRGoreParts_SpotsOption"
@@ -51,4 +76,11 @@ OptionValue "MRGoreParts_OtherBlood"
 	0, "$MRGoreParts_OnlyModBloodNot"
 	1, "$MRGoreParts_OnlyModBloodHide"
 	2, "$MRGoreParts_OnlyModBloodYes"
+}
+
+OptionValue "MRGoreParts_CorpseWoundsOption"
+{
+	0, "$MRGoreParts_CorpseWoundsNone"
+	1, "$MRGoreParts_CorpseWoundsWoundsOnly"
+	2, "$MRGoreParts_CorpseWoundsAll"
 }
