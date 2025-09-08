@@ -324,14 +324,13 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		Double Strn = FRandom(.4, .6);
 		Double Size = FRandom(3.4, 3.7)*Dist;
 		Double Life = FRandom(30, 34);
-							
-		
+		Double StartLife = Life;
 		
 		Double Roll = Random(175, 360);
 		
 		int CircleStart = FRandom(0, 360);
 		float CircleLength = Random(120, 270);
-		//Console.Printf(GetName().." Start: "..CircleStart.." Leng: "..CircleLength.." Str: "..Strn.." Forw: "..Forw.." Pitch: "..Pitch);
+
 		For(float j=CircleStart;j<CircleStart+CircleLength;j+=Size*.75/Amount)
 		{
 			Double Ang = Angle+(j+FRandom(-1.5, 1.5))*Cos(Roll);
@@ -350,8 +349,8 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 
 			mo.A_SpawnParticle(ColTmp, 0, Life+5, Size*FRandom(.9, 1.1), 0, FRandom(-.5,.5)*Scale,FRandom(-.5,.5)*Scale,FRandom(-.5,.5)*Scale,
 				Vel.X, Vel.Y, Vel.Z, FRandom(-.001,.001),FRandom(-.001,.001),FRandom(-.001,.001)-.025+Vel.Z*.01 , 1, 0, -(Size/Life));
-				
-			Life -=.25;
+
+			Life -= StartLife/(CircleLength/(Size*.75/Amount))*FRandom(0, .8);
 		}
 	}
 }
