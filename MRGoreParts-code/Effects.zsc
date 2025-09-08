@@ -9,6 +9,7 @@ Class MR_GoreParticlesFlyingBlood: Actor
 		+ThruActors
 		+Missile
 		-SKYEXPLODE
+		+DONTSPLASH
 		Gravity .3;
 		Scale 3;
 		Radius 3;
