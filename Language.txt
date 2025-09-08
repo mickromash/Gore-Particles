@@ -13,6 +13,8 @@ MRGoreParts_OnlyModBloodNot = "No";
 MRGoreParts_OnlyModBloodHide = "Only hide";
 MRGoreParts_OnlyModBloodYes = "Yes";
 
+MRGoreParts_OnlyModsBloodText = "May cause lags when playing with Brutal Doom";
+
 MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
@@ -93,6 +95,8 @@ MRGoreParts_OnlyModsBlood = "Только кровь из мода";
 MRGoreParts_OnlyModBloodNot = "Нет";
 MRGoreParts_OnlyModBloodHide = "Скрывать другую кровь, но не уничтожать";
 MRGoreParts_OnlyModBloodYes = "Да";
+
+MRGoreParts_OnlyModsBloodText = "Может вызывать лаги при игре с Brutal Doom";
 
 MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";

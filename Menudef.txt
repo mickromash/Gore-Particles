@@ -38,6 +38,7 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 {
 	Title "$MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "MRGoreParts_OtherBlood"
+	StaticText "$MRGoreParts_OnlyModsBloodText", "Fire"
 	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
 	StaticText "$MRGoreParts_Quake2Text", "Fire"
 	StaticText "$MRGoreParts_Quake2Text2", "Fire"
