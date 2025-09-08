@@ -1,0 +1,13 @@
+MRGP/Drip1 "Sounds/Spark1.ogg" $pitchset MRGP/Drip1 8.0 $Volume MRGP/Drip1 .2
+MRGP/Drip2 "Sounds/Spark2.ogg" $pitchset MRGP/Drip2 8.0 $Volume MRGP/Drip2 .2
+MRGP/Drip3 "Sounds/Spark3.ogg" $pitchset MRGP/Drip3 8.0 $Volume MRGP/Drip3 .2
+
+$Random MRGP/Drip { MRGP/Drip1 MRGP/Drip2 MRGP/Drip3 }
+
+MRGP/Splash1 "Sounds/Spark1.ogg" $pitchset MRGP/Splash1 4.0
+MRGP/Splash2 "Sounds/Spark2.ogg" $pitchset MRGP/Splash2 4.0
+MRGP/Splash3 "Sounds/Spark3.ogg" $pitchset MRGP/Splash3 4.0
+
+$Random MRGP/Splash { MRGP/Splash1 MRGP/Splash2 MRGP/Splash3 }
+
+MRGP/Spray "Sounds/icedth1.ogg" $pitchset MRGP/Spray 1.8

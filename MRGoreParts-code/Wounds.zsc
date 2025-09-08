@@ -98,7 +98,7 @@ Class MR_GoreParticlesWound: Thinker
 						{
 							Owner.A_SpawnParticle(Col, SPF_RELPOS, CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt()*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+FRandom(-1, 1), Locs[i].Y+FRandom(-1, 1), 1-(Owner.Pos.Z-FloorZ));
 							MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
-							Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2);
+							Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
 						}
 					}
 					if(Ages[i]>35*3)//Random(0, 10)>7 && Ages[i]>35*3)
