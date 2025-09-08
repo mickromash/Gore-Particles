@@ -339,11 +339,6 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldTick()
 	{
-		/*if(int(gametic%4)==0){
-			if(CVar.GetCVar("MRGoreParts_EffectsList", Players[ConsolePlayer]).GetString()!=EffectsList||
-				CVar.GetCVar("MRGoreParts_AlwaysEffectsList", Players[ConsolePlayer]).GetString()!=AlwaysEffectsList)UpdateEffects();
-		}*/
-		
 		if(!CVar.GetCVar("MRGoreParts_CheckLimit", Players[ConsolePlayer]).GetBool())Return;
 		Let Plr = Players[ConsolePlayer].Camera;
 		
@@ -667,7 +662,8 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if(!MRGoreParts_OnlyModsBlood)Return;
 		
-		if(e.Thing is 'Blood'||Actor.GetReplacement("Blood")==e.Thing.GetClass()||e.Thing is RemoveBloodBase)
+		if(e.Thing is 'Blood'||e.Thing is 'BloodSplatter'||e.Thing is 'AxeBlood'||Actor.GetReplacement("Blood")==e.Thing.GetClass()
+			||e.Thing is RemoveBloodBase)
 		{
 			DoOtherBlood(e.Thing);
 			Return;
@@ -678,7 +674,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(e.Thing is RemoveBloods[i]){DoOtherBlood(e.Thing);Return;}
 		}
 		
-		//Console.Printf(e.Thing.GetClassName());
+		Console.Printf(e.Thing.GetClassName());
 	}
 	
 	Void DoOtherBlood(Actor mo)
