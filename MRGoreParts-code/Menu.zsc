@@ -207,6 +207,8 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		CVar.FindCVar(ConVar).SetString(WorkingString[CursY]);
 		
 		Editing = false;
+		
+		EventHandler.SendNetworkEvent("MRGP_UpdateEffects");
 	}
 	
 	Void ResetChanges()
