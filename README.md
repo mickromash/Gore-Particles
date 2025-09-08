@@ -1,6 +1,9 @@
 # Gore-Particles (WIP)
 GZDoom mini mod that adds fancy blood particles animations
 
+Mod will use loaded gore mods sounds in the future,
+right now you can use [this sfx add-on](https://drive.google.com/file/d/1m2uRR5Aw2YcJhw8IR-lAHvpnnfMVo0fB/view?usp=sharing)
+
 ## Features
 
 * Various volumetric blood effects based on GZDoom particles
@@ -18,17 +21,12 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 ## TO DO
 
-* Add blood mist for gibbing
 * Add more effects for gibbing
 * Add effect for squishing
-* Move effects to separate classes (and make possible for adding effects with pk3s)
-* Add option for spots life time
-* Make all effects optional
 * Rework gibing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
 * Utilization of sounds from loaded gore mods (similar to what was done in the cleaning mod)
 * Wounds pitch on dead bodies from their initial position
-* Big splash on entity death
 * Change vanilla monsters blood color on sapwn
 * Hideous Destructor compatibility
 * Blood amount and size based on damage
