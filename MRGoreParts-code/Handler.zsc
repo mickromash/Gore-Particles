@@ -15,7 +15,6 @@ Class MR_GoreParticlesStaticHandler: StaticEventHandler
 		{
 			if(AllClasses[i] is 'MR_GoreParticlesEffect')
 			{
-				Console.Printf(i.." "..AllClasses[i].GetClassName());
 				if(AllClasses[i].IsAbstract())Continue;
 				else
 				{
@@ -24,8 +23,6 @@ Class MR_GoreParticlesStaticHandler: StaticEventHandler
 				}
 			}
 		}
-		
-		Console.Printf("Effects: "..Effects.Size());
 	}
 }
 
@@ -401,8 +398,8 @@ Class MR_GoreParticlesHandler: EventHandler
 						AlwaysEffects[i].SpawnEffect(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Col);
 					}
 					
-					if(Random(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Pitch:FRandom(.9, 1.1));
-					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Pitch:FRandom(.9, 1.1));
+					if(Random(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO);
+					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO);
 
 
 					if(Random(0, 100)>95)
@@ -484,7 +481,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			if(e.Inflictor)Angle = (e.Thing.AngleTo(e.Inflictor)+40, e.Thing.AngleTo(e.Inflictor)+300);
 			
-			e.Thing.A_StartSound(GibSound, CHAN_AUTO, Pitch:FRandom(.9, 1.1));
+			e.Thing.A_StartSound(GibSound, CHAN_AUTO);
 			
 			For(int i=0;i<Amount*Random(8, 12);i++)
 			{
@@ -577,7 +574,7 @@ Class MR_GoreParticlesDeathHandler: Thinker
 		Super.PostBeginPlay();
 		Mid = Owner.Height*.5;
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
-		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO, Pitch:FRandom(.9, 1.1));
+		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO);
 	}
 
 	Override Void Tick()
