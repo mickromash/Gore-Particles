@@ -674,7 +674,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(e.Thing is RemoveBloods[i]){DoOtherBlood(e.Thing);Return;}
 		}
 		
-		Console.Printf(e.Thing.GetClassName());
+		//Console.Printf(e.Thing.GetClassName());
 	}
 	
 	Void DoOtherBlood(Actor mo)
