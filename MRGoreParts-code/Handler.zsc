@@ -37,6 +37,9 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Array<MR_GoreParticlesEffect> Effects, AlwaysEffects;
 	
+	Array<String> RemoveBloods;
+	String RemoveBloodBase;
+	
 	//Array< function<Clearscope Void(Actor, Double, Double, Color, double, Double, Vector3)> > Effects, AlwaysEffects;
 	String EffectsList, AlwaysEffectsList,
 		HitSound, SpraySound, DripSound, GibSound;
@@ -178,6 +181,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		SetUpSounds();
+		SetUpBloodRemove();
 		
 		UpdateEffects();
 	}
@@ -188,6 +192,130 @@ Class MR_GoreParticlesHandler: EventHandler
 		DripSound = "MRGP/Drip";
 		GibSound = "MRGP/XDeath";
 		SpraySound = "MRGP/Spray";
+		
+		String Mod;
+		
+		Mod = 'MRGP_SoundAddon';
+		if((Class<Object>)(Mod))Return;
+		
+		Mod = 'NashGoreActor';//Nashgore next
+		if((Class<Actor>)(Mod))
+		{
+			HitSound = "nashgore/bloodsplash";
+			DripSound = "nashgore/gibsmall";
+			SpraySound = "nashgore/gibbounce";
+			GibSound = "nashgore/xdeath";
+			Return;
+		}
+		
+		Mod = 'UG_GibBase';//Universal gibs
+		if((class<Actor>)(Mod))
+		{
+			GibSound = SpraySound = "UGSound/Default";
+			Return;
+		}
+		
+		Mod = 'Bolognese_Blood';
+		if((class<Actor>)(Mod))
+		{
+			DripSound = "blooddrop2";
+			HitSound = "misc/xdeath2";
+			GibSound = "SLOP";
+			Return;
+		}
+		
+		Mod = 'Droplets';
+		if((Class<Actor>)(Mod))
+		{
+			HitSound = "blood/hit";
+			DripSound = "blood/drip";
+			Return;
+		}
+		
+		Mod = 'BrutalHereticImp';//Ketchup V5
+		if((Class<Actor>)(Mod))
+		{
+			DripSound = "blooddrop2";
+			HitSound = "misc/xdeath2";
+			GibSound = "misc/xdeath4";
+			Return;
+		}
+		
+		Mod = 'Doomer';//Brutal Dewm
+		if((Class<Actor>)(Mod))
+		{
+			DripSound = "blooddrop2";
+			HitSound = "misc/xdeath2";
+			GibSound = "misc/xdeath4";
+			Return;
+		}
+		
+		Mod = 'PileOfGibs';//Splatter gore
+		if((Class<Actor>)(Mod))
+		{
+			SpraySound = "Gore/Squish";
+			GibSound = "Gore/GIBSPLAT";
+			Return;
+		}
+	}
+	
+	Void SetUpBloodRemove()
+	{
+		String Mod;
+		
+		RemoveBloods.Clear();
+		
+		Mod = 'NashGoreActor';//Nashgore next
+		if((Class<Actor>)(Mod))
+		{
+			Return;
+		}
+		
+		Mod = 'UG_GibBase';//Universal gibs
+		if((class<Actor>)(Mod))
+		{
+			RemoveBloodBase = 'UG_GibImpactBlood';
+			Return;
+		}
+		
+		Mod = 'Bolognese_Blood';
+		if((class<Actor>)(Mod))
+		{
+			RemoveBloodBase = 'BD_FlyingBlood';
+			RemoveBloods.Push('SuperGore');
+			RemoveBloods.Push('BD_FlyingBloodTrail');
+			Return;
+		}
+		
+		Mod = 'Droplets';
+		if((Class<Actor>)(Mod))
+		{
+			RemoveBloodBase = 'BloodHitPuff';
+			Return;
+		}
+		
+		Mod = 'BrutalHereticImp';//Ketchup V5
+		if((Class<Actor>)(Mod))
+		{
+			RemoveBloodBase = 'Brutal_Blood';
+			RemoveBloods.Push('TinyBlood');
+			RemoveBloods.Push('BloodHit');
+			RemoveBloods.Push('Brutal_FlyingBlood');
+			RemoveBloods.Push('Brutal_FlyingBloodFake');
+			Return;
+		}
+		
+		Mod = 'Doomer';//Brutal Dewm
+		if((Class<Actor>)(Mod))
+		{
+			Return;
+		}
+		
+		/*Mod = 'PileOfGibs';//Splatter gore
+		if((Class<Actor>)(Mod))
+		{
+			Return;
+		}*/
 	}
 		
 	Override Void RenderOverlay(RenderEvent e)
@@ -211,10 +339,10 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldTick()
 	{
-		if(int(gametic%4)==0){
+		/*if(int(gametic%4)==0){
 			if(CVar.GetCVar("MRGoreParts_EffectsList", Players[ConsolePlayer]).GetString()!=EffectsList||
 				CVar.GetCVar("MRGoreParts_AlwaysEffectsList", Players[ConsolePlayer]).GetString()!=AlwaysEffectsList)UpdateEffects();
-		}
+		}*/
 		
 		if(!CVar.GetCVar("MRGoreParts_CheckLimit", Players[ConsolePlayer]).GetBool())Return;
 		Let Plr = Players[ConsolePlayer].Camera;
@@ -255,7 +383,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldThingDamaged(WorldEvent e)
 	{
-		if((e.Thing.bIsMonster||e.Thing Is 'PlayerPawn') && !(e.Thing.bNoBlood && MRGoreParts_NoBloodMonsters) && (BlackList.Find(e.Thing.GetClass())==BlackList.Size()||!MRGoreParts_BlacklistOn))
+		if((e.Thing.bIsMonster||e.Thing Is 'PlayerPawn'||e.Thing.bCorpse) && !(e.Thing.bNoBlood && MRGoreParts_NoBloodMonsters) && (BlackList.Find(e.Thing.GetClass())==BlackList.Size()||!MRGoreParts_BlacklistOn))
 		{
 			if(MRGoreParts_BlacklistOn)For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
 			String Damage = "";
@@ -392,7 +520,8 @@ Class MR_GoreParticlesHandler: EventHandler
 					if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
 					else if(e.DamageSource)Pitch = e.Inflictor.PitchTo(e.DamageSource, 0, e.DamageSource.Height*.9);
 					
-					Effects[Random(0, Effects.Size()-1)].SpawnEffect(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Col);
+					if(Effects.Size()>0)
+						Effects[Random(0, Effects.Size()-1)].SpawnEffect(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Col);
 					For(int i=0;i<AlwaysEffects.Size();i++)
 					{
 						AlwaysEffects[i].SpawnEffect(e.Inflictor, e.Inflictor.AngleTo(e.DamageSource), Pitch, Col);
@@ -404,7 +533,6 @@ Class MR_GoreParticlesHandler: EventHandler
 
 					if(Random(0, 100)>95)
 					{
-						Float Bright = FRandom(1, 2);
 						/*if(MRGoreParts_Multiplayer)
 						{
 							MR_GoreParticlesFlyingBloodMultiplayer a = MR_GoreParticlesFlyingBloodMultiplayer(e.Inflictor.Spawn("MR_GoreParticlesFlyingBloodMultiplayer", e.Inflictor.Pos));
@@ -414,7 +542,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						else
 						{*/
 						MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(e.Inflictor.Spawn("MR_GoreParticlesFlyingBlood", e.Inflictor.Pos));
-						a.Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+						a.Col = Col;
 						a.Vel3DFromAngle(Random(4, 6), e.Inflictor.AngleTo(e.DamageSource)+Random(-50, 50), -Random(0, 60));
 						a.Scale *= FRandom(1, 2);
 						//}
@@ -485,18 +613,17 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			For(int i=0;i<Amount*Random(8, 12);i++)
 			{
-				Effects[Random(0, Effects.Size()-1)].SpawnEffect(e.Thing, Angle.X+Random(-120, 120), Random(-70, 0), Col, 1, 1.3, (Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(10, e.Thing.Height)));
+				if(Effects.Size()>0)Effects[Random(0, Effects.Size()-1)].SpawnEffect(e.Thing, Angle.X+Random(-120, 120), Random(-70, 0), Col, 1, 1.3, (Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(10, e.Thing.Height)));
 				For(int i=0;i<AlwaysEffects.Size();i++)
 				{
 					AlwaysEffects[i].SpawnEffect(e.Thing, Angle.X+Random(-120, 120), Random(-70, 0), Col, 1, 1.3, (Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(10, e.Thing.Height)));
 				}
 				
-				if(Random(0, 100)>60)
+				if(Random(0, 100)>30)
 				{
-					Float Bright = FRandom(1, 2);
 					MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(e.Thing.Spawn("MR_GoreParticlesFlyingBlood", e.Thing.Pos));
-					a.Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-					a.Vel3DFromAngle(Random(4, 6), Angle.X+Random(-120, 120), -Random(0, 60));
+					a.Col = Col;
+					a.Vel3DFromAngle(Random(5, 7), Angle.X+Random(-120, 120), -Random(40, 90));
 					a.Scale *= FRandom(1, 2);
 				}
 			}
@@ -538,25 +665,48 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldThingSpawned(WorldEvent e)
 	{
-		if(MRGoreParts_OnlyModsBlood && (e.Thing is 'Blood'||Actor.GetReplacee("Blood") == e.Thing.GetClass()))
+		if(!MRGoreParts_OnlyModsBlood)Return;
+		
+		if(e.Thing is 'Blood'||Actor.GetReplacement("Blood")==e.Thing.GetClass()||e.Thing is RemoveBloodBase)
 		{
-			Color Col = Gameinfo.DefaultBloodColor;
-			if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+			DoOtherBlood(e.Thing);
+			Return;
+		}
+		
+		For(int i=0;i<RemoveBloods.Size();i++)
+		{
+			if(e.Thing is RemoveBloods[i]){DoOtherBlood(e.Thing);Return;}
+		}
+		
+		//Console.Printf(e.Thing.GetClassName());
+	}
+	
+	Void DoOtherBlood(Actor mo)
+	{
+		Color Col = Gameinfo.DefaultBloodColor;
+		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+		{
+			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+		}
+		
+		if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())
+			For(Int i=0;i<Random(6, 9)*CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();i++)
 			{
-				Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+				Float Bright = FRandom(.6, 2);
+				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel, 25, FRandom(1.5, 2.5), mo.AngleTo(Players[ConsolePlayer].Camera),
+					Xoff:FRandom(-1.5, 1.5), FRandom(-1.5, 1.5), FRandom(4, 7), .1,0,.5, 0,0,-.05);
 			}
-			
-			if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())
-				For(Int i=0;i<Random(6, 9)*CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();i++)
-				{
-					Float Bright = FRandom(.6, 2);
-					E.Thing.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel, 25, FRandom(1.5, 2.5), e.Thing.AngleTo(Players[ConsolePlayer].Camera),
-						Xoff:FRandom(-1.5, 1.5), FRandom(-1.5, 1.5), FRandom(4, 7), .1,0,.5, 0,0,-.05);
-				}
-			
-			if(MRGoreParts_OnlyModsBlood>1){e.Thing.Destroy();Return;}
-			
-			e.Thing.A_SetRenderStyle(0, STYLE_NONE);
+		
+		if(MRGoreParts_OnlyModsBlood>1){mo.Destroy();Return;}
+		
+		mo.A_SetRenderStyle(0, STYLE_NONE);
+	}
+	
+	Override Void NetworkProcess(ConsoleEvent e)
+	{
+		if(e.name ~== "MRGP_UpdateEffects")
+		{
+			UpdateEffects();
 		}
 	}
 }
@@ -572,6 +722,7 @@ Class MR_GoreParticlesDeathHandler: Thinker
 	Override Void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
+		if(!Owner)Return;
 		Mid = Owner.Height*.5;
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO);
@@ -620,7 +771,8 @@ Class MR_GoreParticlesDeathHandler: Thinker
 			if(Age<Random(-40, 60))
 			{
 				MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
-				Handler.Effects[Random(0, Handler.Effects.Size()-1)].SpawnEffect(Owner, Angle, Pitch, Bld, 1, 1.5, (0,0,Y*.9));
+				if(Handler.Effects.Size()>0)
+					Handler.Effects[Random(0, Handler.Effects.Size()-1)].SpawnEffect(Owner, Angle, Pitch, Bld, 1, 1.5, (0,0,Y*.9));
 				//MR_GoreParticlesHandler.MRParticleBloodSplash(Owner, Angle, Pitch, Random(-25+Artery*17, 1)*Random(3, 14), Bld, 0, 1, (0,0,Posy));
 			}
 		}
