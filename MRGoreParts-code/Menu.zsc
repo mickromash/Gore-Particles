@@ -26,15 +26,13 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		EffectsNames.Clear();
 		IncludedEffectsNames.Clear();
 		
-		CursX=0;CursY=0;
-		statustimer=0;
+		CurlY = CursX = CursY = statustimer = 0;
 		
 		UpdateList(true);
 
 		WorkingString[MRGP_Menu_EffectsString]=cvar.findcvar("MRGoreParts_EffectsList").getstring();
 		WorkingString[MRGp_Menu_EffectsString2]=cvar.findcvar("MRGoreParts_EffectsList2").getstring();
 		WorkingString[MRGP_Menu_AlwaysEffectsString]=cvar.findcvar("MRGoreParts_AlwaysEffectsList").getstring();
-		//undo=WorkingString;
 	}
 	
 	override bool MenuEvent(int mkey, bool fromcontroller)
@@ -183,12 +181,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		UpdateList(CursY);
 		return Super.OnUIEvent(ev);
 	}
-	
-	/*void StatusText(string input,int timer=70){
-		statusstring=input;
-		statustimer=timer;
-	}*/
-	
+		
 	void savechanges()
 	{
 		String ConVar;
@@ -214,13 +207,6 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		CVar.FindCVar(ConVar).SetString(WorkingString[CursY]);
 		
 		Editing = false;
-		/*if(checkdifferent()){
-			undo=cvar.findcvar("hd_loadout"..CursY).getstring();
-			cvar.findcvar("hd_loadout"..CursY).setstring(WorkingString);
-			statustext(Stringtable.Localize("$LOADOUTMENU_LOADSAVEDTO")..CursY.." -");
-			checkdifferent();
-		}*/
-		//CurlY=0;
 	}
 	
 	Void ResetChanges()
@@ -393,6 +379,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		
 		blinktimer++;
 		if(blinktimer>6)blinktimer = 0;
+		
 		//CVars
 		For(int i=0;i<MRGP_MENU_Size;i++)
 		{
@@ -484,6 +471,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			
 			vcurs+=NewSmallFont.GetHeight()*1.5;
 		}
+		
 		//Lists
 		int StrXpos = screen.GetWidth() / 3;
 		TempStr = StringTable.Localize(ViewList?"$MRGoreParts_IncludedEffectsList":"$MRGoreParts_AllEffectsList")..":";
@@ -497,7 +485,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		screen.DrawText(NewSmallFont,
 			OptionMenuSettings.mFontColorHeader,
 			StrXpos,vcurs*CleanYfac_1,TempStr,DTA_CleanNoMove_1, true,
-			DTA_Alpha, .5
+			DTA_Alpha, .75
 		);
 		vcurs+=NewSmallFont.GetHeight()*2;
 		
