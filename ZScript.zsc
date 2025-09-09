@@ -5,6 +5,7 @@ Const MRGP_MaxWoundsGlobal = 7;//Max wounded entities
 Const MRGP_DistanceMult = 2.;//Effects scaling by distance
 Const MRGP_MinBright = .5;
 Const MRGP_MaxBright = 1.5;
+Const MRGP_GibbingTime = 60;
 
 #include "MRGoreParts-code/Handler.zsc"
 #include "MRGoreParts-code/Effects.zsc"
