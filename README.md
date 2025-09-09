@@ -34,3 +34,4 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Partially invisible blood
 * Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
+* Work on projectiles impcat
