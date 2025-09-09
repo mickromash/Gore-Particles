@@ -55,6 +55,9 @@ MRGoreParts_CorpseWoundsAll = "Wounds, splashes and dripping blood";
 MRGoreParts_Voxel = "Voxel enemies";
 ////}
 
+MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
+MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
+
 MRGoreParts_FloorSpots = "Spots on surfaces";
 MRGoreParts_SpotsNothing = "None";
 MRGoreParts_SpotsByWoundsOnly = "Only leaved by wounds";
@@ -64,6 +67,7 @@ MRGoreParts_SpotsTime = "Spots life time in seconds";
 
 MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
+MRGoreParts_FullBright = "Glowing blood";
 
 MRGoreParts_Multiplayer = "Multiplayer friendly";
 
@@ -138,6 +142,9 @@ MRGoreParts_CorpseWoundsAll = "Раны и капающая кровь";
 MRGoreParts_Voxel = "Воксельные враги";
 ////}
 
+MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
+MRGoreParts_MaxGibing = "Максимум джибсов";
+
 MRGoreParts_FloorSpots = "Кровь на поверхностях";
 MRGoreParts_SpotsNothing = "Нет";
 MRGoreParts_SpotsByWoundsOnly = "Только кровь из ран";
@@ -147,6 +154,7 @@ MRGoreParts_SpotsTime = "Удалять пятна спустя * секунд";
 
 MRGoreParts_UseCustomColor = "Кровь одного цвета";
 MRGoreParts_Color = "Цвет крови";
+MRGoreParts_FullBright = "Светящаяся кровь";
 
 MRGoreParts_Multiplayer = "Режим игры по сети";
 

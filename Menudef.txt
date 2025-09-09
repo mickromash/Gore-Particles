@@ -15,11 +15,15 @@ OptionMenu "MRGoreParts_Menu"
 	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
 	SubMenu "$MRGoreParts_WoundsMenu", "MRGoreParts_WoundsMenu"
 	StaticText ""
+	Slider "$MRGoreParts_MaxDying", "MRGoreParts_MaxDying", 0, 30, 1
+	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1
+	StaticText ""
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
 	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 60, 2
 	StaticText ""
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
+	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
 	StaticText ""
 	Option "$MRGoreParts_Multiplayer", "MRGoreParts_Multiplayer", "OnOff"
 	StaticText ""
