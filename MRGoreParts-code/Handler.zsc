@@ -338,6 +338,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	}
 	
 	Float ViewBob;
+	Float LimitIndicatorOffset;
 	
 	Override Void WorldTick()
 	{
@@ -347,11 +348,13 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(GibsTime[i]>MRGP_GibbingTime){GibsTime.Delete(i);i--;}
 		}
 		
+		if(Gametic%35==0)LimitIndicatorOffset = -CVar.GetCVar("MRGoreParts_CheckLimitOffset", Players[ConsolePlayer]).GetFloat();
+		
 		if(!CVar.GetCVar("MRGoreParts_CheckLimit", Players[ConsolePlayer]).GetBool())Return;
 		Let Plr = Players[ConsolePlayer].Camera;
 		
 		Vector3 Pos = (0,0, Plr.Player.ViewZ-Plr.Pos.Z);
-		Pos.XY += Actor.AngleToVector(Plr.Angle+90, 5 + 1*Abs(Sin(Plr.Pitch)));
+		Pos.XY += Actor.AngleToVector(Plr.Angle+90, LimitIndicatorOffset + 1*Abs(Sin(Plr.Pitch)));
 		
 		Float NewBob = Plr.Player.ViewZ - Plr.Pos.Z - Plr.Player.ViewHeight;
 		Float Bob;

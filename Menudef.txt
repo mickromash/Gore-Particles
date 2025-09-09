@@ -28,6 +28,7 @@ OptionMenu "MRGoreParts_Menu"
 	Option "$MRGoreParts_Multiplayer", "MRGoreParts_Multiplayer", "OnOff"
 	StaticText ""
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
+	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
 	StaticText ""
 	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 0, 10000, 300, 0
 	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"

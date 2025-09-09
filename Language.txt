@@ -71,7 +71,8 @@ MRGoreParts_FullBright = "Glowing blood";
 
 MRGoreParts_Multiplayer = "Multiplayer friendly";
 
-MRGoreParts_CheckLimit = "Particles limit display";
+MRGoreParts_CheckLimit = "Particles limit indicator";
+MRGoreParts_CheckLimitOffset = "Indicator offset";
 
 MRGoreParts_AllParticlesAmount = "All particles amount";
 
@@ -158,7 +159,8 @@ MRGoreParts_FullBright = "Светящаяся кровь";
 
 MRGoreParts_Multiplayer = "Режим игры по сети";
 
-MRGoreParts_CheckLimit = "Показатель лимита частиц";
+MRGoreParts_CheckLimit = "Индикатор лимита частиц";
+MRGoreParts_CheckLimitOffset = "Сдвиг индикатора";
 
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
 
