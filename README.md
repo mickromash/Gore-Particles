@@ -1,8 +1,8 @@
 # Gore-Particles (WIP)
 GZDoom mini mod that adds fancy blood particles animations
 
-Mod will use loaded gore mods sounds in the future,
-right now you can use [this sfx add-on](https://drive.google.com/file/d/1m2uRR5Aw2YcJhw8IR-lAHvpnnfMVo0fB/view?usp=sharing)
+Mod uses sound effects from loaded gore mods, but you can also use
+[this sfx add-on](https://drive.google.com/file/d/1m2uRR5Aw2YcJhw8IR-lAHvpnnfMVo0fB/view?usp=sharing)
 
 ## Features
 
@@ -13,7 +13,7 @@ right now you can use [this sfx add-on](https://drive.google.com/file/d/1m2uRR5A
 * Compatibility with other gameplay, monsters or gore mods
 #
 
-Because most of the blood effects are only made of particles (excluding blood streams), mod dosen't create any new actors and has pretty much no effect on the performance.
+Because most of the blood effects are only made of particles (excluding blood streams), mod dosen't create any new actors and won't affect performance much.
 
 But because all of the blood is visualized with particles, I highly recommend use other mods in case you want blood puddles and spots.
 
@@ -21,7 +21,6 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 ## TO DO
 
-* Add more effects for gibbing
 * Add effect for squishing
 * Rework gibing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
@@ -34,4 +33,5 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Configurable blood brightness and transparancy
 * Partially invisible blood
 * Running clarify line in options menu (like in Nashgore)
-* Limit death effects amount
+* Add performance settings pressets
+* Work on projectiles impcat
