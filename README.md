@@ -21,7 +21,6 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 ## TO DO
 
-* Add more effects for gibbing
 * Add effect for squishing
 * Rework gibing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
@@ -34,4 +33,3 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Configurable blood brightness and transparancy
 * Partially invisible blood
 * Running clarify line in options menu (like in Nashgore)
-* Limit death effects amount
