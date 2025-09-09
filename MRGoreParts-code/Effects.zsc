@@ -2,7 +2,7 @@
 	Effects actors and classes
 */
 
-Class MR_GoreParticlesFlyingBlood: Actor
+Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 {
 	Default{
 		-Solid
@@ -179,15 +179,26 @@ Class MR_GoreParticlesFlyingBloodMultiplayer: Actor
 }
 
 enum MRGP_EffectFlag{
-	SGPF_NODIST = 1,
+	SGPF_NODIST = 1,//Distance won't affect particles velocity and sizes
 };
 
 Class MR_GoreParticlesEffect play Abstract
 {
 	Virtual Void SpawnEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
 	{}
-	
-	Clearscope Virtual String GetName(){Return StringTable.Localize("$"..GetClassName());}
+	/*
+		mo - actor that spawns particles
+		Amount - particles amount multiplier
+		Flags - check MRGP_EffectFlag enum
+		Angle - particles direction angle
+		Pitch - particles direction pitch
+		Col - particles base color
+		Scale - particles sizes multiplier
+		Offset - offsets particles spawn point from actor position (absolute)
+		LifeM - particles lifetime multiplier
+		MoVel - multiplies actor velocity that will be added to particles
+	*/
+	Clearscope Virtual String GetName(){Return StringTable.Localize("$"..GetClassName());}//Effect name that will be displayedin the menu
 }
 
 Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
