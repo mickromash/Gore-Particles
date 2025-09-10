@@ -682,6 +682,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	Override Void WorldThingSpawned(WorldEvent e)
 	{
 		if(!MRGoreParts_OnlyModsBlood)Return;
+		if(!e.Thing)Return;
 		
 		if(e.Thing is 'Blood'||e.Thing is 'BloodSplatter'||e.Thing is 'AxeBlood'||Actor.GetReplacement("Blood")==e.Thing.GetClass()
 			||e.Thing is RemoveBloodBase)
