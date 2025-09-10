@@ -15,6 +15,9 @@ MRGoreParts_OnlyModBloodYes = "Yes";
 
 MRGoreParts_OnlyModsBloodText = "May cause lags when playing with Brutal Doom";
 
+MRGoreParts_BloodTypes = "Remove blood types unic to some monsters";
+MRGoreParts_BloodTypesText = "Recommended for HfE";
+
 MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
@@ -27,6 +30,7 @@ MRGoreParts_NoBloodMonsters = "No blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_EffectsMenu = "Effects settings";
 ////{
 MRGoreParts_Amount = "Blood amount";
+MRGoreParts_Distance = "Effects scale by distance";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_FlyingBood = "Quake gibs style blood streams";
 
@@ -103,6 +107,9 @@ MRGoreParts_OnlyModBloodYes = "Да";
 
 MRGoreParts_OnlyModsBloodText = "Может вызывать лаги при игре с Brutal Doom";
 
+MRGoreParts_BloodTypes = "Включать типы крови уникальные для определённых монстров";
+MRGoreParts_BloodTypesText = "Рекомендовано для HfE";
+
 MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
 MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами";
@@ -115,6 +122,7 @@ MRGoreParts_NoBloodMonsters = "Отключить кровь для монстр
 MRGoreParts_EffectsMenu = "Настройки эффектов";
 ////{
 MRGoreParts_Amount = "Количество крови";
+MRGoreParts_Distance = "Увеличение эффектов на расстоянии";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
 
