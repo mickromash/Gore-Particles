@@ -39,7 +39,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	Array<MR_GoreParticlesDeathHandler> Dyings;
 	Array<int> GibsTime;
 	
-	Array<String> RemoveBloods;
+	Array<String> RemoveBloods, RemoveBloodTypes;
 	String RemoveBloodBase;
 	
 	//Array< function<Clearscope Void(Actor, Double, Double, Color, double, Double, Vector3)> > Effects, AlwaysEffects;
@@ -86,7 +86,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())AlwaysEffects.Push(Handler.Effects[Num.ToInt()]);
 		}
-		if(MRGoreParts_Debug){
+		/*if(MRGoreParts_Debug){
 			Console.printf("\c-All Effects:");
 			For(int i=0;i<Handler.Effects.Size();i++)Console.printf("\cg"..i.." "..Handler.Effects[i].GetName());
 			Console.Printf("\c-==============");
@@ -98,7 +98,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Console.printf("\c-Always Effects:");
 			For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cv"..i.." "..AlwaysEffects[i].GetName());
 			Console.Printf("\c-==============");
-		}
+		}*/
 	}
 	
 	Array<Actor> Wounded;
@@ -108,7 +108,7 @@ Class MR_GoreParticlesHandler: EventHandler
 
 	
 	Array<String> Monsters;
-	Color Colors[40];
+	Color Colors[50];
 	
 	/*
 		MRPRTCOL (MickRomash's gore PaRTiCle COLours) lump stores information
@@ -136,7 +136,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		Lump.Replace("\n", "");
 		While(Lump.IndexOf("(")>-1)
 		{
-			Monsters.Push(Lump.Left(Lump.IndexOf(" ")));
+			String Monster = Lump.Left(Lump.IndexOf(" "));
+			if((Class<Actor>)(Monster))Monsters.Push(Monster);
 
 			String Cols = Lump.Mid(Lump.IndexOf("("), Lump.IndexOf(")")).." ";
 			int Vals[3];
@@ -148,7 +149,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				Cols = Cols.Mid(Cols.IndexOf(" ")+1);
 			}
 			
-			Colors[Monsters.Size()-1] = Color(Vals[0], Vals[1], Vals[2]);
+			if((Class<Actor>)(Monster))Colors[Monsters.Size()-1] = Color(Vals[0], Vals[1], Vals[2]);
 			
 			Lump = Lump.Mid(Lump.IndexOf(")")+2);
 		}
@@ -156,6 +157,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			Console.Printf("\cdBlood color override:");
 			For(int i=0;i<Monsters.Size();i++)Console.Printf(Monsters[i].." "..Colors[i]);
 		}
+		
+		
 		String BList = MRGoreParts_BlackList;
 		BList.Replace(" ", "");
 		While(BList.Length()>2)
@@ -180,10 +183,19 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(MRGoreParts_Debug){
 			Console.Printf("\cdBlacklist:");
 			For(int i=0;i<BlackList.Size();i++)Console.Printf("\cg"..BlackList[i].GetClassName());
+			Console.Printf("\cd===================");
 		}
 		
 		SetUpSounds();
 		SetUpBloodRemove();
+		if(MRGoreParts_Debug){
+			Console.Printf("\n\cgBase Blood: "..RemoveBloodBase);
+			Console.Printf("\cgBlood Types:");
+			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
+			Console.Printf("\cgBloods:");
+			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." "..RemoveBloods[i]);
+			Console.Printf("-----------");
+		}
 		
 		UpdateEffects();
 	}
@@ -263,9 +275,22 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void SetUpBloodRemove()
 	{
-		String Mod;
-		
 		RemoveBloods.Clear();
+		RemoveBloodTypes.Clear();
+		
+		For(int i=0;i<AllActorClasses.Size();i++)
+		{
+			String Blud = GetDefaultByType(AllActorClasses[i]).BloodType;
+			if(Blud!="Blood" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
+			
+			Blud = GetDefaultByType(AllActorClasses[i]).BloodType2;
+			if(Blud!="BloodSplatter" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
+			
+			Blud = GetDefaultByType(AllActorClasses[i]).BloodType3;
+			if(Blud!="AxeBlood" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
+		}
+		
+		String Mod;
 		
 		Mod = 'NashGoreActor';//Nashgore next
 		if((Class<Actor>)(Mod))
@@ -304,6 +329,14 @@ Class MR_GoreParticlesHandler: EventHandler
 			RemoveBloods.Push('BloodHit');
 			RemoveBloods.Push('Brutal_FlyingBlood');
 			RemoveBloods.Push('Brutal_FlyingBloodFake');
+			Return;
+		}
+		
+		Mod = 'HDOperator';//Hideous destructor
+		if((Class<Actor>)(Mod))
+		{
+			RemoveBloodBase = 'BloodSplatSilent';
+			RemoveBloods.Push('HDBloodTrailFloor');
 			Return;
 		}
 		
@@ -391,7 +424,11 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if((e.Thing.bIsMonster||e.Thing Is 'PlayerPawn'||e.Thing.bCorpse) && !(e.Thing.bNoBlood && MRGoreParts_NoBloodMonsters) && (BlackList.Find(e.Thing.GetClass())==BlackList.Size()||!MRGoreParts_BlacklistOn))
 		{
+			String HDest = 'HDOperator';
+			if((Class<Actor>)(HDest) && e.DamageType != 'piercing' && e.DamageType != 'bleedout')Return;
+
 			if(MRGoreParts_BlacklistOn)For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
+			
 			String Damage = "";
 			if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
 			if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
@@ -400,31 +437,45 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(MRGoreParts_Debug && e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
 			if(MRGoreParts_Debug && e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
 			
+			Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+				
+			Color Col = e.Thing.BloodColor;
+			if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+			{
+				Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			}
+			else
+			{
+				if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+				For(int i=0;i<Monsters.Size();i++)
+				{
+					if(Monsters[i]==e.Thing.GetClassName())
+					{
+						Col = Colors[i];
+						Break;
+					}
+				}
+			}
+			
+			if(e.DamageType == 'bleedout')
+			{
+				Vector3 Pos = (Actor.AngleToVector(e.Thing.Angle + FRandom(-90, 90), e.Thing.Radius*.7), Random(e.Thing.Height*.25, e.Thing.Height*.7));
+				
+				For(int i=0;i<Random(2, 4);i++)
+				e.Thing.A_SpawnParticle(Col, 0, 20, FRandom(2, 3), 0, Pos.X,Pos.Y,Pos.Z+.1*i,
+					0,0,0, 0,0,-.3);
+				
+				MR_GoreParticlesEffect_SimpleSplash a = New('MR_GoreParticlesEffect_SimpleSplash');
+				a.SpawnEffect(e.Thing, 0, e.DamageAngle, 0, Col, 1, .6, Pos);
+				a.Destroy();
+			}
+			
 			if(e.Inflictor)
 			{
 				//Console.Printf("\cdHealth: \c-"..e.Thing.Health.." \cgDamage: \c-"..e.Damage);
 				//Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
-				Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
 				
-				Color Col = e.Thing.BloodColor;
-				if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
-				{
-					Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
-				}
-				else
-				{
-					if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
-					For(int i=0;i<Monsters.Size();i++)
-					{
-						if(Monsters[i]==e.Thing.GetClassName())
-						{
-							Col = Colors[i];
-							Break;
-						}
-					}
-				}
-				
-				if(Random(0, 10)>4 && MRGoreParts_Wounds && !PlayerPawn(e.Thing) && Wounds.Size()<MRGP_MaxWOundsGlobal)
+				if(Random(0, 10)>4 && MRGoreParts_Wounds && !PlayerPawn(e.Thing) && Wounds.Size()<MRGP_MaxWOundsGlobal && e.DamageType != 'bleedout')
 				{
 					MR_GoreParticlesWound Token;
 					if(Wounded.Find(e.Thing)==Wounded.Size())
@@ -611,59 +662,7 @@ Class MR_GoreParticlesHandler: EventHandler
 
 		if(e.Thing.FindState("XDeath") && e.Thing.Health<-GetDefaultByType(e.Thing.GetClass()).Health)
 		{
-			e.Thing.A_StartSound(GibSound, CHAN_AUTO);
-			
-			if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
-			
-			GibsTime.Push(0);
-			Vector2 Angle = (0, 360);
-			
-			if(e.Inflictor)Angle = (e.Thing.AngleTo(e.Inflictor)+40, e.Thing.AngleTo(e.Inflictor)+300);
-			
-			For(int i=0;i<Amount*Random(8, 12);i++)
-			{
-				if(MRGPartsCheckDraw(e.Thing) && Effects.Size()>0)
-					Effects[Random(0, Effects.Size()-1)].SpawnEffect(e.Thing, 0, Angle.X+Random(-120, 120), Random(-20, 0)*4, Col, 1.5, 3,
-						(Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(10, e.Thing.Height*.5)), 4, 1/e.Thing.Mass);
-				For(int j=0;j<AlwaysEffects.Size();j++)
-				{
-					AlwaysEffects[j].SpawnEffect(e.Thing, SGPF_NODIST, Angle.X+Random(-120, 120), Random(-30, 0)*3, Col, 1, 7, (Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(-e.Thing.Radius, e.Thing.Radius)*.5,Random(10, e.Thing.Height)), 1.2, 1/e.Thing.Mass);
-				}
-				
-				if(Random(0, 100)>30)
-				{
-					MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(e.Thing.Spawn("MR_GoreParticlesFlyingBlood", e.Thing.Pos));
-					a.Col = Col;
-					a.Vel3DFromAngle(Random(5, 7), Angle.X+Random(-120, 120), -Random(40, 90));
-					a.Scale *= FRandom(1, 2);
-				}
-			}
-			
-			/*For(Float y=0;y<e.Thing.Height;y+=e.Thing.Height/(4*Amount))
-			{
-				if(MRGPartsCheckDraw(e.Thing))For(float i=Angle.X;i<Angle.Y;i+=Dif(Angle.X, Angle.Y)/(40*Amount))
-				{
-					Float Bright = FRandom(1, 2);
-					Float Life = Random(60, 90);
-					Float Vel = FRandom(1, 4);
-					Float Size = Random(1, 6);
-					e.Thing.A_SpawnParticle(Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright)), 0, Life, Size, 0, Cos(i)*2, Sin(i)*2, y+5,
-						Vel*Cos(i), Vel*Sin(i), Random(1, 5), 0,0,-FRandom(.2, .4), FRandom(.8, 1.5), 0, Size/Life);
-				}
-			}*/
-			
-			if(MRGPartsCheckDraw(e.Thing))For(int i=0;i<e.Thing.Height*2*Amount;i++)
-			{
-				Float Bright = FRandom(1, 2);
-				e.Thing.A_SpawnParticle(Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright)), SPF_RELATIVE, 40, Random(2, 5), Random(0, 360), FRandom(0, e.Thing.Radius), 0, Random(5, e.Thing.Height),
-					Random(-1, 1),0,FRandom(0, 2), 0,0,-FRandom(.3, .4), 1, 0, -FRandom(.006, .01));
-			}
-			
-			if(MRGPartsCheckDraw(e.Thing) && CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>1)For(float i=Angle.X;i<Angle.Y;i+=Dif(Angle.X, Angle.Y)/100*Amount)
-			{
-				Float Bright = FRandom(1, 2);
-				e.Thing.A_SpawnParticle(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), SPF_RELPOS, CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt()*35, Random(1, 3), i, Random(1, 60), 0, 1);
-			}
+			SpawnXDeath(e.Thing, e.Inflictor);
 		}
 		else if(Random(0, 10)>2 && MRGoreParts_MaxDying>0)
 		{
@@ -691,6 +690,11 @@ Class MR_GoreParticlesHandler: EventHandler
 			Return;
 		}
 		
+		if(MRGoreParts_BloodTypes)For(int i=0;i<RemoveBloodTypes.Size();i++)
+		{
+			if(e.Thing is RemoveBloodTypes[i]){DoOtherBlood(e.Thing);Return;}
+		}
+		
 		For(int i=0;i<RemoveBloods.Size();i++)
 		{
 			if(e.Thing is RemoveBloods[i]){DoOtherBlood(e.Thing);Return;}
@@ -699,12 +703,126 @@ Class MR_GoreParticlesHandler: EventHandler
 		//Console.Printf(e.Thing.GetClassName());
 	}
 	
+	Static Void SpawnBloodDrop(Actor mo, Color Col)
+	{
+		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
+		
+		Float TempGrav = -.3;
+		
+		For(int i=0;i<Random(2, 5);i++)
+			mo.A_SpawnParticle(Col, 0, 20, FRandom(3, 4), 0, FRandom(-.5,.5),FRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
+		
+		MR_GoreParticlesDelayedSpawner a = 
+			MR_GoreParticlesDelayedSpawner(mo.Spawn("MR_GoreParticlesDelayedSpawner", (mo.pos.x+frandom(-1, 1), mo.pos.y+frandom(-1, 1), mo.floorz+1)));
+		
+		int Delay = 1;
+		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
+		{
+			TempGrav += abs(-.3);
+			Delay++;
+		}
+		
+		Double Alph = FRandom(.8, .9);
+		a.Col = Col;
+		a.Size = FRandom(2, 4);
+		a.Delay = Delay;
+		a.Life = 100;
+		a.Fade = Alph/100;
+		a.Alpha = Alph;
+	}
+	
+	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
+	{
+		mo.A_StartSound(GibSound, CHAN_AUTO);
+		
+		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
+		
+		Color Col = mo.BloodColor;
+		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+		{
+			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+		}
+		else
+		{
+			if(mo.BloodColor==0 && mo.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			For(int i=0;i<Monsters.Size();i++)
+			{
+				if(Monsters[i]==mo.GetClassName())
+				{
+					Col = Colors[i];
+					Break;
+				}
+			}
+		}
+		
+		Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		
+		GibsTime.Push(0);
+		Vector2 Angle = (0, 360);
+		
+		if(Inflictor)Angle = (mo.AngleTo(Inflictor)+40, mo.AngleTo(Inflictor)+300);
+		
+		For(int i=0;i<Amount*Random(8, 12);i++)
+		{
+			if(MRGPartsCheckDraw(mo) && Effects.Size()>0)
+				Effects[Random(0, Effects.Size()-1)].SpawnEffect(mo, 0, Angle.X+Random(-120, 120), Random(-20, 0)*4, Col, 1.5, 3,
+					(Random(-mo.Radius, mo.Radius)*.5,Random(-mo.Radius, mo.Radius)*.5,Random(10, mo.Height*.5)), 4, 1/mo.Mass);
+			For(int j=0;j<AlwaysEffects.Size();j++)
+			{
+				AlwaysEffects[j].SpawnEffect(mo, SGPF_NODIST, Angle.X+Random(-120, 120), Random(-30, 0)*3, Col, 1, 7, (Random(-mo.Radius, mo.Radius)*.5,Random(-mo.Radius, mo.Radius)*.5,Random(10, mo.Height)), 1.2, 1/mo.Mass);
+			}
+			
+			if(Random(0, 100)>30)
+			{
+				MR_GoreParticlesFlyingBlood a = MR_GoreParticlesFlyingBlood(mo.Spawn("MR_GoreParticlesFlyingBlood", mo.Pos));
+				a.Col = Col;
+				a.Vel3DFromAngle(Random(5, 7), Angle.X+Random(-120, 120), -Random(40, 90));
+				a.Scale *= FRandom(1, 2);
+			}
+		}
+					
+		if(MRGPartsCheckDraw(mo))For(int i=0;i<mo.Height*2*Amount;i++)
+		{
+			Float Bright = FRandom(1, 2);
+			mo.A_SpawnParticle(Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright)), SPF_RELATIVE, 40, Random(2, 5), Random(0, 360), FRandom(0, mo.Radius), 0, Random(5, mo.Height),
+				Random(-1, 1),0,FRandom(0, 2), 0,0,-FRandom(.3, .4), 1, 0, -FRandom(.006, .01));
+		}
+		
+		if(MRGPartsCheckDraw(mo) && CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>1)For(float i=Angle.X;i<Angle.Y;i+=Dif(Angle.X, Angle.Y)/100*Amount)
+		{
+			Float Bright = FRandom(1, 2);
+			mo.A_SpawnParticle(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), SPF_RELPOS, CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt()*35, Random(1, 3), i, Random(1, 60), 0, 1);
+		}
+	}
+	
 	Void DoOtherBlood(Actor mo)
 	{
 		Color Col = Gameinfo.DefaultBloodColor;
 		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
 		{
 			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+		}
+		
+		String HDBld = 'HDBloodTrailFloor';
+		if(mo is HDBld)
+		{
+			Double Alph = FRandom(.8, 1);
+			mo.A_SpawnParticle(Col, 0, 100, Random(2, 3), 0, 0,0,1,
+				0,0,0, 0,0,0, Alph, Alph/100.);
+			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
+			Return;
+		}
+		
+		HDBld = 'BloodSplat';
+		String HDBld2 = 'HDMasterBlood';
+		if(mo is HDBld2||mo is HDBld)
+		{
+			String Sheild = 'HDMagicShield';
+			if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
+			
+			SpawnBloodDrop(mo, Col);
+			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
+			Return;
 		}
 		
 		if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())
@@ -725,6 +843,39 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(e.name ~== "MRGP_UpdateEffects")
 		{
 			UpdateEffects();
+		}
+	}
+}
+
+Class MR_GoreParticlesDelayedSpawner: Actor//You'll never guess in what mod it originates from
+{
+	Color Col;
+	Float Size, Fade, Resize;
+	Vector3 Ofst, Vely, Accel;
+	int Delay, Life;
+	
+	Static Bool MRGPartsCheckDraw(Actor mo = Null)
+	{
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return false;
+		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		
+		if(!mo)Return CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool();
+		
+		
+		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
+	}
+		
+	Override Void Tick()
+	{
+		Super.Tick();
+		if(Delay<0){A_SpawnParticle(Col, 0, 1, Size, StartAlphaf:Alpha);Destroy();Return;}
+				
+		if((Delay>-1&&GetAge()>Delay)||(Delay<0&&Pos.Z==FloorZ))
+		{
+			A_SpawnParticle(Col, SPF_RELATIVE, Life, Size, 0, Ofst.X, Ofst.Y, Ofst.Z,
+				Vely.X, Vely.Y, Vely.Z, Accel.X, AcceL.Y, Accel.Z, Alpha, Fade, Resize);
+			Destroy();
 		}
 	}
 }
@@ -758,6 +909,14 @@ Class MR_GoreParticlesDeathHandler: Thinker
 		if(Age>60||!Owner){Destroy();Return;}
 		Age++;
 		Super.Tick();
+		
+		if(Owner.instatesequence(Owner.CurState, Owner.ResolveState("gib")))
+		{
+			MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+			Handler.SpawnXDeath(Owner);
+			Destroy();
+			Return;
+		}
 		
 		TextureID Sprt = Owner.CurState.GetSpriteTexture(0);
 		

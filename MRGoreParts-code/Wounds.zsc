@@ -55,7 +55,7 @@ Class MR_GoreParticlesWound: Thinker
 		int Corpse=2;
 		if(Owner.Health<1)
 		{
-			Corpse = 0 + CVar.GetCVar("MRGoreParts_CorpseWounds", Players[ConsolePlayer]).GetInt();
+			Corpse = CVar.GetCVar("MRGoreParts_CorpseWounds", Players[ConsolePlayer]).GetInt();
 		}
 		
 		For(int i=0;i<Locs.Size();i++)

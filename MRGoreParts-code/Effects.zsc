@@ -211,7 +211,7 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -264,7 +264,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -307,7 +307,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -367,7 +367,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
 			if(Scale>1)Dist/=Scale;
 		}
 		
