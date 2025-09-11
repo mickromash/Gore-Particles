@@ -5,6 +5,7 @@
 
 Class MR_GoreParticlesStaticHandler: StaticEventHandler
 {
+	Ui Bool RecsShown;
 	Array<MR_GoreParticlesEffect> Effects;
 	
 	Override Void OnRegister()
@@ -352,23 +353,6 @@ Class MR_GoreParticlesHandler: EventHandler
 			Return;
 		}*/
 	}
-		
-	Override Void RenderOverlay(RenderEvent e)
-	{
-		Return;
-		Let Sb = StatusBar;
-		
-		Bool WhyOffsetS = Sb.FullscreenOffsets;
-		Sb.FullscreenOffsets = true;
-		
-		HUDFont BigFnt = HUDFont.Create("BIGFONT");
-		
-		Sb.DrawString(BigFnt, "Wounds: "..Wounds.Size(), (0,3), Sb.DI_SCREEN_LEFT_TOP, Scale:(.75,.75));
-		Sb.DrawString(BigFnt, "Wounded: "..Wounded.Size(), (0,13), Sb.DI_SCREEN_LEFT_TOP, Scale:(.75,.75));
-		
-		
-		Sb.FullscreenOffsets = WhyOffsetS;
-	}
 	
 	Float ViewBob;
 	Float LimitIndicatorOffset;
@@ -714,7 +698,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			mo.A_SpawnParticle(Col, 0, 20, FRandom(3, 4), 0, FRandom(-.5,.5),FRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
 		
 		MR_GoreParticlesDelayedSpawner a = 
-			MR_GoreParticlesDelayedSpawner(mo.Spawn("MR_GoreParticlesDelayedSpawner", (mo.pos.x+frandom(-1, 1), mo.pos.y+frandom(-1, 1), mo.floorz+1)));
+			MR_GoreParticlesDelayedSpawner(mo.Spawn("MR_GoreParticlesDelayedSpawner", (mo.pos.x+frandom(-1, 1), mo.pos.y+frandom(-1, 1), mo.floorz)));
 		
 		int Delay = 1;
 		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
@@ -730,6 +714,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		a.Life = 100;
 		a.Fade = Alph/100;
 		a.Alpha = Alph;
+		a.Ofst = (0,0,1);
 	}
 	
 	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
@@ -821,6 +806,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			String Sheild = 'HDMagicShield';
 			if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
 			
+			if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
 			SpawnBloodDrop(mo, Col);
 			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
 			Return;
@@ -839,12 +825,127 @@ Class MR_GoreParticlesHandler: EventHandler
 		mo.A_SetRenderStyle(0, STYLE_NONE);
 	}
 	
+
+	
 	Override Void NetworkProcess(ConsoleEvent e)
 	{
 		if(e.name ~== "MRGP_UpdateEffects")
 		{
 			UpdateEffects();
 		}
+	}
+	
+	Override Void PlayerEntered(PlayerEvent e)
+	{
+		SendInterfaceEvent(ConsolePlayer, "MRGP_OpenRecs", 5, 1);
+	}
+	
+	////////////////////////////////////////////////////////////////////////////
+	
+	Override Void InterfaceProcess(ConsoleEvent e)
+	{
+		if(e.name ~== "MRGP_OpenRecs")
+		{
+			if(e.args[1])
+			{
+				MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+				if(Handler.RecSShown)Return;
+			}
+			
+			CheckRecS(e.args[1]);
+			if(e.args[1] && Recs.Size()<1)Return;
+			
+			ShowRecs = !ShowRecs;
+			if(RecsAnim<1)RecsAnim = 20;
+			if(!ShowRecs)Return;
+			if(e.args[0]>0)ShowingRecs = 35*e.args[0];
+		}
+	}
+	
+	Ui Array<String> RecS;
+	Ui Bool ShowRecs;
+	Ui int RecsAnim, ShowingRecs;
+	
+	Ui Void CheckRecS(bool GameStart = false)
+	{
+		RecS.Clear();
+		String Mod = 'HDOperator';
+		if((class<actor>)(Mod))
+		{
+			if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Quake2").."\cc 0");
+			if(CVar.GetCVar("MRGoreParts_OnlyModsBlood", Players[ConsolePlayer]).GetInt()<2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_OnlyModsBlood")..
+				"\cc "..StringTable.Localize("$MRGoreParts_OnlyModsBlood"..2));
+			if(CVar.GetCVar("MRGoreParts_BloodTypes", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BloodTypes").."\cc 0");
+			if(CVar.GetCVar("MRGoreParts_BlacklistOn", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BlacklistOn").."\cc 0");
+			if(CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat()>0)Recs.Push("\cc"..StringTable.Localize("$MRGoreParts_EffectsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Distance").."\cc 0");
+			if(!CVar.GetCVar("MRGoreParts_Wounds", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Wounds").."\cc 1");
+			if(CVar.GetCVar("MRGoreParts_CorpseWounds", Players[ConsolePlayer]).GetInt()!=1)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_CorpseWounds")..
+				"\cc "..StringTable.Localize("$MRGoreParts_CorpseWounds"..1));
+		}
+		
+		if(GameStart)
+		{
+			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			
+			Handler.RecSShown = true;
+			
+			if(RecS.Size()<1)Return;
+			Console.Printf(StringTable.Localize("$MR_GoreParticlesUi_RecS"));
+			
+			For(int i=0;i<Recs.Size();i++)
+			{
+				Console.Printf(Recs[i]);
+			}
+			
+			Console.Printf(StringTable.Localize("============================"));
+		}
+	}
+	
+	Override Void UiTick()
+	{
+		if(ShowRecs)CheckRecS();
+		if(menuactive!=menu.off||!ShowRecs)Return;
+				
+		if(ShowingRecs>1 && RecsAnim<1)ShowingRecs--;
+		if(ShowingRecs==1){ShowingRecs = 0;RecsAnim = 20;ShowRecs = false;Return;}
+	}
+	
+	Override Void RenderOverlay(RenderEvent e)
+	{
+		if(!ShowRecs && RecsAnim<0)Return;
+		
+		Let Sb = StatusBar;
+		
+		Vector2 HUDSca = Sb.GetHUDScale();
+		Double HUDScale = ((4/HUDSca.X)/(4/Sb.defaultScale.X));
+		
+		bool OriginalOffsets = Sb.FullscreenOffsets;
+		Sb.FullscreenOffsets = true;
+		
+		HUDFont MainFont = HUDFont.Create("NewSmallFont");
+		
+		Double Alph = RecsAnim;
+		Alph /= 20;
+		
+		if(ShowRecS)Alph = 1.-Alph;
+		
+		int PosY = -NewSmallFont.GetHeight()*.5 * (Recs.Size()-1);
+		Sb.DrawString(MainFont, StringTable.Localize("$MR_GoreParticlesUi_RecS"), (0, PosY)*HUDScale, Sb.DI_SCREEN_LEFT_CENTER, Alpha:Alph, Scale:(.5,.5)*HUDScale);
+		
+		if(RecS.Size()>0)For(int i=0;i<RecS.Size();i++)
+		{
+			Sb.DrawString(MainFont, RecS[i], (0, PosY+NewSmallFont.GetHeight()*.5*(i+1))*HUDScale, Sb.DI_SCREEN_LEFT_CENTER, Alpha:Alph, Scale:(.5,.5)*HUDScale);
+		}
+		else 
+		{
+			String DoneS = StringTable.Localize("$MR_GoreParticlesUi_RecSDone");
+			String Sounds = 'MRGP_SoundAddon';
+			if(!((class<object>)(Sounds)))DoneS = DoneS.."  "..StringTable.Localize("$MR_GoreParticlesUi_RecSSound");
+			Sb.DrawString(MainFont, DoneS, (0, PosY+NewSmallFont.GetHeight()*.5)*HUDScale, Sb.DI_SCREEN_LEFT_CENTER, Font.CR_GREEN, Alph, Scale:(.5,.5)*HUDScale);
+		}
+		if(RecsAnim>0)RecsAnim--;
+		
+		Sb.FullscreenOffsets = OriginalOffsets;
 	}
 }
 
