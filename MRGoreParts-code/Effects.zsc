@@ -411,3 +411,62 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		}
 	}
 }
+
+Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
+{
+	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Vector3 Offset, Double LifeM, Double MoVel)
+	{
+		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		Float Dist = MRGP_DistanceMult;
+		
+		if(Flags&SGPF_NODIST)Dist = 1;
+		else
+		{
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
+			if(Scale>1)Dist/=Scale;
+		}
+		
+		int Glow = 0;
+		if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+		
+		Pitch -= FRandom(5, 8);
+		Angle += Random(-30, 30);
+		Double Forw = FRandom(1.4, 3);
+		Vector3 Strn;
+		Double Size = FRandom(1.2, 1.6)*Dist;
+		Double Life = FRandom(35, 40)*LifeM;
+							
+		For(float j=.1;j<1.1;j+=.05/Amount)
+		{
+			Double Ang = Random(0, 360);
+			Double Leng = FRandom(0, .1*j);
+			Strn.X = Forw*j*.25;
+			Strn.Y = -Cos(Ang)*Leng;
+			Strn.Z = -Sin(Ang)*Leng;
+			Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+			
+			Float Bright = Max(MRGP_MinBright, Min(MRGP_MaxBright, (Strn.Z/(.3*j)+.75)*2));
+			Bright += FRandom(-.05, .05);
+			
+			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+			Vel *= Dist;
+			Vel *= Scale;
+			Vel += mo.Vel*moVel;
+			
+			Vector3 Accel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+			Accel *= FRandom(.01, .02);
+			Accel.XY += Actor.AngleToVector(Angle+90, -Strn.Y*.1);
+			Accel.XY += Actor.AngleToVector(Angle, -Strn.Z)*Sin(Pitch);
+			
+			Accel = -Accel;
+			Accel *= Dist;
+			Accel *= Scale;
+			
+			mo.A_SpawnParticle(ColTmp, Glow, Life+5, (Size+j*3)*FRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 1.2/Life, ((Size+j*3)/Life)*.05);
+			Life-=.5*LifeM;
+		}
+	}
+}

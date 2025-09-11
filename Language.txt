@@ -95,6 +95,7 @@ MR_GoreParticlesEffect_Sprays = "Blood sprays";
 MR_GoreParticlesEffect_Mist = "Blood mist";
 MR_GoreParticlesEffect_BeautifulSpray = "\"Beautiful\" blood spray";
 MR_GoreParticlesEffect_CurveLine = "Curve blood spray";
+MR_GoreParticlesEffect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
 
 [ru]
 
@@ -193,3 +194,4 @@ MR_GoreParticlesEffect_Sprays = "Кровавые лучи";
 MR_GoreParticlesEffect_Mist = "Кровавая дымка";
 MR_GoreParticlesEffect_BeautifulSpray = "Распадающаяся струя крови";
 MR_GoreParticlesEffect_CurveLine = "Кривая линия крови";
+MR_GoreParticlesEffect_BeautifulSprayGrowing = "Распадающаяся струя крови (расширяющаяся)";
