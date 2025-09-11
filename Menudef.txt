@@ -1,5 +1,6 @@
 AddOptionMenu "OptionsMenu"
 {
+	StaticText ""
 	StaticText "$MRGoreParts_Title", "Red"
 	SubMenu "$MRGoreParts_Settings", "MRGoreParts_Menu"
 	StaticText ""
@@ -14,6 +15,8 @@ OptionMenu "MRGoreParts_Menu"
 	SubMenu "$MRGoreParts_BloodSpawnMenu", "MRGoreParts_BloodSpawnMenu"
 	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
 	SubMenu "$MRGoreParts_WoundsMenu", "MRGoreParts_WoundsMenu"
+	StaticText ""
+	Control "$MRGP_Recs", "InterfaceEvent MRGP_OpenRecs"
 	StaticText ""
 	Slider "$MRGoreParts_MaxDying", "MRGoreParts_MaxDying", 0, 30, 1
 	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1
@@ -76,21 +79,21 @@ OptionMenu "MRGoreParts_WoundsMenu"
 
 OptionValue "MRGoreParts_SpotsOption"
 {
-	0, "$MRGoreParts_SpotsNothing"
-	1, "$MRGoreParts_SpotsByWoundsOnly"
-	2, "$MRGoreParts_SpotsAll"
+	0, "$MRGoreParts_FloorSpots0"
+	1, "$MRGoreParts_FloorSpots1"
+	2, "$MRGoreParts_FloorSpots2"
 }
 
 OptionValue "MRGoreParts_OtherBlood"
 {
-	0, "$MRGoreParts_OnlyModBloodNot"
-	1, "$MRGoreParts_OnlyModBloodHide"
-	2, "$MRGoreParts_OnlyModBloodYes"
+	0, "$MRGoreParts_OnlyModsBlood0"
+	1, "$MRGoreParts_OnlyModsBlood1"
+	2, "$MRGoreParts_OnlyModsBlood2"
 }
 
 OptionValue "MRGoreParts_CorpseWoundsOption"
 {
-	0, "$MRGoreParts_CorpseWoundsNone"
-	1, "$MRGoreParts_CorpseWoundsWoundsOnly"
-	2, "$MRGoreParts_CorpseWoundsAll"
+	0, "$MRGoreParts_CorpseWounds0"
+	1, "$MRGoreParts_CorpseWounds1"
+	2, "$MRGoreParts_CorpseWounds2"
 }
