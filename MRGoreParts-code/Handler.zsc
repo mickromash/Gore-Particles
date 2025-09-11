@@ -711,12 +711,12 @@ Class MR_GoreParticlesHandler: EventHandler
 		a.Col = Col;
 		a.Size = FRandom(2, 4);
 		a.Delay = Delay;
-		a.Life = 100;
+		a.Life = 150;
 		a.Fade = Alph/100;
 		a.Alpha = Alph;
 		a.Ofst = (0,0,1);
 		
-		mo.A_StartSound(DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
+		mo.A_StartSound(DripSound, CHAN_AUTO, attenuation: ATTN_STATIC);
 	}
 	
 	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
