@@ -688,7 +688,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		//Console.Printf(e.Thing.GetClassName());
 	}
 	
-	Static Void SpawnBloodDrop(Actor mo, Color Col)
+	Void SpawnBloodDrop(Actor mo, Color Col)
 	{
 		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
 		
