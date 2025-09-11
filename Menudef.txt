@@ -62,7 +62,7 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 OptionMenu "MRGoreParts_EffectsMenu"
 {
 	Title "$MRGoreParts_EffectsMenu"
-	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 4, .1
+	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 3, .1
 	Slider "$MRGoreParts_Distance", "MRGoreParts_Distance", 0, 10, .5
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
