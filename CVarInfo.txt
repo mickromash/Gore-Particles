@@ -15,8 +15,6 @@ user float MRGoreParts_Amount = 1;
 server int MRGoreParts_OnlyModsBlood = 1;//0 - leave other mods/vanila blood, 1 - only hide other blood, but not destroy, 2 - destroy any other blood
 server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters blood types in other mods blood
 
-server bool MRGoreParts_Multiplayer = false;
-
 user bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
 user Color MRGoreParts_Color = "0 96 0";
 user bool MRGoreParts_FullBright = false;//Glowing particles

@@ -28,8 +28,6 @@ OptionMenu "MRGoreParts_Menu"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
 	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
 	StaticText ""
-	Option "$MRGoreParts_Multiplayer", "MRGoreParts_Multiplayer", "OnOff"
-	StaticText ""
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
 	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
 	StaticText ""
