@@ -16,17 +16,25 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 	}
 	
 	Color Col;
+	Double Fov;
+	Bool DrawMe, WasDrawn;
 	//Float Brightnes;
+	
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		Let Plr = Players[ConsolePlayer];
+		Fov = CVar.GetCVar("FOV", Plr).GetFloat();
+		DrawMe = CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool() && CVar.GetCVar("MRGoreParts_FlyingBood", Plr).GetBool();
+	}
 	
 	Bool MRGPartsCheckDraw()
 	{
 		Let Plr = Players[ConsolePlayer];
 		if(!Plr.Camera)Return false;
-		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool()||
-			!CVar.GetCVar("MRGoreParts_FlyingBood", Plr).GetBool()||
-			!CheckSight(Plr.Camera))Return false;
+		if(!DrawMe||!CheckSight(Plr.Camera))Return false;
 		
-		Return abs(DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Self)))<CVar.GetCVar("FOV", Players[ConsolePlayer]).GetFloat();
+		Return abs(DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Self)))<FOV;
 	}
 
 	States
@@ -36,6 +44,7 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 				Vel.Z -= Gravity;
 				if(MRGPartsCheckDraw() && Scale.X>0)
 				{
+					if(!WasDrawn)WasDrawn = true;
 					int Glow = 0;
 					if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
 					Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
@@ -63,6 +72,53 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 						);
 						//else A_SpawnParticle(Col, 0, 1, Scale.X, 0, Dif.X*Step,Dif.Y*Step,Dif.Z*Step, Vel.X, Vel.Y, Vel.Z);
 					}
+				}
+				if(WasDrawn && !CheckSight(Players[ConsolePlayer].Camera)||Pos.Z<=FloorZ)
+				{
+					Let Plr = Players[ConsolePlayer].Camera;
+					
+					int Glow = 0;
+					if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+					
+					if(abs(DeltaAngle(Plr.AngleTo(Self), Plr.Angle))<CVar.GetCVar("FOV", Plr.Player).GetFloat())
+						For(float i=-4;i<5;i++){
+						Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
+						Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
+						
+						A_SpawnParticle(CurCol, SPF_RELVEL|Glow, 15, Scale.X*CFRandom(.6, 1), VectorAngle(Vel.X, Vel.Y)+180+i*CFRandom(38, 50),
+							0,0,0,
+							CFrandom(2, 3),0,-Vel.Z*((i+3)/8)*.5,
+							0,0,-.3);
+							
+					}
+					
+					if(Pos.Z<=FloorZ && CVar.GetCVar("MRGoreParts_FloorSpots", Plr.Player).GetInt()>1)
+					{
+						int Life = CVar.GetCVar("MRGoreParts_SpotsTime", Plr.Player).GetInt();
+						For(int i=0;i<4;i++)
+						{
+							Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
+							Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
+						
+							A_SpawnParticle(CurCol, Glow, Life, Scale.X*CFRandom(.5, 1.1), 0, CFRandom(-3, 3), CFRandom(-3, 3), 1);
+						}
+					}
+					WasDrawn = false;
+				}
+				if(GetAge()>35*3||Pos.Z<=FloorZ)
+				{
+					/*int Glow = 0;
+					if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+					Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
+					
+					Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
+					
+					For(int i=0;i<CRandom(3, 5);i++)
+						A_SpawnParticle(CurCol, Glow, 10, Scale.X, 0, CFRandom(-1, 1)*Scale.X,CFRandom(-1, 1)*Scale.X,CFRandom(-1, 1)*Scale.X,
+							Vel.X,Vel.Y,Vel.Z,
+							0,0,-Gravity);*/
+					
+					Destroy();
 				}
 			}
 			Wait;
@@ -96,6 +152,7 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Vector3 Offset, Double LifeM, Double MoVel)
 	{
+		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
 		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
 		Float Dist = MRGP_DistanceMult;
 		
@@ -149,6 +206,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Vector3 Offset, Double LifeM, Double MoVel)
 	{
+		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
 		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
 		Float Dist = MRGP_DistanceMult;
 		
@@ -182,8 +240,12 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 			
 			Double Alpha = CFRandom(.2, .4);
 			
-			mo.A_SpawnParticle(ColTmp, Glow, Life, Size, 0, 0+Offset.X,0+Offset.Y,5+Offset.Z,
-				Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alpha, Alpha/Life, Size*.1);
+			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("GParMist"), STYLE_None, Glow, Life, Size, 0,
+				Offset.X,Offset.Y,5+Offset.Z,
+				Vel.X,Vel.Y,Vel.Z,
+				Accel.X,Accel.Y,Accel.Z,
+				Alpha, Alpha/Life, Size*.1
+			);
 		}
 	}
 }
@@ -192,6 +254,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Vector3 Offset, Double LifeM, Double MoVel)
 	{
+		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
 		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
 		Float Dist = MRGP_DistanceMult;
 		
@@ -252,6 +315,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Vector3 Offset, Double LifeM, Double MoVel)
 	{
+		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
 		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
 		Float Dist = MRGP_DistanceMult;
 		
@@ -307,6 +371,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Vector3 Offset, Double LifeM, Double MoVel)
 	{
+		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
 		Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
 		Float Dist = MRGP_DistanceMult;
 		
