@@ -19,7 +19,7 @@ user bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
 user Color MRGoreParts_Color = "0 96 0";
 user bool MRGoreParts_FullBright = false;//Glowing particles
 
-server bool MRGoreParts_NoBloodMonsters = true;//Spawn blood on monsters with +NOBLOOD flag
+server bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag
 user bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 
 server string MRGoreParts_Blacklist = "LostSoul, Revenant";

@@ -31,7 +31,7 @@ OptionMenu "MRGoreParts_Menu"
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
 	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
 	StaticText ""
-	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 0, 10000, 300, 0
+	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 100, 10000, 300, 0
 	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
 	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
 	StaticText ""
@@ -74,6 +74,8 @@ OptionMenu "MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption"
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
 }
+
+
 
 OptionValue "MRGoreParts_SpotsOption"
 {
