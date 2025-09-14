@@ -1,3 +1,3 @@
-HellKnight (0 90 0)
-BaronOfHell (0 90 0)
-Cacodemon (0 0 120)
+HellKnight (10 80 10)
+BaronOfHell (10 80 10)
+Cacodemon (30 30 120)

@@ -1,2 +1,2 @@
-BaronOfHell (0 90 0)
-Cacodemon (0 0 120)
+BaronOfHell (10 80 10)
+Cacodemon (30 30 120)
