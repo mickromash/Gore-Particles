@@ -20,10 +20,14 @@ user Color MRGoreParts_Color = "0 96 0";
 user bool MRGoreParts_FullBright = false;//Glowing particles
 
 server bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag
-user bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 
 server string MRGoreParts_Blacklist = "LostSoul, Revenant";
 server bool MRGoreParts_BlacklistOn = true;
+
+user bool MRGoreParts_NoBloodMist = true;
+user color MRGoreParts_NoBloodMistColor = "70 70 70";
+
+user bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 
 server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
 server int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding

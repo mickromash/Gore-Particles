@@ -25,6 +25,8 @@ MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
 MRGoreParts_Blacklist = "Monsters black list:";
 MRGoreParts_BlacklistOn = "Blacklist:";
 MRGoreParts_NoBloodMonsters = "Force blood for monsters with \"+NOBLOOD\" flag";
+MRGoreParts_NoBloodMist = "Spec. impact effect for monsters with no blood";
+MRGoreParts_NoBloodMistColor = "Effect color";
 ////}
 
 MRGoreParts_EffectsMenu = "Effects settings";
@@ -124,6 +126,8 @@ MRGoreParts_Quake2Text2 = "Рекомендуется включить при и
 MRGoreParts_Blacklist = "Чёрный список монстров:";
 MRGoreParts_BlacklistOn = "Чёрный список монстров:";
 MRGoreParts_NoBloodMonsters = "Включить кровь для монстров с флагом \"+NOBLOOD\"";
+MRGoreParts_NoBloodMist = "Спец. эффекты для безкровных";
+MRGoreParts_NoBloodMistColor = "Цвет эффектов";
 ////}
 
 MRGoreParts_EffectsMenu = "Настройки эффектов";

@@ -55,6 +55,8 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
 	TextField "$MRGoreParts_Blacklist", "MRGoreParts_Blacklist"
 	Option "$MRGoreParts_BlacklistOn", "MRGoreParts_BlacklistOn", "OnOff"
+	Option "$MRGoreParts_NoBloodMist", "MRGoreParts_NoBloodMist", "OnOff"
+	ColorPicker "$MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMistColor"
 }
 
 OptionMenu "MRGoreParts_EffectsMenu"
