@@ -1,45 +1,45 @@
-user bool MRGoreParts_Draw = true;//Doesn't affect anything besides actual particles spawning
+nosave bool MRGoreParts_Draw = true;//Doesn't affect anything besides actual particles spawning
 
 server bool MRGoreParts_Wounds = true;//Bleeding wounds
-user int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
+nosave int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
 server bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face player
 
-user bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
-user bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
+nosave bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
+nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 
-user int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
-user int MRGoreParts_SpotsTime = 5;//Surface blood life time
+nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
+nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
 
-user float MRGoreParts_Amount = 1;
+nosave float MRGoreParts_Amount = 1;
 
 server int MRGoreParts_OnlyModsBlood = 1;//0 - leave other mods/vanila blood, 1 - only hide other blood, but not destroy, 2 - destroy any other blood
 server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters blood types in other mods blood
 
-user bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
-user Color MRGoreParts_Color = "0 96 0";
-user bool MRGoreParts_FullBright = false;//Glowing particles
+nosave bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
+nosave Color MRGoreParts_Color = "0 96 0";
+nosave bool MRGoreParts_FullBright = false;//Glowing particles
 
 server bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag
 
 server string MRGoreParts_Blacklist = "LostSoul, Revenant";
 server bool MRGoreParts_BlacklistOn = true;
 
-user bool MRGoreParts_NoBloodMist = true;
-user color MRGoreParts_NoBloodMistColor = "70 70 70";
+nosave bool MRGoreParts_NoBloodMist = true;
+nosave color MRGoreParts_NoBloodMistColor = "70 70 70";
 
-user bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
+nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 
 server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
 server int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding
 server int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
 
-user bool MRGoreParts_FlyingBood = true;//Quake like blood stream
-user string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 5 4";//When blood spawned, one of these effects will appear
-user string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
-user string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
+nosave bool MRGoreParts_FlyingBood = true;//Quake like blood stream
+nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 5 4";//When blood spawned, one of these effects will appear
+nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
+nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
 
-user float MRGoreParts_Distance = 1;
+nosave float MRGoreParts_Distance = 1;
 
-user bool MRGoreParts_CheckLimit = false;
-user float MRGoreParts_CheckLimitOffset = 0;
+nosave bool MRGoreParts_CheckLimit = false;
+nosave float MRGoreParts_CheckLimitOffset = 0;
 server bool MRGoreParts_Debug = false;
