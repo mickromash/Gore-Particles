@@ -910,9 +910,9 @@ Class MR_GoreParticlesHandler: EventHandler
 		CVar_FloorSpots = CVar.GetCVar("MRGoreParts_FloorSpots", Plr).GetInt();
 		CVar_SpotsTime = CVar.GetCVar("MRGoreParts_SpotsTime", Plr).GetInt();
 		
-		CVar_Amount = CVar.GetCVar("MRGoreParts_Amount", Plr).GetInt();
-		CVar_Distance = CVar.GetCVar("MRGoreParts_Distance", Plr).GetInt();
-		CVar_CheckLimitOffset = CVar.GetCVar("MRGoreParts_CheckLimitOffset", Plr).GetInt();
+		CVar_Amount = CVar.GetCVar("MRGoreParts_Amount", Plr).GetFloat();
+		CVar_Distance = CVar.GetCVar("MRGoreParts_Distance", Plr).GetFloat();
+		CVar_CheckLimitOffset = CVar.GetCVar("MRGoreParts_CheckLimitOffset", Plr).GetFloat();
 		
 		CVar_Color = CVar.GetCVar("MRGoreParts_Color", Plr).GetInt();
 		CVar_NoBloodMistColor = CVar.GetCVar("MRGoreParts_NoBloodMistColor", Plr).GetInt();
