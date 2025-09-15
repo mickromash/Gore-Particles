@@ -117,7 +117,7 @@ Class MR_GoreParticlesWound: Thinker
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
 						}
 						MR_GoreParticlesEffect_SimpleSplash Effect = New('MR_GoreParticlesEffect_SimpleSplash');
-						Effect.SpawnEffect(Owner, 0, Angle, Owner.Health>0?0:-90, Col, .5, .5, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
+						Effect.SpawnEffect(Owner, 0, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
 						Effect.Destroy();
 					}
 				}
