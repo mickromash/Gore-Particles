@@ -882,16 +882,21 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 	}
 	
+	Override Void WorldLoaded(WorldEvent e)
+	{
+		CacheUserCVars();
+	}
+		
 	//Stored user CVars
-	Bool CVar_Draw, CVar_Quake2, CVar_DripOnImpact,
+	Transient Bool CVar_Draw, CVar_Quake2, CVar_DripOnImpact,
 		CVar_UseCustomColor, CVar_FullBright, CVar_NoBloodMist,
 		CVar_FuzzyBlood, CVar_FlyingBood, CVar_CheckLimit;
 		
-	Int CVar_CorpseWounds, CVar_FloorSpots, CVar_SpotsTime;
+	Transient Int CVar_CorpseWounds, CVar_FloorSpots, CVar_SpotsTime;
 	
-	Float CVar_Amount, CVar_Distance, CVar_CheckLimitOffset;
+	Transient Float CVar_Amount, CVar_Distance, CVar_CheckLimitOffset;
 	
-	Color CVar_Color, CVar_NoBloodMistColor;
+	Transient Color CVar_Color, CVar_NoBloodMistColor;
 	
 	Void CacheUserCVars()
 	{
@@ -906,7 +911,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		CVar_FlyingBood = CVar.GetCVar("MRGoreParts_FlyingBood", Plr).GetBool();
 		CVar_CheckLimit = CVar.GetCVar("MRGoreParts_CheckLimit", Plr).GetBool();
 		
-		CVar_CorpseWounds = CVar.GetCVar("MRGoreParts_CheckLimit", Plr).GetInt();
+		CVar_CorpseWounds = CVar.GetCVar("MRGoreParts_CorpseWounds", Plr).GetInt();
 		CVar_FloorSpots = CVar.GetCVar("MRGoreParts_FloorSpots", Plr).GetInt();
 		CVar_SpotsTime = CVar.GetCVar("MRGoreParts_SpotsTime", Plr).GetInt();
 		
@@ -943,6 +948,37 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(RecsAnim<1)RecsAnim = 20;
 			if(!ShowRecs)Return;
 			if(e.args[0]>0)ShowingRecs = 35*e.args[0];
+		}
+		if(e.name ~== "MRGP_ListUserCVars")
+		{
+			Console.Printf("\cfCached user CVars:");
+			
+			Console.Printf("\cvBools:");
+			Console.Printf("\cgCVar_Draw\c- "..CVar_Draw.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_Quake2\c- "..CVar_Quake2.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_DripOnImpact\c- "..CVar_DripOnImpact.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_DripOnImpact", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_UseCustomColor\c- "..CVar_UseCustomColor.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_FullBright\c- "..CVar_FullBright.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_NoBloodMist\c- "..CVar_NoBloodMist.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_NoBloodMist", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_FuzzyBlood\c- "..CVar_FuzzyBlood.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_FuzzyBlood", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_FlyingBood\c- "..CVar_FlyingBood.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_FlyingBood", Players[ConsolePlayer]).GetBool());
+			Console.Printf("\cgCVar_CheckLimit\c- "..CVar_CheckLimit.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_CheckLimit", Players[ConsolePlayer]).GetBool());
+			
+			Console.Printf("\cvInts:");
+			Console.Printf("\cgCVar_CorpseWounds\c- "..CVar_CorpseWounds.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_CorpseWounds", Players[ConsolePlayer]).GetInt());
+			Console.Printf("\cgCVar_FloorSpots\c- "..CVar_FloorSpots.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt());
+			Console.Printf("\cgCVar_SpotsTime\c- "..CVar_SpotsTime.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt());
+			
+			Console.Printf("\cvFloats:");
+			Console.Printf("\cgCVar_Amount\c- "..CVar_Amount.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat());
+			Console.Printf("\cgCVar_Distance\c- "..CVar_Distance.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat());
+			Console.Printf("\cgCVar_CheckLimitOffset\c- "..CVar_CheckLimitOffset.." \cdCVar:\c- "..CVar.GetCVar("MRGoreParts_CheckLimitOffset", Players[ConsolePlayer]).GetFloat());
+			
+			Console.printf("\cvColors:");
+			Color Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			Console.Printf("\cgCVar_Color\c- "..CVar_Color.." \cdCVar:\c- "..Col);
+			Col = CVar.GetCVar("MRGoreParts_NoBloodMistColor", Players[ConsolePlayer]).GetInt();
+			Console.Printf("\cgCVar_NoBloodMistColor\c- "..CVar_NoBloodMistColor.." \cdCVar:\c- "..Col);
 		}
 	}
 	
