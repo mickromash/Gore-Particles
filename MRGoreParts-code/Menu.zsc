@@ -382,6 +382,16 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		blinktimer++;
 		if(blinktimer>6)blinktimer = 0;
 		
+		if(!Editing)//Draw selector
+		{
+			Vector2 Posy = (screen.GetWidth()/2 - (NewSmallFont.StringWidth(WorkingString[CursY])/2 + 10) * CleanXfac_1, CurSY*(NewSmallFont.GetHeight()*2.5));
+			Screen.DrawText(ConFont, (BlinkTimer<3)?Font.CR_BRICK:Font.CR_WHITE,
+				Posy.X, (vcurs+NewSmallFont.GetHeight()+NewSmallFont.GetHeight()*.2+Posy.Y)*CleanYFac_1,
+				"\xd",
+				DTA_ScaleX, 2,
+				DTA_ScaleY, 2
+			);
+		}
 		//CVars
 		For(int i=0;i<MRGP_MENU_Size;i++)
 		{
