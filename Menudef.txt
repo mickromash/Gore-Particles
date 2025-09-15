@@ -31,12 +31,14 @@ OptionMenu "MRGoreParts_Menu"
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
 	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
 	StaticText ""
-	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 100, 10000, 300, 0
-	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
-	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
+	Command "$MRGP_UpdateCVars", "NetEvent MRGP_UpdateCVars"
 	StaticText ""
+	StaticText "--------------- GZDoom ---------------"
+	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 100, 10000, 300, 0
 	StaticText "$MRGoreParts_Tip2", "Fire"
 	StaticText "$MRGoreParts_Tip3", "Fire"
+	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
+	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
 }
 
 
@@ -57,6 +59,8 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_BlacklistOn", "MRGoreParts_BlacklistOn", "OnOff"
 	Option "$MRGoreParts_NoBloodMist", "MRGoreParts_NoBloodMist", "OnOff"
 	ColorPicker "$MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMistColor"
+	StaticText ""
+	Command "$MRGP_UpdateCVars", "NetEvent MRGP_UpdateCVars"
 }
 
 OptionMenu "MRGoreParts_EffectsMenu"
@@ -67,6 +71,8 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
 	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
+	StaticText ""
+	Command "$MRGP_UpdateCVars", "NetEvent MRGP_UpdateCVars"
 }
 
 OptionMenu "MRGoreParts_WoundsMenu"
@@ -75,6 +81,8 @@ OptionMenu "MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption"
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
+	StaticText ""
+	Command "$MRGP_UpdateCVars", "NetEvent MRGP_UpdateCVars"
 }
 
 

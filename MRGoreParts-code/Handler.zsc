@@ -354,7 +354,6 @@ Class MR_GoreParticlesHandler: EventHandler
 	}
 	
 	Float ViewBob;
-	Float LimitIndicatorOffset;
 	
 	Override Void WorldTick()
 	{
@@ -363,14 +362,12 @@ Class MR_GoreParticlesHandler: EventHandler
 			GibsTime[i]++;
 			if(GibsTime[i]>MRGP_GibbingTime){GibsTime.Delete(i);i--;}
 		}
-		
-		if(Gametic%35==0)LimitIndicatorOffset = -CVar.GetCVar("MRGoreParts_CheckLimitOffset", Players[ConsolePlayer]).GetFloat();
-		
-		if(!CVar.GetCVar("MRGoreParts_CheckLimit", Players[ConsolePlayer]).GetBool())Return;
+				
+		if(!CVar_CheckLimit)Return;
 		Let Plr = Players[ConsolePlayer].Camera;
 		
 		Vector3 Pos = (0,0, Plr.Player.ViewZ-Plr.Pos.Z);
-		Pos.XY += Actor.AngleToVector(Plr.Angle+90, LimitIndicatorOffset + 1*Abs(Sin(Plr.Pitch)));
+		Pos.XY += Actor.AngleToVector(Plr.Angle+90, -CVar_CheckLimitOffset + 1*Abs(Sin(Plr.Pitch)));
 		
 		Float NewBob = Plr.Player.ViewZ - Plr.Pos.Z - Plr.Player.ViewHeight;
 		Float Bob;
@@ -388,21 +385,21 @@ Class MR_GoreParticlesHandler: EventHandler
 	}
 	
 	
-	Static Bool MRGPartsCheckDraw(Actor mo = Null)
+	Bool MRGPartsCheckDraw(Actor mo = Null)
 	{
 		Let Plr = Players[ConsolePlayer];
 		if(!Plr.Camera)Return false;
-		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		if(!CVar_Draw)Return false;
 		
-		if(!mo)Return CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool();
+		if(!mo)Return true;
 		
 		
 		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
 	}
 	
-	Static Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle)
+	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle)
 	{
-		if(CVar.GetCVar("MRGoreParts_NoBloodMist", Players[ConsolePlayer]).GetBool())
+		if(CVar_NoBloodMist)
 		{
 			MR_GoreParticlesEffect_Mist a = New('MR_GoreParticlesEffect_Mist');
 			
@@ -412,7 +409,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			Float Bright = CFRandom(.7, 1.4);
 			
-			Color Col = CVar.GetCVar("MRGoreParts_NoBloodMistColor", Players[ConsolePlayer]).GetInt();
+			Color Col = CVar_NoBloodMistColor;
 
 			Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 						
@@ -450,12 +447,12 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(MRGoreParts_Debug && e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
 			if(MRGoreParts_Debug && e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
 			
-			Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+			Float Amount = CVar_Amount;
 				
 			Color Col = e.Thing.BloodColor;
-			if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+			if(CVar_UseCustomColor)
 			{
-				Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+				Col = CVar_Color;
 			}
 			else
 			{
@@ -640,7 +637,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
 						Vector3 Ofst = (Actor.AngleToVector(Angle, 1)*abs(Cos(Pitch)), Sin(Pitch))*Dist;
 								
-						if(i%2==0 && MRGPartsCheckDraw(e.Inflictor) && CVar.GetCVar("MRGoreParts_DripOnImpact", Players[ConsolePlayer]).GetBool())
+						if(i%2==0 && MRGPartsCheckDraw(e.Inflictor) && CVar_DripOnImpact)
 						{
 							Ang = CRandom(140, 220)*Dist;
 							Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
@@ -664,9 +661,9 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(MRGoreParts_BlacklistOn)For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
 		
 		Color Col = e.Thing.BloodColor;
-		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+		if(CVar_UseCustomColor)
 		{
-			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			Col = CVar_Color;
 		}
 		else
 		{
@@ -681,7 +678,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			}
 		}
 		
-		Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		Float Amount = CVar_Amount;
 
 		if(e.Thing.FindState("XDeath") && e.Thing.Health<-GetDefaultByType(e.Thing.GetClass()).Health)
 		{
@@ -704,7 +701,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldThingSpawned(WorldEvent e)
 	{
-		if(!MRGoreParts_OnlyModsBlood && !CVar.GetCVar("MRGoreParts_HideOtherBlood", Players[ConsolePlayer]).GetBool())Return;
+		if(!MRGoreParts_OnlyModsBlood)Return;
 		if(!e.Thing)Return;
 		
 		if(e.Thing is 'Blood'||e.Thing is 'BloodSplatter'||e.Thing is 'AxeBlood'||Actor.GetReplacement("Blood")==e.Thing.GetClass()
@@ -729,7 +726,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void SpawnBloodDrop(Actor mo, Color Col)
 	{
-		Bool Draw = CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool();
+		Bool Draw = CVar_Draw;
 		
 		Float TempGrav = -.3;
 		
@@ -765,9 +762,9 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
 		
 		Color Col = mo.BloodColor;
-		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+		if(CVar_UseCustomColor)
 		{
-			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			Col = CVar_Color;
 		}
 		else
 		{
@@ -785,7 +782,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		Let Plr = Players[ConsolePlayer].Camera;
 		Bool Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.GetCVAr("FOV", Plr.Player).GetFloat();
 		
-		Float Amount = CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		Float Amount = CVar_Amount;
 		
 		GibsTime.Push(0);
 		
@@ -830,9 +827,9 @@ Class MR_GoreParticlesHandler: EventHandler
 	Void DoOtherBlood(Actor mo)
 	{
 		Color Col = Gameinfo.DefaultBloodColor;
-		if(CVar.GetCVar("MRGoreParts_UseCustomColor", Players[ConsolePlayer]).GetBool())
+		if(CVar_UseCustomColor)
 		{
-			Col = CVar.GetCVar("MRGoreParts_Color", Players[ConsolePlayer]).GetInt();
+			Col = CVar_Color;
 		}
 		
 		String HDBld = 'HDBloodTrailFloor';
@@ -858,8 +855,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			Return;
 		}
 		
-		if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())
-			For(Int i=0;i<CRandom(6, 9)*CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();i++)
+		if(CVar_Quake2)
+			For(Int i=0;i<CRandom(6, 9)*CVar_Amount;i++)
 			{
 				Float Bright = CFRandom(.6, 2);
 				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel, 25, CFRandom(1.5, 2.5), mo.AngleTo(Players[ConsolePlayer].Camera),
@@ -879,11 +876,52 @@ Class MR_GoreParticlesHandler: EventHandler
 		{
 			UpdateEffects();
 		}
+		if(e.name ~== "MRGP_UpdateCVars")
+		{
+			CacheUserCVars();
+		}
+	}
+	
+	//Stored user CVars
+	Bool CVar_Draw, CVar_Quake2, CVar_DripOnImpact,
+		CVar_UseCustomColor, CVar_FullBright, CVar_NoBloodMist,
+		CVar_FuzzyBlood, CVar_FlyingBood, CVar_CheckLimit;
+		
+	Int CVar_CorpseWounds, CVar_FloorSpots, CVar_SpotsTime;
+	
+	Float CVar_Amount, CVar_Distance, CVar_CheckLimitOffset;
+	
+	Color CVar_Color, CVar_NoBloodMistColor;
+	
+	Void CacheUserCVars()
+	{
+		Let Plr = Players[ConsolePlayer];
+		CVar_Draw = CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool();
+		CVar_Quake2 = CVar.GetCVar("MRGoreParts_Quake2", Plr).GetBool();
+		CVar_DripOnImpact = CVar.GetCVar("MRGoreParts_DripOnImpact", Plr).GetBool();
+		CVar_UseCustomColor = CVar.GetCVar("MRGoreParts_UseCustomColor", Plr).GetBool();
+		CVar_FullBright = CVar.GetCVar("MRGoreParts_FullBright", Plr).GetBool();
+		CVar_NoBloodMist = CVar.GetCVar("MRGoreParts_NoBloodMist", Plr).GetBool();
+		CVar_FuzzyBlood = CVar.GetCVar("MRGoreParts_FuzzyBlood", Plr).GetBool();
+		CVar_FlyingBood = CVar.GetCVar("MRGoreParts_FlyingBood", Plr).GetBool();
+		CVar_CheckLimit = CVar.GetCVar("MRGoreParts_CheckLimit", Plr).GetBool();
+		
+		CVar_CorpseWounds = CVar.GetCVar("MRGoreParts_CheckLimit", Plr).GetInt();
+		CVar_FloorSpots = CVar.GetCVar("MRGoreParts_FloorSpots", Plr).GetInt();
+		CVar_SpotsTime = CVar.GetCVar("MRGoreParts_SpotsTime", Plr).GetInt();
+		
+		CVar_Amount = CVar.GetCVar("MRGoreParts_Amount", Plr).GetInt();
+		CVar_Distance = CVar.GetCVar("MRGoreParts_Distance", Plr).GetInt();
+		CVar_CheckLimitOffset = CVar.GetCVar("MRGoreParts_CheckLimitOffset", Plr).GetInt();
+		
+		CVar_Color = CVar.GetCVar("MRGoreParts_Color", Plr).GetInt();
+		CVar_NoBloodMistColor = CVar.GetCVar("MRGoreParts_NoBloodMistColor", Plr).GetInt();
 	}
 	
 	Override Void PlayerEntered(PlayerEvent e)
 	{
 		SendInterfaceEvent(ConsolePlayer, "MRGP_OpenRecs", 5, 1);
+		if(e.PlayerNumber == ConsolePlayer)CacheUserCVars();
 	}
 	
 	////////////////////////////////////////////////////////////////////////////
@@ -918,14 +956,14 @@ Class MR_GoreParticlesHandler: EventHandler
 		String Mod = 'HDOperator';
 		if((class<actor>)(Mod))
 		{
-			if(CVar.GetCVar("MRGoreParts_Quake2", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Quake2").."\cc 0");
-			if(CVar.GetCVar("MRGoreParts_OnlyModsBlood", Players[ConsolePlayer]).GetInt()<2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_OnlyModsBlood")..
+			if(CVar_Quake2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Quake2").."\cc 0");
+			if(MRGoreParts_OnlyModsBlood<2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_OnlyModsBlood")..
 				"\cc "..StringTable.Localize("$MRGoreParts_OnlyModsBlood"..2));
-			if(CVar.GetCVar("MRGoreParts_BloodTypes", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BloodTypes").."\cc 0");
-			if(CVar.GetCVar("MRGoreParts_BlacklistOn", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BlacklistOn").."\cc 0");
-			if(CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat()>0)Recs.Push("\cc"..StringTable.Localize("$MRGoreParts_EffectsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Distance").."\cc 0");
-			if(!CVar.GetCVar("MRGoreParts_Wounds", Players[ConsolePlayer]).GetBool())RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Wounds").."\cc 1");
-			if(CVar.GetCVar("MRGoreParts_CorpseWounds", Players[ConsolePlayer]).GetInt()!=1)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_CorpseWounds")..
+			if(MRGoreParts_BloodTypes)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BloodTypes").."\cc 0");
+			if(MRGoreParts_BlacklistOn)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BlacklistOn").."\cc 0");
+			if(CVar_Distance>0)Recs.Push("\cc"..StringTable.Localize("$MRGoreParts_EffectsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Distance").."\cc 0");
+			if(!MRGoreParts_Wounds)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Wounds").."\cc 1");
+			if(CVar_CorpseWounds!=1)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_CorpseWounds")..
 				"\cc "..StringTable.Localize("$MRGoreParts_CorpseWounds"..1));
 		}
 		
@@ -1006,9 +1044,10 @@ Class MR_GoreParticlesDelayedSpawner: Actor//You'll never guess what mod it orig
 	{
 		Let Plr = Players[ConsolePlayer];
 		if(!Plr.Camera)Return false;
-		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(!Handler.CVar_Draw)Return false;
 		
-		if(!mo)Return CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool();
+		if(!mo)Return true;
 		
 		
 		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
@@ -1035,6 +1074,7 @@ Class MR_GoreParticlesDeathHandler: Thinker
 	Float Mid;
 	Actor Owner;
 	int Age;
+	Double Fov;
 	
 	Override Void PostBeginPlay()
 	{
@@ -1043,6 +1083,7 @@ Class MR_GoreParticlesDeathHandler: Thinker
 		Mid = Owner.Height*.5;
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO);
+		Fov = CVar.GetCVar("FOV", Players[ConsolePlayer]).GetFloat();
 	}
 	
 	Override Void OnDestroy()
@@ -1056,10 +1097,11 @@ Class MR_GoreParticlesDeathHandler: Thinker
 	{
 		Let Plr = Players[ConsolePlayer];
 		if(!Plr.Camera)Return false;
-		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(!Handler.CVar_Draw)Return false;
 		if(!Owner.CheckSight(Plr.Camera))Return false;
 		
-		Return abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Owner)))<CVar.GetCVar("FOV", Plr).GetFloat();
+		Return abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Owner)))<Fov;
 	}
 
 	Override Void Tick()

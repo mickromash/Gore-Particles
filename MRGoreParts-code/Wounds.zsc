@@ -5,30 +5,37 @@
 Class MR_GoreParticlesWound: Thinker
 {
 	Vector3 Locs[MRGP_MaxWounds];
-	float Ages[MRGP_MaxWounds];
+	Float Ages[MRGP_MaxWounds], Fov;
 	Double Angles[MRGP_MaxWounds];
 	Double Heights[MRGP_MaxWounds];
 	Color Col;
 	Actor Owner;
+	MR_GoreParticlesHandler Handler;
 	
 	Bool MRGPartsCheckDraw()
 	{
 		Let Plr = Players[ConsolePlayer];
 		if(!Plr.Camera)Return false;
-		if(!CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool())Return false;
+		if(!Handler.CVar_Draw)Return false;
 		
-		if(!Owner)Return CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool();
+		if(!Owner)Return True;
 		
 		
-		Return Owner.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Owner)))<120;
+		Return Owner.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Owner)))<Fov;
 	}
 	
 	Override Void OnDestroy()
 	{
-		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		Handler.Wounds.Delete(Handler.Wounds.Find(Self));
 		Handler.Wounded.Delete(Handler.Wounded.Find(Owner));
 		Super.OnDestroy();
+	}
+	
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Fov = CVar.GetCVar("FOV", Players[ConsolePlayer]).GetFloat();
 	}
 	
 	Override Void Tick()
@@ -55,7 +62,7 @@ Class MR_GoreParticlesWound: Thinker
 		int Corpse=2;
 		if(Owner.Health<1)
 		{
-			Corpse = CVar.GetCVar("MRGoreParts_CorpseWounds", Players[ConsolePlayer]).GetInt();
+			Corpse = Handler.CVar_CorpseWounds;
 		}
 		
 		For(int i=0;i<Locs.Size();i++)
@@ -80,7 +87,7 @@ Class MR_GoreParticlesWound: Thinker
 					MaxBlood--;
 					if(Draw && Corpse>1)For(float j=0;j<CRandom(1, 5);j++)Owner.A_SpawnParticle(Col, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X, Locs[i].Y, Min(Z, Locs[i].Z-j*.5*(Ages[i]/(35*15))),
 						Owner.Vel.X, Owner.Vel.Y, Owner.Vel.Z, 0,0,-.3);
-					if(CVar.GetCVar("MRGoreParts_FloorSpots", Players[ConsolePlayer]).GetInt()>0 && Draw && Corpse>1)
+					if(Handler.CVar_FloorSpots>0 && Draw && Corpse>1)
 					{
 						Vector2 Pos = Owner.Pos.XY;
 						if(Owner.Health>0||MRGoreParts_Voxel)
@@ -97,7 +104,7 @@ Class MR_GoreParticlesWound: Thinker
 
 						if(35*15-Ages[i]>(Locs[i].Z-FloorZ)/4)
 						{
-							Owner.A_SpawnParticle(Col, SPF_RELPOS, CVar.GetCVar("MRGoreParts_SpotsTime", Players[ConsolePlayer]).GetInt()*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1), Locs[i].Y+CFRandom(-1, 1), 1-(Owner.Pos.Z-FloorZ));
+							Owner.A_SpawnParticle(Col, SPF_RELPOS, Handler.CVar_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1), Locs[i].Y+CFRandom(-1, 1), 1-(Owner.Pos.Z-FloorZ));
 							MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 							Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
 						}

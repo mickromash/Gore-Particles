@@ -6,6 +6,8 @@ MRGoreParts_Title = "Particle Gore";
 //{
 MRGoreParts_Draw = "Draw gore particles";
 
+MRGP_UpdateCVars = "Apply settings";
+
 MRGoreParts_BloodSpawnMenu = "Blood spawn settings";
 ////{
 MRGoreParts_OnlyModsBlood = "Remove other gore";
@@ -106,6 +108,8 @@ MRGoreParts_Settings = "Настроить кровавые частицы";
 MRGoreParts_Title = "Кровавые частицы";
 //{
 MRGoreParts_Draw = "Рендер частиц";
+
+MRGP_UpdateCVars = "Применить настройки";
 
 MRGoreParts_BloodSpawnMenu = "Настройки появления крови";
 ////{

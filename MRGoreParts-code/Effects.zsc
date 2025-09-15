@@ -18,14 +18,19 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 	Color Col;
 	Double Fov;
 	Bool DrawMe, WasDrawn;
+	MR_GoreParticlesHandler Handler;
 	//Float Brightnes;
 	
 	Override Void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
+		
+		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		Let Plr = Players[ConsolePlayer];
+		
 		Fov = CVar.GetCVar("FOV", Plr).GetFloat();
-		DrawMe = CVar.GetCVar("MRGoreParts_Draw", Plr).GetBool() && CVar.GetCVar("MRGoreParts_FlyingBood", Plr).GetBool();
+		
+		DrawMe = Handler.CVar_Draw && Handler.CVar_FlyingBood;
 	}
 	
 	Bool MRGPartsCheckDraw()
@@ -46,7 +51,7 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 				{
 					if(!WasDrawn)WasDrawn = true;
 					int Glow = 0;
-					if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+					if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 					Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
 					
 					Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
@@ -77,9 +82,9 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 					Let Plr = Players[ConsolePlayer].Camera;
 					Bool Wall = Pos.Z>FloorZ && Pos.Z<CeilingZ;
 					int Glow = 0;
-					if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+					if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 					
-					if(abs(DeltaAngle(Plr.AngleTo(Self), Plr.Angle))<CVar.GetCVar("FOV", Plr.Player).GetFloat()){
+					if(abs(DeltaAngle(Plr.AngleTo(Self), Plr.Angle))<Fov){
 						
 						Double Angle, Pitch;
 						Angle = VectorAngle(Vel.X, Vel.Y)+180;
@@ -101,9 +106,9 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 						}
 					}
 					
-					if((Pos.Z<=FloorZ || Pos.Z>=CeilingZ) && CVar.GetCVar("MRGoreParts_FloorSpots", Plr.Player).GetInt()>1)
+					if((Pos.Z<=FloorZ || Pos.Z>=CeilingZ) && Handler.CVar_FloorSpots>1)
 					{
-						int Life = CVar.GetCVar("MRGoreParts_SpotsTime", Plr.Player).GetInt();
+						int Life = Handler.CVar_SpotsTime;
 						For(int i=0;i<4;i++)
 						{
 							Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
@@ -167,8 +172,10 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
-		if(!(Flags&SGPF_FixAmount))Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		
+		if(!Handler.CVar_Draw)Return;
+		if(!(Flags&SGPF_FixAmount))Amount *= Handler.CVar_Amount;
 		if(Amount<=0)Return;
 		
 		Float Dist = MRGP_DistanceMult;
@@ -176,12 +183,12 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
-		if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
 		Float Mult = (CRandom(1, 3)*3+1)*Amount;
 		
@@ -223,8 +230,10 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
-		if(!(Flags&SGPF_FixAmount))Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		
+		if(!Handler.CVar_Draw)Return;
+		if(!(Flags&SGPF_FixAmount))Amount *= Handler.CVar_Amount;
 		if(Amount<=0)Return;
 		
 		Float Dist = MRGP_DistanceMult;
@@ -232,12 +241,12 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
-		if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
 		int Amnt = CRandom(1, 4)*2*Amount;
 		if(Flags&SGPF_FixAmount)Amnt = Amount;
@@ -278,8 +287,10 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
-		if(!(Flags&SGPF_FixAmount))Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		
+		if(!Handler.CVar_Draw)Return;
+		if(!(Flags&SGPF_FixAmount))Amount *= Handler.CVar_Amount;
 		if(Amount<=0)Return;
 		
 		Float Dist = MRGP_DistanceMult;
@@ -287,12 +298,12 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
-		if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
 		Pitch -= CFRandom(5, 8);
 		Angle += CRandom(-30, 30);
@@ -341,8 +352,10 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
-		if(!(Flags&SGPF_FixAmount))Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		
+		if(!Handler.CVar_Draw)Return;
+		if(!(Flags&SGPF_FixAmount))Amount *= Handler.CVar_Amount;
 		if(Amount<=0)Return;
 		Amount = Min(1.1, Amount);
 		Float Dist = MRGP_DistanceMult;
@@ -350,12 +363,12 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
-		if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
 		Pitch -= CRandom(5, 40);
 		//Angle += CRandom(-15, 15);
@@ -399,19 +412,21 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 {
 	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!CVar.GetCVar("MRGoreParts_Draw", Players[ConsolePlayer]).GetBool())Return;
-		if(!(Flags&SGPF_FixAmount))Amount *= CVar.GetCVar("MRGoreParts_Amount", Players[ConsolePlayer]).GetFloat();
+		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		
+		if(!Handler.CVar_Draw)Return;
+		if(!(Flags&SGPF_FixAmount))Amount *= Handler.CVar_Amount;
 		Float Dist = MRGP_DistanceMult;
 		
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*CVar.GetCVar("MRGoreParts_Distance", Players[ConsolePlayer]).GetFloat();
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
-		if(CVar.GetCVar("MRGoreParts_FullBright", Players[ConsolePlayer]).GetBool())Glow = SPF_FULLBRIGHT;
+		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
 		Pitch -= CFRandom(5, 8);
 		Angle += CRandom(-30, 30);
