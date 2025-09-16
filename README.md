@@ -22,12 +22,10 @@ But because all of the blood is visualized with particles, I highly recommend us
 ## TO DO
 
 * Add effect for squishing
-* Rework gibing calculation (make something similar to UGibs)
+* Rework gibbing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
-* Utilization of sounds from loaded gore mods (similar to what was done in the cleaning mod)
 * Wounds pitch on dead bodies from their initial position
 * Change vanilla monsters blood color on sapwn
-* Hideous Destructor compatibility
 * Blood amount and size based on damage
 * Wounds size based on damage
 * Configurable blood brightness and transparancy
@@ -35,3 +33,6 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
 * Work on projectiles impcat
+* Add underwater blood
+* Add setting for particles speed
+* Add setting for minimization of alpha channel usage
