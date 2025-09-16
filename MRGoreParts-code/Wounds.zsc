@@ -17,6 +17,7 @@ Class MR_GoreParticlesWound: Thinker
 		Let Plr = Players[ConsolePlayer];
 		if(!Plr.Camera)Return false;
 		if(!Handler.CVar_Draw)Return false;
+		if(!Handler.CVar_DrawWounds)Return false;
 		
 		if(!Owner)Return True;
 		
@@ -35,7 +36,7 @@ Class MR_GoreParticlesWound: Thinker
 	{
 		Super.PostBeginPlay();
 		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
-		Fov = CVar.GetCVar("FOV", Players[ConsolePlayer]).GetFloat();
+		Fov = CVar.FindCVar("FOV").GetFloat();
 	}
 	
 	Override Void Tick()
@@ -109,7 +110,7 @@ Class MR_GoreParticlesWound: Thinker
 							Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
 						}
 					}
-					if(Ages[i]>35*3)//Random(0, 10)>7 && Ages[i]>35*3)
+					if(Ages[i]>35*3 && Draw)//Random(0, 10)>7 && Ages[i]>35*3)
 					{
 						Double Angl = VectorAngle(Locs[i].X, Locs[i].Y);
 						Vector2 Pos = (0,0);
@@ -123,9 +124,7 @@ Class MR_GoreParticlesWound: Thinker
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
 						}
-						MR_GoreParticlesEffect_SimpleSplash Effect = New('MR_GoreParticlesEffect_SimpleSplash');
-						Effect.SpawnEffect(Owner, 0, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
-						Effect.Destroy();
+						MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_SimpleSplash', Owner, 0, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
 					}
 				}
 			}
