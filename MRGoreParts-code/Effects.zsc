@@ -28,9 +28,9 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		Let Plr = Players[ConsolePlayer];
 		
-		Fov = CVar.GetCVar("FOV", Plr).GetFloat();
+		Fov = CVar.FindCVar("FOV").GetFloat();
 		
-		DrawMe = Handler.CVar_Draw && Handler.CVar_FlyingBood;
+		DrawMe = Handler.CVar_Draw && Handler.CVar_DrawFlyingBood;
 	}
 	
 	Bool MRGPartsCheckDraw()
@@ -56,7 +56,7 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 					
 					Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 					
-					A_SpawnParticle(CurCol, Glow, 1, Scale.X, 0, 0,0,0, Vel.X, Vel.Y, Vel.Z);
+					A_SpawnParticle(CurCol, Glow, 1, Scale.X, 0, 0,0,0, Vel.X, Vel.Y, Vel.Z, FadeStepF:0);
 					
 					Vector3 Dif = LevelLocals.Vec3Diff(Pos, Prev);
 					For(float i=0;i<Dif.Length();i+=Scale.X*.5)
@@ -73,7 +73,7 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 							Dif.X*Step+Vel.X*.5+Rand, Dif.Y*Step+Vel.Y*.5+Rand, Dif.Z*Step+Vel.Z*.5+Rand,
 							0,0,0,
 							0,0,-Gravity*.5,
-							1, -1, -Scale.X*.9*.05
+							1, 0, -Scale.X*.9*.05
 						);
 					}
 				}
@@ -102,7 +102,8 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 							A_SpawnParticle(CurCol, Glow, 15, Scale.X*CFRandom(.6, 1), 0,
 								0,0,0,
 								Vel.X,Vel.Y,Vel.Z,
-								0,0,-.3);
+								0,0,-.3,
+								1, 0, -.075*Scale.X);
 						}
 					}
 					
@@ -114,33 +115,19 @@ Class MR_GoreParticlesFlyingBlood: Actor//Quake gibs blood stream
 							Float Brightnes = CFRandom(MRGP_MinBright, MRGP_MaxBright);
 							Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 						
-							A_SpawnParticle(CurCol, Glow, Life, Scale.X*CFRandom(.5, 1.1), 0, CFRandom(-3, 3), CFRandom(-3, 3), (Pos.Z>=CeilingZ)?-1:1);
+							A_SpawnParticle(CurCol, Glow, Life, Scale.X*CFRandom(.5, 1.1), 0, CFRandom(-3, 3), CFRandom(-3, 3), (Pos.Z>=CeilingZ)?-1:1, FadeStepf:0);
 						}
 					}
 					WasDrawn = false;
+					Scale.X = 0;
 				}
 				
-				if(GetAge()>35*3||Pos.Z<=FloorZ||Pos.Z>=CeilingZ)Destroy();
+				if(GetAge()>35*3)Destroy();
 			}
 			Wait;
 	}
 }
 
-Class Pista: Pistol
-{
-	States
-	{
-		Fire:
-			PISG B 2
-				{
-					MR_GoreParticlesFlyingBlood Bld = MR_GoreParticlesFlyingBlood(A_FireProjectile("MR_GoreParticlesFlyingBlood", 0, false));
-					Bld.Vel3DFromAngle(10, Angle, Pitch);
-					Bld.Col = Color(200,0,0);
-				}
-			PISG CD 2;
-			Goto Ready;
-	}
-}
 
 enum MRGP_EffectFlag{
 	SGPF_NoDist = 1,//Distance won't affect particles velocity and sizes
@@ -150,7 +137,7 @@ enum MRGP_EffectFlag{
 
 Class MR_GoreParticlesEffect play Abstract
 {
-	Virtual Void SpawnEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
+	Virtual Void DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
 	{}
 	/*
 		mo - actor that spawns particles
@@ -165,12 +152,22 @@ Class MR_GoreParticlesEffect play Abstract
 		LifeM - particles lifetime multiplier
 		MoVel - multiplies actor velocity that will be added to particles
 	*/
+	Static Void SpawnEffect(Class<Object> Effect, Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
+	{
+		MR_GoreParticlesEffect Spawner = MR_GoreParticlesEffect(New(Effect));
+		
+		if(Spawner){
+			Spawner.DoParticleEffect(mo, Flags, Angle, Pitch, Col, Amount, Scale, Alpha, Offset, LifeM, MoVel);
+			Spawner.Destroy();
+		}
+	}
 	Clearscope Virtual String GetName(){Return StringTable.Localize("$"..GetClassName());}//Effect name that will be displayedin the menu
+	Clearscope Virtual Bool UsesAlpha(){Return false;}
 }
 
 Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 {
-	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		
@@ -183,14 +180,14 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0015*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
 		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
-		Float Mult = (CRandom(1, 3)*3+1)*Amount;
+		Float Mult = (CRandom(1, 3)*3+1)/Max(1, Dist*.1)*Amount;
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
@@ -201,11 +198,12 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
+			Vel *= Handler.CVar_Speed;
 			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
-			Float Life = Min(45, 10/Strn.Length())*LifeM;
+			Float Life = Min(45, 10/Strn.Length())/Handler.CVar_Speed*LifeM;
 			Double Size = CFRandom(.9, 3)*Dist*Scale;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			
@@ -228,7 +226,7 @@ Class MR_GoreParticlesEffect_Sprays: MR_GoreParticlesEffect
 
 Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 {
-	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		
@@ -241,14 +239,14 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0015*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
 		int Glow = 0;
 		if(Handler.CVar_FullBright)Glow = SPF_FULLBRIGHT;
 		
-		int Amnt = CRandom(1, 4)*2*Amount;
+		int Amnt = CRandom(1, 4)/Max(1, Dist*.1)*2*Amount;
 		if(Flags&SGPF_FixAmount)Amnt = Amount;
 		
 		For(int i=0;i<Amnt;i++)
@@ -259,13 +257,16 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
+			Vel *= Handler.CVar_Speed;
 			Vel *= Dist;
 			Vel += mo.Vel*moVel;
 			
-			Double Life = Min(50, 11/Strn.Length())*LifeM;
+			Vector3 Accel = -Vel*CFRandom(.004, .01);
+			
+			Float Life = Min(50, 11/Strn.Length())/Handler.CVar_Speed*LifeM;
+			
 			Double Size = Scale*(abs(HorzStrn.Length()*20))*Dist;
 			if(Flags&SGPF_NoVel)Size = Scale*Dist;
-			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			
 			Float Bright = CFRandom(.9, 1.4);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
@@ -273,7 +274,16 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 			Double PAlpha = CFRandom(.2, .4);
 			if(Alpha!=1)PAlpha = Alpha;
 			
-			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("GParMist"), STYLE_None, Glow, Life, Size, 0,
+			TextureId Texture;
+			
+			Switch(Handler.CVar_MistTexture)
+			{
+				Case 0:Texture = Texman.CheckForTexture("GParMist");Break;
+				//Case 1:Texture = Texman.CheckForTexture("PLS1A0");Break;
+				Case 1:Texture = Texman.CheckForTexture("glpart");Break;
+			}
+			
+			mo.A_SpawnParticleEx(ColTmp, Texture, STYLE_None, Glow, Life, Size, 0,
 				Offset.X,Offset.Y,5+Offset.Z,
 				Vel.X,Vel.Y,Vel.Z,
 				Accel.X,Accel.Y,Accel.Z,
@@ -281,11 +291,13 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 			);
 		}
 	}
+	
+	Override Bool UsesAlpha(){Return true;}
 }
 
 Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 {
-	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		
@@ -298,7 +310,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0015*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -310,9 +322,9 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 		Double Forw = CFRandom(1.4, 3);
 		Vector3 Strn;
 		Double Size = CFRandom(1.2, 1.6)*Dist;
-		Double Life = CFRandom(35, 40)*LifeM;
+		Float Life = CFRandom(35, 40)/Handler.CVar_Speed*LifeM;
 							
-		For(float j=.1;j<1.1;j+=.05/Amount)
+		For(float j=.1;j<1.1;j+=.05*Max(1, Dist*.1)/Amount)
 		{
 			Double Ang = CRandom(0, 360);
 			Double Leng = CFRandom(0, .1*j);
@@ -323,10 +335,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
-			Float Bright = Max(MRGP_MinBright, Min(MRGP_MaxBright, (Strn.Z/(.3*j)+.75)*2));
-			Bright += CFRandom(-.05, .05);
-			
-			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+			Vel *= Handler.CVar_Speed;
 			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
@@ -340,17 +349,22 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 			Accel *= Dist;
 			Accel *= Scale;
 			
+			Float Bright = Max(MRGP_MinBright, Min(MRGP_MaxBright, (Strn.Z/(.3*j)+.75)*2));
+			Bright += CFRandom(-.05, .05);
+			
+			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+			
 			
 			mo.A_SpawnParticle(ColTmp, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 0, -((Size+j*3)/Life));
-			Life-=.5*LifeM;
+			Life-=.5/Handler.CVar_Speed*LifeM;
 		}
 	}
 }
 
 Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 {
-	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		
@@ -363,7 +377,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0015*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -375,7 +389,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		Double Forw = CFRandom(.01, .2);
 		Double Strn = CFRandom(.4, .6);
 		Double Size = CFRandom(3.4, 3.7)*Dist;
-		Double Life = CFRandom(30, 34)*LifeM;
+		Float Life = CFRandom(30, 34)/Handler.CVar_Speed*LifeM;
 		Double StartLife = Life;
 		
 		Double Roll = CRandom(175, 360);
@@ -383,7 +397,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		int CircleStart = CFRandom(0, 360);
 		float CircleLength = CRandom(120, 270);
 
-		For(float j=CircleStart;j<CircleStart+CircleLength;j+=Size*.75/Amount)
+		For(float j=CircleStart;j<CircleStart+CircleLength;j+=Size*.75*Max(1, Dist*.1)/Amount)
 		{
 			Double Ang = Angle+(j+CFRandom(-1.5, 1.5))*Cos(Roll);
 			Double Pit = Pitch+(j+CFRandom(-1.5, 1.5))*Sin(Roll);
@@ -392,6 +406,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 			Vel += (Actor.AngleToVector(Angle, Forw)*Cos(Abs(Pitch)), -Sin(Pitch)*Forw);
 			Vel.XY += Actor.AngleToVector(Ang, Strn)*Sin(Pit);
 			
+			Vel *= Handler.CVar_Speed;
 			Vel *= Scale;
 			Vel *= Dist;
 			Vel += mo.Vel*moVel;
@@ -403,14 +418,14 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 			mo.A_SpawnParticle(ColTmp, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, CFRandom(-.5,.5)*Scale,CFRandom(-.5,.5)*Scale,CFRandom(-.5,.5)*Scale,
 				Vel.X, Vel.Y, Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),CFRandom(-.001,.001)-.025+Vel.Z*.01 , 1, 0, -(Size/Life));
 
-			Life -= StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8);
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Handler.CVar_Speed;
 		}
 	}
 }
 
 Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 {
-	Override Void SpawnEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		
@@ -421,7 +436,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0025*Handler.CVar_Distance;
+			Dist *= 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0015*Handler.CVar_Distance;
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -433,9 +448,9 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 		Double Forw = CFRandom(1.4, 3);
 		Vector3 Strn;
 		Double Size = CFRandom(1.2, 1.6)*Dist;
-		Double Life = CFRandom(35, 40)*LifeM;
+		Float Life = CFRandom(35, 40)/Handler.CVar_Speed*LifeM;
 							
-		For(float j=.1;j<1.1;j+=.05/Amount)
+		For(float j=.1;j<1.1;j+=.05*Max(1, Dist*.1)/Amount)
 		{
 			Double Ang = CRandom(0, 360);
 			Double Leng = CFRandom(0, .1*j);
@@ -446,10 +461,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
-			Float Bright = Max(MRGP_MinBright, Min(MRGP_MaxBright, (Strn.Z/(.3*j)+.75)*2));
-			Bright += CFRandom(-.05, .05);
-			
-			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+			Vel *= Handler.CVar_Speed;
 			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
@@ -463,9 +475,16 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 			Accel *= Dist;
 			Accel *= Scale;
 			
+			Float Bright = Max(MRGP_MinBright, Min(MRGP_MaxBright, (Strn.Z/(.3*j)+.75)*2));
+			Bright += CFRandom(-.05, .05);
+			
+			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+			
 			mo.A_SpawnParticle(ColTmp, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 1.2/Life, ((Size+j*3)/Life)*.05);
-			Life-=.5*LifeM;
+			Life-=.5/Handler.CVar_Speed*LifeM;
 		}
 	}
+	
+	Override Bool UsesAlpha(){Return true;}
 }
