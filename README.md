@@ -35,5 +35,4 @@ But because all of the blood is visualized with particles, I highly recommend us
 * Work on projectiles impcat
 * Add underwater blood
 * Add setting for particles speed
-* Add setting for minimisation of alpha channel usage
-* Make all mod's elements client sided
+* Add setting for minimization of alpha channel usage
