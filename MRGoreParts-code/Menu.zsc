@@ -16,7 +16,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 
 	string WorkingString[3];
 	
-	int CursX, CursY, CurlY;
+	int CursX, CursY, CurlY, UpdLineTime;
 	string Undo;
 	bool ViewList, Editing;
 	
@@ -159,7 +159,12 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 							ConVar = "MRGoreParts_AlwaysEffectsList";
 							Break;
 					}
+					
+					String OldCVar = CVar.FindCVar(ConVar).GetString();
 					CVar.FindCVar(ConVar).resettodefault();
+					if(OldCVar!=CVar.FindCVar(ConVar).GetString())UpdLineTime = 40;
+					
+					EventHandler.SendNetworkEvent("MRGP_UpdateEffects");
 					
 					WorkingString[CursY] = CVar.FindCVar(ConVar).GetString();
 					UpdateList();
@@ -204,7 +209,10 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			WorkingString[CursY].Replace("  ", " ");
 		}
 		
+		String OldCVar = CVar.FindCVar(ConVar).GetString();
 		CVar.FindCVar(ConVar).SetString(WorkingString[CursY]);
+		
+		if(OldCVar!=CVar.FindCVar(ConVar).GetString())UpdLineTime = 40;
 		
 		Editing = false;
 		
@@ -242,7 +250,9 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		
 			For(int i=0;i<Handler.Effects.Size();i++)
 			{
-				EffectsNames.Push(Handler.Effects[i].GetName());
+				String Nam = Handler.Effects[i].GetName();
+				if(Handler.Effects[i].UsesAlpha())Nam = Nam.." \cf*\c-";
+				EffectsNames.Push(Nam);
 			}
 			if(EffectsNames.Size()>0){Return;}
 			
@@ -250,7 +260,9 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		
 			For(int i=0;i<Handle.Effects.Size();i++)
 			{
-				EffectsNames.Push(Handle.Effects[i].GetName());
+				String Nam = Handle.Effects[i].GetName();
+				if(Handle.Effects[i].UsesAlpha())Nam = Nam.." \cf*\c-";
+				EffectsNames.Push(Nam);
 			}
 			Return;
 		}
@@ -363,21 +375,21 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			vcurs*CleanYfac_1,
 			TempStr,DTA_CleanNoMove_1,true
 		);
-		vcurs+=NewSmallFont.GetHeight()*5;
+		vcurs+=NewSmallFont.GetHeight()*3;
 		
-		
-		Switch(CursY)
+		if(UpdLineTime>0)//CVar updated line
 		{
-			Case MRGP_Menu_EffectsString:
-				TempStr=StringTable.Localize("$MRGoreParts_EffectsListTip");
-				Break;
-			Case MRGP_Menu_EffectsString2:
-				TempStr=StringTable.Localize("$MRGoreParts_EffectsListTip");
-				Break;
-			Case MRGP_Menu_AlwaysEffectsString:
-				TempStr=StringTable.Localize("$MRGoreParts_AlwaysEffectsListTip");
-				Break;
+			TempStr = StringTable.Localize("$MRGoreParts_EffectsUpdated");
+			screen.DrawText(SmallFont,
+				OptionMenuSettings.mFontColorValue,
+				(screen.GetWidth() - SmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+				vcurs*CleanYfac_1,
+				TempStr,DTA_CleanNoMove_1,true
+			);
+		
+			UpdLineTime--;
 		}
+		vcurs+=NewSmallFont.GetHeight()*2;
 		
 		blinktimer++;
 		if(blinktimer>6)blinktimer = 0;
@@ -499,7 +511,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			StrXpos,vcurs*CleanYfac_1,TempStr,DTA_CleanNoMove_1, true,
 			DTA_Alpha, .75
 		);
-		vcurs+=NewSmallFont.GetHeight()*2;
+		vcurs+=NewSmallFont.GetHeight()*3.25;
 		
 		if(ViewList) For(int i=CurlY;i<IncludedEffectsNames.Size();i++)
 		{
