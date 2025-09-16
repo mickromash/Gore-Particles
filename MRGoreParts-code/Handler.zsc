@@ -365,6 +365,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				
 		if(!CVar_CheckLimit)Return;
 		Let Plr = Players[ConsolePlayer].Camera;
+		if(!Plr)Return;
 		
 		Vector3 Pos = (0,0, Plr.Player.ViewZ-Plr.Pos.Z);
 		Pos.XY += Actor.AngleToVector(Plr.Angle+90, -CVar_CheckLimitOffset + 1*Abs(Sin(Plr.Pitch)));
@@ -386,9 +387,10 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Bool MRGPartsCheckDraw(Actor mo = Null)
 	{
-		Let Plr = Players[ConsolePlayer];
-		if(!Plr.Camera)Return false;
 		if(!CVar_Draw)Return false;
+		
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return true;
 		
 		if(!mo)Return true;
 		
@@ -400,12 +402,10 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if(CVar_NoBloodMist)
 		{
-			//MR_GoreParticlesEffect_Mist a = New('MR_GoreParticlesEffect_Mist');
-			
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
 			if(Inflictor&&Inflictor.Distance2D(mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
-			
+
 			Float Bright = CFRandom(.7, 1.4);
 			
 			Color Col = CVar_NoBloodMistColor;
@@ -776,7 +776,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		Let Plr = Players[ConsolePlayer].Camera;
-		Bool Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.GetCVAr("FOV", Plr.Player).GetFloat();
+		Bool Draw = true;
+		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat();
 		
 		Float Amount = CVar_Amount;
 		
@@ -850,7 +851,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Return;
 		}
 		
-		if(CVar_Quake2)
+		if(CVar_Quake2 && Players[ConsolePlayer].Camera)
 			For(Int i=0;i<CRandom(6, 9)*CVar_Amount;i++)
 			{
 				Float Bright = CFRandom(.6, 2);
@@ -1084,10 +1085,11 @@ Class MR_GoreParticlesDelayedSpawner: Actor//You'll never guess what mod it orig
 	
 	Static Bool MRGPartsCheckDraw(Actor mo = Null)
 	{
-		Let Plr = Players[ConsolePlayer];
-		if(!Plr.Camera)Return false;
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		if(!Handler.CVar_Draw)Return false;
+		
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return true;
 		
 		if(!mo)Return true;
 		
@@ -1137,10 +1139,12 @@ Class MR_GoreParticlesDeathHandler: Thinker
 	
 	Bool MRGPartsCheckDraw()
 	{
-		Let Plr = Players[ConsolePlayer];
-		if(!Plr.Camera)Return false;
 		MR_GoreParticlesHandler Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		if(!Handler.CVar_Draw)Return false;
+		
+		Let Plr = Players[ConsolePlayer];
+		if(!Plr.Camera)Return true;
+		
 		if(!Owner.CheckSight(Plr.Camera))Return false;
 		
 		Return abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Owner)))<Fov;
@@ -1179,7 +1183,7 @@ Class MR_GoreParticlesDeathHandler: Thinker
 			}
 			
 			Double Angle = Owner.Angle;
-			if(!MRGoreParts_Voxel)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
+			if(!MRGoreParts_Voxel && Players[ConsolePlayer].Camera)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
 			
 			if(Random(-500+Artery*200, 70)>Age && MRGoreParts_FlyingBlood)
 			{
