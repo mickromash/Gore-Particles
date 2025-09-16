@@ -68,8 +68,13 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Title "$MRGoreParts_EffectsMenu"
 	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 3, .1
 	Slider "$MRGoreParts_Distance", "MRGoreParts_Distance", 0, 10, .5
+	Option "$MRGoreParts_LowAlpha", "MRGoreParts_LowAlpha", "YesNo"
+	StaticText "$MRGoreParts_LowAlphaTip", "Fire"
+	Slider "$MRGoreParts_Speed", "MRGoreParts_Speed", .1, 3, .1
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_FlyingBood", "MRGoreParts_FlyingBood", "OnOff"
+	Option "$MRGoreParts_DrawFlyingBood", "MRGoreParts_DrawFlyingBood", "YesNo", "MRGoreParts_FlyingBood", 1, 0
+	Option "$MRGoreParts_MistTexture", "MRGoreParts_MistTexture", "MRGoreParts_MistTextureOption"
 	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
 	StaticText ""
 	Command "$MRGP_UpdateCVars", "NetEvent MRGP_UpdateCVars"
@@ -79,13 +84,19 @@ OptionMenu "MRGoreParts_WoundsMenu"
 {
 	Title "$MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
-	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption"
-	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo"
+	Option "$MRGoreParts_DrawWounds", "MRGoreParts_DrawWounds", "YesNo", "MRGoreParts_Wounds"
+	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
+	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds"
 	StaticText ""
 	Command "$MRGP_UpdateCVars", "NetEvent MRGP_UpdateCVars"
 }
 
-
+OptionValue "MRGoreParts_MistTextureOption"
+{
+	0, "$MRGoreParts_MistTexture0"
+	//1, "$MRGoreParts_MistTexture1"
+	2, "$MRGoreParts_MistTexture2"
+}
 
 OptionValue "MRGoreParts_SpotsOption"
 {

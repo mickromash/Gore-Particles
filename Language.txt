@@ -33,27 +33,40 @@ MRGoreParts_NoBloodMistColor = "Effect color";
 
 MRGoreParts_EffectsMenu = "Effects settings";
 ////{
-MRGoreParts_Amount = "Blood amount";
+MRGoreParts_Amount = "Particles amount in one effect";
 MRGoreParts_Distance = "Effects scale by distance";
+
+MRGoreParts_LowAlpha = "Minimize alpha channel usage";
+MRGoreParts_LowAlphaTip = "Improves performance by minimizing particles Transparency";
+
+MRGoreParts_Speed = "Particles speed/lifetime";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_FlyingBood = "Quake gibs style blood streams";
+MRGoreParts_DrawFlyingBood = "Draw blood streams";
+
+MRGoreParts_MistTexture = "Blood mist texture";
+MRGoreParts_MistTexture0 = "Mod";
+MRGoreParts_MistTexture1 = "GZDoom smoke";
+MRGoreParts_MistTexture2 = "Same as particles";
 
 MRGoreParts_EffectsListMenu = "Configure included effects";
 MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
 MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Reset Changes   \cv[ENTER]\c-: Save Changes   \cv[R]\c-: Reset to Default";
 MRGoreParts_AllEffectsList = "\czAll effects ids";
 MRGoreParts_IncludedEffectsList = "\cbIncluded effects";
-MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- or \cvMouse wheel\c-: scroll the list";
+MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- or \cvMouse wheel\c-: scroll the list\nEffects marked with \cf\"*\"\c- utilize alpha channel";
 MRGoreParts_EffectsList = "Random effects list";
 MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effect will appear on impact\nType same effect multiple times to increase its spawn chance";
 MRGoreParts_AlwaysEffectsList = "Constant effects list";
 MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these effects will appear on impact";
+MRGoreParts_EffectsUpdated = "Effects list updated";
 
 ////}
 
 MRGoreParts_WoundsMenu = "Wounds settings";
 ////{
 MRGoreParts_Wounds = "Bleeding wounds";
+MRGoreParts_DrawWounds = "Draw wounds";
 
 MRGoreParts_CorpseWounds = "Wounds on corpses";
 MRGoreParts_CorpseWounds0 = "None";
@@ -136,10 +149,21 @@ MRGoreParts_NoBloodMistColor = "Цвет эффектов";
 
 MRGoreParts_EffectsMenu = "Настройки эффектов";
 ////{
-MRGoreParts_Amount = "Количество крови";
+MRGoreParts_Amount = "Количество частиц в одном эффекте";
 MRGoreParts_Distance = "Увеличение эффектов на расстоянии";
+
+MRGoreParts_LowAlpha = "Минимизировать использование альфа канала";
+MRGoreParts_LowAlphaTip = "Улучшает производительность минимизируя прозрачность частиц";
+
+MRGoreParts_Speed = "Скоровть/время жизни частиц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
+MRGoreParts_DrawFlyingBood = "Отображать струи крови";
+
+MRGoreParts_MistTexture = "Текстура дымки";
+MRGoreParts_MistTexture0 = "Из мода";
+MRGoreParts_MistTexture1 = "Дым из GZDoom";
+MRGoreParts_MistTexture2 = "Такая же как у частиц";
 
 
 MRGoreParts_EffectsListMenu = "Настроить включённые эффекты";
@@ -147,17 +171,19 @@ MRGoreParts_EffectsListGuide = "\cfВводите id эффектов разде
 MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Отменить изменения   \cv[ENTER]\c-: Сохранить изменения   \cv[R]\c-: Список по умолчанию";
 MRGoreParts_AllEffectsList = "\czid эффектов";
 MRGoreParts_IncludedEffectsList = "\cbВключённые эффекты";
-MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- или \cvКолёсико мыши\c-: листать список";
+MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- или \cvКолёсико мыши\c-: листать список\nЭффекты помеченные \cf\"*\"\c- используют афльфа канал";
 MRGoreParts_EffectsList = "Список случайных эффектов";
 MRGoreParts_EffectsListTip = "\cgСписок случайных эффектов\cb - Один из этих эффектов появится при уроне\nВведите один и тот же эффект несколько раз для повышения вероятности его появления";
 MRGoreParts_AlwaysEffectsList = "Список обязательных эффектов";
 MRGoreParts_AlwaysEffectsListTip = "\cgСписок обязательных эффектов\cb - каждый из этих эффектов появится при уроне";
+MRGoreParts_EffectsUpdated = "Список эффектов обновлён";
 
 ////}
 
 MRGoreParts_WoundsMenu = "Настройки ран";
 ////{
 MRGoreParts_Wounds = "Кровоточащие раны";
+MRGoreParts_DrawWounds = "Отображать кровавые раны";
 
 MRGoreParts_CorpseWounds = "Раны на трупах";
 MRGoreParts_CorpseWounds0 = "Нет";
