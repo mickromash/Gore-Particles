@@ -35,7 +35,7 @@ server int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the s
 server int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
 
 server bool MRGoreParts_FlyingBlood = true;//Quake like blood stream
-nosave bool MRGoreParts_DrawFlyingBood = true;
+nosave bool MRGoreParts_DrawFlyingBlood = true;
 nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
@@ -44,7 +44,7 @@ nosave float MRGoreParts_Distance = 1;
 nosave bool MRGoreParts_LowAlpha = false;//Minimize usage of alpha channel for particles
 nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
 
-nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1 - GZDoom smoke, 1 - particles
+nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-4 - custom(lowres), 5 - particles
 
 nosave bool MRGoreParts_CheckLimit = false;
 nosave float MRGoreParts_CheckLimitOffset = 0;
