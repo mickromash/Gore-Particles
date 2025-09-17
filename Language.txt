@@ -41,13 +41,14 @@ MRGoreParts_LowAlphaTip = "Improves performance by minimizing particles Transpar
 
 MRGoreParts_Speed = "Particles speed/lifetime";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
-MRGoreParts_FlyingBood = "Quake gibs style blood streams";
-MRGoreParts_DrawFlyingBood = "Draw blood streams";
+MRGoreParts_FlyingBlood = "Quake gibs style blood streams";
+MRGoreParts_DrawFlyingBlood = "Draw blood streams";
 
 MRGoreParts_MistTexture = "Blood mist texture";
-MRGoreParts_MistTexture0 = "Mod";
-MRGoreParts_MistTexture1 = "GZDoom smoke";
-MRGoreParts_MistTexture2 = "Same as particles";
+MRGoreParts_MistTexture0 = "Mod (128x128)";
+MRGoreParts_MistTexture1 = "Mod (64x64)";
+MRGoreParts_MistTexture2 = "Mod (1x1)";
+MRGoreParts_MistTexture3 = "Same as particles";
 
 MRGoreParts_EffectsListMenu = "Configure included effects";
 MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
@@ -157,13 +158,14 @@ MRGoreParts_LowAlphaTip = "Улучшает производительность
 
 MRGoreParts_Speed = "Скоровть/время жизни частиц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
-MRGoreParts_FlyingBood = "Струи крови (как в Quake)";
-MRGoreParts_DrawFlyingBood = "Отображать струи крови";
+MRGoreParts_FlyingBlood = "Струи крови (как в Quake)";
+MRGoreParts_DrawFlyingBlood = "Отображать струи крови";
 
 MRGoreParts_MistTexture = "Текстура дымки";
-MRGoreParts_MistTexture0 = "Из мода";
-MRGoreParts_MistTexture1 = "Дым из GZDoom";
-MRGoreParts_MistTexture2 = "Такая же как у частиц";
+MRGoreParts_MistTexture0 = "Из мода (128x128)";
+MRGoreParts_MistTexture1 = "Из мода (64x64)";
+MRGoreParts_MistTexture2 = "Из мода (1x1)";
+MRGoreParts_MistTexture3 = "Такая же как у частиц";
 
 
 MRGoreParts_EffectsListMenu = "Настроить включённые эффекты";
