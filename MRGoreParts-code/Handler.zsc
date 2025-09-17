@@ -343,9 +343,14 @@ Class MR_GoreParticlesHandler: EventHandler
 		Mod = 'Doomer';//Brutal Dewm
 		if((Class<Actor>)(Mod))
 		{
+			RemoveBloodBase = 'Brutal_Blood';
+			RemoveBloods.Push('BloodSplasher');
+			RemoveBloods.Push('BlueBloodSplasher');
+			RemoveBloods.Push('GreenBloodSplasher');
+			RemoveBloods.Push('Brutal_FlyingBlood');
 			Return;
 		}
-		
+				
 		/*Mod = 'PileOfGibs';//Splatter gore
 		if((Class<Actor>)(Mod))
 		{
@@ -835,7 +840,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Double Alph = CFRandom(.8, 1);
 			mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
 				0,0,0, 0,0,0, Alph, Alph/100.);
-			if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
 			Return;
 		}
 		
@@ -848,7 +853,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
 			SpawnBloodDrop(mo, Col);
-			if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
 			Return;
 		}
 		
@@ -860,7 +865,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					Xoff:CFRandom(-1.5, 1.5), CFRandom(-1.5, 1.5), CFRandom(4, 7), .1,0,.5, 0,0,-.05);
 			}
 		
-		if(MRGoreParts_OnlyModsBlood){mo.Destroy();Return;}
+		if(MRGoreParts_OnlyModsBlood>1){mo.Destroy();Return;}
 		
 		mo.A_SetRenderStyle(0, STYLE_NONE);
 	}
