@@ -835,26 +835,29 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		String HDBld = 'HDBloodTrailFloor';
-		if(mo is HDBld)
+		if((Class<Actor>)(HDBld))
 		{
-			Double Alph = CFRandom(.8, 1);
-			mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
-				0,0,0, 0,0,0, Alph, Alph/100.);
-			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
-			Return;
-		}
-		
-		HDBld = 'BloodSplat';
-		String HDBld2 = 'HDMasterBlood';
-		if(mo is HDBld2||mo is HDBld)
-		{
-			String Sheild = 'HDMagicShield';
-			if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
+			if(mo is HDBld)
+			{
+				Double Alph = CFRandom(.8, 1);
+				mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
+					0,0,0, 0,0,0, Alph, Alph/100.);
+				if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
+				Return;
+			}
 			
-			if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
-			SpawnBloodDrop(mo, Col);
-			if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
-			Return;
+			HDBld = 'BloodSplat';
+			String HDBld2 = 'HDMasterBlood';
+			if(mo is HDBld2||mo is HDBld)
+			{
+				String Sheild = 'HDMagicShield';
+				if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
+				
+				if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
+				SpawnBloodDrop(mo, Col);
+				if(MRGoreParts_OnlyModsBlood>1)mo.Destroy();
+				Return;
+			}
 		}
 		
 		if(MRGoreParts_Quake2 && Players[ConsolePlayer].Camera)
