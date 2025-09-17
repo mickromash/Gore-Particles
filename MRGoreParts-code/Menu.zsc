@@ -26,8 +26,8 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		EffectsNames.Clear();
 		IncludedEffectsNames.Clear();
 		
-		CurlY = CursX = CursY = statustimer = 0;
-		
+		CurlY = CursY = statustimer = 0;
+		CursX = -1;
 		UpdateList(true);
 
 		WorkingString[MRGP_Menu_EffectsString]=cvar.findcvar("MRGoreParts_EffectsList").getstring();
@@ -65,6 +65,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 				UpdateList();
 			}
 			else CursY = MRGP_Menu_Size-1;
+			CursX = WorkingString[CursY].Length();
 			MenuSound("menu/cursor");
 			break;
 		case MKEY_Down:
@@ -75,6 +76,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 				UpdateList();
 			}
 			else CursY = 0;
+			CursX = WorkingString[CursY].Length();
 			MenuSound("menu/cursor");
 			break;
 			
@@ -86,6 +88,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			else
 			{
 				Editing = true;
+				if(CursX<0)CursX = WorkingString[CursY].Length();
 				CursX = Min(WorkingString[CursY].Length(), CursX);
 				UpdateList();
 				MenuSound("menu/choose");
