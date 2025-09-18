@@ -28,6 +28,8 @@ OptionMenu "MRGoreParts_Menu"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
 	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
 	StaticText ""
+	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
+	StaticText ""
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
 	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
 	StaticText ""
@@ -55,6 +57,7 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
 	TextField "$MRGoreParts_Blacklist", "MRGoreParts_Blacklist"
 	Option "$MRGoreParts_BlacklistOn", "MRGoreParts_BlacklistOn", "OnOff"
+	Command "$MRGP_UpdateBlacklist", "NetEvent MRGP_UpdateBlacklist"
 	Option "$MRGoreParts_NoBloodMist", "MRGoreParts_NoBloodMist", "OnOff"
 	ColorPicker "$MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMistColor"
 	StaticText ""
@@ -84,6 +87,14 @@ OptionMenu "MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds"
 	StaticText ""
+}
+
+OptionMenu "MRGoreParts_UpdateMenu"
+{
+	Title "$MRGoreParts_UpdateMenu"
+	Command "$MRGP_UpdateColors", "NetEvent MRGP_UpdateColors"
+	Command "$MRGP_UpdateSounds", "NetEvent MRGP_UpdateSounds"
+	Command "$MRGP_UpdateRemoveBlood", "NetEvent MRGP_UpdateRemoveBlood"
 }
 
 OptionValue "MRGoreParts_MistTextureOption"

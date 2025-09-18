@@ -26,6 +26,7 @@ MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
 
 MRGoreParts_Blacklist = "Monsters black list:";
 MRGoreParts_BlacklistOn = "Blacklist:";
+MRGP_UpdateBlacklist = "Apply blacklist";
 MRGoreParts_NoBloodMonsters = "Force blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_NoBloodMist = "Spec. impact effect for monsters with no blood";
 MRGoreParts_NoBloodMistColor = "Effect color";
@@ -93,6 +94,13 @@ MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
 MRGoreParts_FullBright = "Glowing blood";
 
+MRGoreParts_UpdateMenu = "Update mod's data";
+////{
+MRGP_UpdateColors = "Update monsters blood colors";
+MRGP_UpdateSounds = "Update blood sounds";
+MRGP_UpdateRemoveBlood = "Update other mods blood list";
+////}
+
 MRGoreParts_Multiplayer = "Multiplayer friendly";
 
 MRGoreParts_CheckLimit = "Particles limit indicator";
@@ -114,6 +122,7 @@ MR_GoreParticlesEffect_Mist = "Blood mist";
 MR_GoreParticlesEffect_BeautifulSpray = "\"Beautiful\" blood spray";
 MR_GoreParticlesEffect_CurveLine = "Curve blood spray";
 MR_GoreParticlesEffect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
+MR_GoreParticlesEffect_Sparks = "Sparks";
 
 [ru]
 
@@ -143,6 +152,7 @@ MRGoreParts_Quake2Text2 = "Рекомендуется включить при и
 
 MRGoreParts_Blacklist = "Чёрный список монстров:";
 MRGoreParts_BlacklistOn = "Чёрный список монстров:";
+MRGP_UpdateBlacklist = "Применить чёрный список";
 MRGoreParts_NoBloodMonsters = "Включить кровь для монстров с флагом \"+NOBLOOD\"";
 MRGoreParts_NoBloodMist = "Спец. эффекты для безкровных";
 MRGoreParts_NoBloodMistColor = "Цвет эффектов";
@@ -212,6 +222,13 @@ MRGoreParts_FullBright = "Светящаяся кровь";
 
 MRGoreParts_Multiplayer = "Режим игры по сети";
 
+MRGoreParts_UpdateMenu = "Обновить данные мода";
+////{
+MRGP_UpdateColors = "Обновить цвета крови монстров";
+MRGP_UpdateSounds = "Обновить звуки крови";
+MRGP_UpdateRemoveBlood = "Обновить список крови из других модов";
+////}
+
 MRGoreParts_CheckLimit = "Индикатор лимита частиц";
 MRGoreParts_CheckLimitOffset = "Сдвиг индикатора";
 
@@ -231,3 +248,4 @@ MR_GoreParticlesEffect_Mist = "Кровавая дымка";
 MR_GoreParticlesEffect_BeautifulSpray = "Распадающаяся струя крови";
 MR_GoreParticlesEffect_CurveLine = "Кривая линия крови";
 MR_GoreParticlesEffect_BeautifulSprayGrowing = "Распадающаяся струя крови (расширяющаяся)";
+MR_GoreParticlesEffect_Sparks = "Искры";
