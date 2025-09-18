@@ -36,5 +36,4 @@ Mod requires GZDoom 4.12 or newer
 * Add performance settings pressets
 * Work on projectiles impcat
 * Add underwater blood
-* Add setting for particles speed
 * Add setting for minimization of alpha channel usage
