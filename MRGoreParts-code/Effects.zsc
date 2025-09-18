@@ -492,3 +492,65 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 	
 	Override Bool UsesAlpha(){Return true;}
 }
+
+Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
+{
+	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	{
+		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		
+		if(!MRGoreParts_Draw)Return;
+		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
+		Float Dist = MRGP_DistanceMult;
+		
+		if(Flags&SGPF_NODIST)Dist = 1;
+		else
+		{
+			Dist *= Max(1, 1+(mo.Distance3D(Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			if(Scale>1)Dist/=Scale;
+		}
+		
+		Pitch += CFRandom(15, 18);
+		Angle += CRandom(-30, 30);
+		
+		Double Forw = CFRandom(2, 4);
+		
+		Double Size = CFRandom(.1, .2);//*Dist;
+		Float Life = CFRandom(25, 30)/MRGoreParts_Speed*LifeM;
+							
+		For(float j=.1;j<1.1;j+=.4*Max(1, Dist*.1)/Amount)
+		{
+			Double Ang = CRandom(0, 360);
+			Double Leng = CFRandom(0, .1*j);
+			Vector3 Strn;
+			Strn.X = Forw*j*.5;
+			Strn.Y = -Cos(Ang)*Leng;
+			Strn.Z = -Sin(Ang)*Leng;
+			Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+			
+			Vel *= MRGoreParts_Speed;
+			Vel *= Dist;
+			Vel *= Scale;
+			Vel += mo.Vel*moVel;
+			
+			Vector3 Accel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+			Accel *= CFRandom(.01, .02);
+			Accel.XY += Actor.AngleToVector(Angle+90, -Strn.Y*.1);
+			Accel.XY += Actor.AngleToVector(Angle, -Strn.Z)*Sin(Pitch);
+			
+			Accel = -Accel;
+			Accel *= Dist;
+			Accel *= Scale;
+			
+			Accel.Z -= .3;
+			
+			Color Col = Color(255,CRandom(230, 255),CRandom(0, 105));
+			
+			mo.A_SpawnParticle(Col, SPF_FULLBRIGHT, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j*Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 0, -((Size+j*3)/Life));
+			Life-=.5/MRGoreParts_Speed*LifeM;
+		}
+	}
+}
