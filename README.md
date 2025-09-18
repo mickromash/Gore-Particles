@@ -19,7 +19,7 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 (GZDoom particles aren't working in such a way that when their amount hit the limit, and new particle need to spawn, old ones will wanish, instead, new particles won't spawn until one of the old ones won't disappear)
 
-Mod requires GZDoom 4.12 or newer
+__Mod requires GZDoom 4.12 or newer__
 
 ## TO DO
 
