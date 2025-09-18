@@ -1,4 +1,4 @@
-Version "4.12"
+Version "4.10"
 
 Const MRGP_MaxWounds = 15;//Max wounds per entity
 Const MRGP_MaxWoundsGlobal = 7;//Max wounded entities
