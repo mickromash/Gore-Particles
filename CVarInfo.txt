@@ -4,6 +4,8 @@ server bool MRGoreParts_Wounds = true;//Bleeding wounds
 nosave bool MRGoreParts_DrawWounds = true;
 nosave int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
 server bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face player
+server int MRGoreParts_MaxWounded = 7;//Max wounded entities
+server int MRGoreParts_MaxWounds = 10;//Max wounds per entity
 
 nosave bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
 nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
@@ -11,7 +13,7 @@ nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
 nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
 
-nosave float MRGoreParts_Amount = 1;
+nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash)
 
 server int MRGoreParts_OnlyModsBlood = 1;//0 - leave other mods/vanila blood, 1 - only hide other blood, but not destroy, 2 - destroy any other blood
 server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters blood types in other mods blood
@@ -25,8 +27,8 @@ server bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +
 server string MRGoreParts_Blacklist = "LostSoul, Revenant";
 server bool MRGoreParts_BlacklistOn = true;
 
-nosave bool MRGoreParts_NoBloodMist = true;
-nosave color MRGoreParts_NoBloodMistColor = "70 70 70";
+nosave bool MRGoreParts_NoBloodMist = true;//Spawn dust for non bleeding things
+nosave color MRGoreParts_NoBloodMistColor = "70 70 70";//Color of dust
 
 nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 
@@ -40,11 +42,11 @@ nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned
 nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
 
-nosave float MRGoreParts_Distance = 1;
+nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
 nosave bool MRGoreParts_LowAlpha = false;//Minimize usage of alpha channel for particles
 nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
 
-nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-4 - custom(lowres), 5 - particles
+nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
 
 nosave bool MRGoreParts_CheckLimit = false;
 nosave float MRGoreParts_CheckLimitOffset = 0;
