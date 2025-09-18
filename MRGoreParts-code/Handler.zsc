@@ -36,24 +36,20 @@ Class MR_GoreParticlesHandler: EventHandler
 		Return b-a;
 	}
 	
-	Array<MR_GoreParticlesEffect> Effects, AlwaysEffects;
 	Array<MR_GoreParticlesDeathHandler> Dyings;
 	Array<int> GibsTime;
 	
-	Array<String> RemoveBloods, RemoveBloodTypes;
-	String RemoveBloodBase;
 	
-	String EffectsList, AlwaysEffectsList,
-		HitSound, SpraySound, DripSound, GibSound;
+	
+	Array<MR_GoreParticlesEffect> Effects, AlwaysEffects;
 	
 	Void UpdateEffects()
 	{
 		MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 		
 		Effects.Clear();
-		EffectsList = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
 		
-		String TempStr = EffectsList;
+		String TempStr = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
 		
 		While(TempStr.IndexOf("  ")>-1)
 		{
@@ -70,8 +66,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		AlwaysEffects.Clear();
-		AlwaysEffectsList = CVar.FindCVar("MRGoreParts_AlwaysEffectsList").GetString();
-		TempStr = AlwaysEffectsList;
+
+		TempStr = CVar.FindCVar("MRGoreParts_AlwaysEffectsList").GetString();
 		
 		While(TempStr.IndexOf("  ")>-1)
 		{
@@ -86,29 +82,23 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())AlwaysEffects.Push(Handler.Effects[Num.ToInt()]);
 		}
-		/*if(MRGoreParts_Debug){
-			Console.printf("\c-All Effects:");
-			For(int i=0;i<Handler.Effects.Size();i++)Console.printf("\cg"..i.." "..Handler.Effects[i].GetName());
-			Console.Printf("\c-==============");
-			
-			Console.printf("\c-Effects:");
-			For(int i=0;i<Effects.Size();i++)Console.Printf("\cd"..i.." "..Effects[i].GetName());
-			Console.Printf("\c-==============");
-			
-			Console.printf("\c-Always Effects:");
-			For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cv"..i.." "..AlwaysEffects[i].GetName());
-			Console.Printf("\c-==============");
-		}*/
 	}
 	
 	Array<Actor> Wounded;
 	Array<MR_GoreParticlesWound> Wounds;
 	
-	Array<Class <Actor> > BlackList;
-
 	
-	Array<String> Monsters;
-	Color Colors[50];
+	
+	Override Void OnRegister()
+	{
+		SetUpColors();
+		SetUpBlacklist();
+		SetUpSounds();
+		SetUpBloodRemove();
+		UpdateEffects();
+	}
+	
+	Map<String, Color> BldCols;//Monsters that supposed to have different blood color
 	
 	/*
 		MRPRTCOL (MickRomash's gore PaRTiCle COLours) lump stores information
@@ -122,7 +112,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		Cacodemon (30 30 120)
 	*/
 	
-	Override Void OnRegister()
+	Void SetUpColors()
 	{
 		int LumpNum = 0;
 		While(LumpNum>-1)
@@ -137,7 +127,6 @@ Class MR_GoreParticlesHandler: EventHandler
 		While(Lump.IndexOf("(")>-1)
 		{
 			String Monster = Lump.Left(Lump.IndexOf(" "));
-			if((Class<Actor>)(Monster))Monsters.Push(Monster);
 
 			String Cols = Lump.Mid(Lump.IndexOf("("), Lump.IndexOf(")")).." ";
 			int Vals[3];
@@ -149,16 +138,27 @@ Class MR_GoreParticlesHandler: EventHandler
 				Cols = Cols.Mid(Cols.IndexOf(" ")+1);
 			}
 			
-			if((Class<Actor>)(Monster))Colors[Monsters.Size()-1] = Color(Vals[0], Vals[1], Vals[2]);
+			if((Class<Actor>)(Monster))BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
 			
 			Lump = Lump.Mid(Lump.IndexOf(")")+2);
 		}
+		
 		if(MRGoreParts_Debug){
 			Console.Printf("\cdBlood color override:");
-			For(int i=0;i<Monsters.Size();i++)Console.Printf(Monsters[i].." "..Colors[i]);
+			Actor Monst;
+			Color Col;
+			
+			Foreach(Monst , Col : BldCols)
+			{
+				Console.Printf(Monst.." "..Col);
+			}
 		}
-		
-		
+	}
+	
+	Array<Class <Actor> > BlackList;//Black listed monsters
+	
+	Void SetUpBlackList()
+	{
 		String BList = MRGoreParts_BlackList;
 		BList.Replace(" ", "");
 		While(BList.Length()>2)
@@ -185,20 +185,10 @@ Class MR_GoreParticlesHandler: EventHandler
 			For(int i=0;i<BlackList.Size();i++)Console.Printf("\cg"..BlackList[i].GetClassName());
 			Console.Printf("\cd===================");
 		}
-		
-		SetUpSounds();
-		SetUpBloodRemove();
-		if(MRGoreParts_Debug){
-			Console.Printf("\n\cgBase Blood: "..RemoveBloodBase);
-			Console.Printf("\cgBlood Types:");
-			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
-			Console.Printf("\cgBloods:");
-			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." "..RemoveBloods[i]);
-			Console.Printf("-----------");
-		}
-		
-		UpdateEffects();
 	}
+	
+	
+	String HitSound, SpraySound, DripSound, GibSound;
 	
 	Void SetUpSounds()
 	{
@@ -209,69 +199,85 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		String Mod;
 		
-		Mod = 'MRGP_SoundAddon';
-		if((Class<Object>)(Mod))Return;
-		
-		Mod = 'NashGoreActor';//Nashgore next
-		if((Class<Actor>)(Mod))
+		While(True)
 		{
-			HitSound = "nashgore/bloodsplash";
-			DripSound = "nashgore/gibsmall";
-			SpraySound = "nashgore/gibbounce";
-			GibSound = "nashgore/xdeath";
-			Return;
+			Mod = 'MRGP_SoundAddon';
+			if((Class<Object>)(Mod))Break;
+			
+			Mod = 'NashGoreActor';//Nashgore next
+			if((Class<Actor>)(Mod))
+			{
+				HitSound = "nashgore/bloodsplash";
+				DripSound = "nashgore/gibsmall";
+				SpraySound = "nashgore/gibbounce";
+				GibSound = "nashgore/xdeath";
+				Break;
+			}
+			
+			Mod = 'UG_GibBase';//Universal gibs
+			if((class<Actor>)(Mod))
+			{
+				GibSound = SpraySound = "UGSound/Default";
+				Break;
+			}
+			
+			Mod = 'Bolognese_Blood';
+			if((class<Actor>)(Mod))
+			{
+				DripSound = "blooddrop2";
+				HitSound = "misc/xdeath2";
+				GibSound = "SLOP";
+				Break;
+			}
+			
+			Mod = 'Droplets';
+			if((Class<Actor>)(Mod))
+			{
+				HitSound = "blood/hit";
+				DripSound = "blood/drip";
+				Break;
+			}
+			
+			Mod = 'BrutalHereticImp';//Ketchup V5
+			if((Class<Actor>)(Mod))
+			{
+				DripSound = "blooddrop2";
+				HitSound = "misc/xdeath2";
+				GibSound = "misc/xdeath4";
+				Break;
+			}
+			
+			Mod = 'Doomer';//Brutal Dewm
+			if((Class<Actor>)(Mod))
+			{
+				DripSound = "blooddrop2";
+				HitSound = "misc/xdeath2";
+				GibSound = "misc/xdeath4";
+				Break;
+			}
+			
+			Mod = 'PileOfGibs';//Splatter gore
+			if((Class<Actor>)(Mod))
+			{
+				SpraySound = "Gore/Squish";
+				GibSound = "Gore/GIBSPLAT";
+				Break;
+			}
+			
+			Break;
 		}
-		
-		Mod = 'UG_GibBase';//Universal gibs
-		if((class<Actor>)(Mod))
-		{
-			GibSound = SpraySound = "UGSound/Default";
-			Return;
-		}
-		
-		Mod = 'Bolognese_Blood';
-		if((class<Actor>)(Mod))
-		{
-			DripSound = "blooddrop2";
-			HitSound = "misc/xdeath2";
-			GibSound = "SLOP";
-			Return;
-		}
-		
-		Mod = 'Droplets';
-		if((Class<Actor>)(Mod))
-		{
-			HitSound = "blood/hit";
-			DripSound = "blood/drip";
-			Return;
-		}
-		
-		Mod = 'BrutalHereticImp';//Ketchup V5
-		if((Class<Actor>)(Mod))
-		{
-			DripSound = "blooddrop2";
-			HitSound = "misc/xdeath2";
-			GibSound = "misc/xdeath4";
-			Return;
-		}
-		
-		Mod = 'Doomer';//Brutal Dewm
-		if((Class<Actor>)(Mod))
-		{
-			DripSound = "blooddrop2";
-			HitSound = "misc/xdeath2";
-			GibSound = "misc/xdeath4";
-			Return;
-		}
-		
-		Mod = 'PileOfGibs';//Splatter gore
-		if((Class<Actor>)(Mod))
-		{
-			SpraySound = "Gore/Squish";
-			GibSound = "Gore/GIBSPLAT";
-			Return;
+		if(MRGoreParts_Debug){
+			Console.printf("\n\cgSounds:");
+			Console.Printf("\ccHitSound:\cg \""..HitSound.."\"");
+			Console.Printf("\ccDripSound:\cg \""..DripSound.."\"");
+			Console.Printf("\ccSpraySound:\cg \""..SpraySound.."\"");
+			Console.Printf("\ccGibSound:\cg \""..GibSound.."\"");
 		}
 	}
+	
+	
+	Array<String> RemoveBloods, RemoveBloodTypes;
+	String RemoveBloodBase;
 	
 	Void SetUpBloodRemove()
 	{
@@ -291,71 +297,83 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		String Mod;
-		
-		Mod = 'NashGoreActor';//Nashgore next
-		if((Class<Actor>)(Mod))
+		While(True)
 		{
-			Return;
+			Mod = 'NashGoreActor';//Nashgore next
+			if((Class<Actor>)(Mod))
+			{
+				Break;
+			}
+			
+			Mod = 'UG_GibBase';//Universal gibs
+			if((class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'UG_GibImpactBlood';
+				Break;
+			}
+			
+			Mod = 'Bolognese_Blood';
+			if((class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'BD_FlyingBlood';
+				RemoveBloods.Push('SuperGore');
+				RemoveBloods.Push('BD_FlyingBloodTrail');
+				Break;
+			}
+			
+			Mod = 'Droplets';
+			if((Class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'BloodHitPuff';
+				Break;
+			}
+			
+			Mod = 'BrutalHereticImp';//Ketchup V5
+			if((Class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'Brutal_Blood';
+				RemoveBloods.Push('TinyBlood');
+				RemoveBloods.Push('BloodHit');
+				RemoveBloods.Push('Brutal_FlyingBlood');
+				RemoveBloods.Push('Brutal_FlyingBloodFake');
+				Break;
+			}
+			
+			Mod = 'HDOperator';//Hideous destructor
+			if((Class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'BloodSplatSilent';
+				RemoveBloods.Push('HDBloodTrailFloor');
+				Break;
+			}
+			
+			Mod = 'Doomer';//Brutal Dewm
+			if((Class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'Brutal_Blood';
+				RemoveBloods.Push('BloodSplasher');
+				RemoveBloods.Push('BlueBloodSplasher');
+				RemoveBloods.Push('GreenBloodSplasher');
+				RemoveBloods.Push('Brutal_FlyingBlood');
+				Break;
+			}
+					
+			/*Mod = 'PileOfGibs';//Splatter gore
+			if((Class<Actor>)(Mod))
+			{
+				Break;
+			}*/
+			
+			Break;
 		}
-		
-		Mod = 'UG_GibBase';//Universal gibs
-		if((class<Actor>)(Mod))
-		{
-			RemoveBloodBase = 'UG_GibImpactBlood';
-			Return;
+		if(MRGoreParts_Debug){
+			Console.Printf("\cgBase Blood: "..RemoveBloodBase);
+			Console.Printf("\cgBlood Types:");
+			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
+			Console.Printf("\cgBloods:");
+			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." "..RemoveBloods[i]);
+			Console.Printf("-----------");
 		}
-		
-		Mod = 'Bolognese_Blood';
-		if((class<Actor>)(Mod))
-		{
-			RemoveBloodBase = 'BD_FlyingBlood';
-			RemoveBloods.Push('SuperGore');
-			RemoveBloods.Push('BD_FlyingBloodTrail');
-			Return;
-		}
-		
-		Mod = 'Droplets';
-		if((Class<Actor>)(Mod))
-		{
-			RemoveBloodBase = 'BloodHitPuff';
-			Return;
-		}
-		
-		Mod = 'BrutalHereticImp';//Ketchup V5
-		if((Class<Actor>)(Mod))
-		{
-			RemoveBloodBase = 'Brutal_Blood';
-			RemoveBloods.Push('TinyBlood');
-			RemoveBloods.Push('BloodHit');
-			RemoveBloods.Push('Brutal_FlyingBlood');
-			RemoveBloods.Push('Brutal_FlyingBloodFake');
-			Return;
-		}
-		
-		Mod = 'HDOperator';//Hideous destructor
-		if((Class<Actor>)(Mod))
-		{
-			RemoveBloodBase = 'BloodSplatSilent';
-			RemoveBloods.Push('HDBloodTrailFloor');
-			Return;
-		}
-		
-		Mod = 'Doomer';//Brutal Dewm
-		if((Class<Actor>)(Mod))
-		{
-			RemoveBloodBase = 'Brutal_Blood';
-			RemoveBloods.Push('BloodSplasher');
-			RemoveBloods.Push('BlueBloodSplasher');
-			RemoveBloods.Push('GreenBloodSplasher');
-			RemoveBloods.Push('Brutal_FlyingBlood');
-			Return;
-		}
-				
-		/*Mod = 'PileOfGibs';//Splatter gore
-		if((Class<Actor>)(Mod))
-		{
-			Return;
-		}*/
 	}
 	
 	Float ViewBob;
@@ -365,7 +383,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		For(int i=0;i<GibsTime.Size();i++)
 		{
 			GibsTime[i]++;
-			if(GibsTime[i]>MRGP_GibbingTime){GibsTime.Delete(i);i--;}
+			if(GibsTime[i]>(MRGP_GibbingTime/MRGoreParts_Speed)){GibsTime.Delete(i);i--;}
 		}
 				
 		if(!MRGoreParts_CheckLimit)Return;
@@ -403,7 +421,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
 	}
 	
-	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle)
+	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)
 	{
 		if(MRGoreParts_NoBloodMist)
 		{
@@ -418,6 +436,18 @@ Class MR_GoreParticlesHandler: EventHandler
 			Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*90, Col, Offset:(0,0,ZOfst));
+		}
+		if(HDestArmor)
+		{
+			Actor Who = mo;
+			Double ZOfst = mo.Height*.5;
+			if(Inflictor&&Inflictor.Distance2D(mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
+			
+			Double Pitch = 0;
+			if(Source && PlayerPawn(Source) && Inflictor)Pitch = Inflictor.PitchTo(Source, 5, Source.Player.ViewZ-Source.Pos.Z);
+			Pitch = 0;
+			
+			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Sparks', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*-90, Offset:(0,0,ZOfst));
 		}
 	}
 		
@@ -440,9 +470,6 @@ Class MR_GoreParticlesHandler: EventHandler
 					if(e.Thing is BlackList[i]){SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);Return;}
 				}
 			
-			String HDest = 'HDOperator';
-			if((Class<Actor>)(HDest) && e.DamageType != 'piercing' && e.DamageType != 'bleedout')Return;
-			
 			if(MRGoreParts_Debug){
 				String Damage = "";
 				if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
@@ -451,6 +478,18 @@ Class MR_GoreParticlesHandler: EventHandler
 				Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
 				if(e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
 				if(e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
+			}
+			
+			String HDest = 'HDOperator';
+			if((Class<Actor>)(HDest))
+			{
+				String Armour = "HDArmourWorn";
+				if(e.DamageType == 'bashing' && e.Thing.CountInv(Armour))
+				{
+					SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle, e.DamageSource, true);
+					Return;
+				}
+				if(e.DamageType != 'piercing' && e.DamageType != 'bleedout')Return;
 			}
 			
 			Float Amount = MRGoreParts_Amount;
@@ -463,14 +502,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			else
 			{
 				if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
-				For(int i=0;i<Monsters.Size();i++)
-				{
-					if(Monsters[i]==e.Thing.GetClassName())
-					{
-						Col = Colors[i];
-						Break;
-					}
-				}
+				if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
 			}
 			
 			if(e.DamageType == 'bleedout')
@@ -670,14 +702,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		else
 		{
 			if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
-			For(int i=0;i<Monsters.Size();i++)
-			{
-				if(Monsters[i]==e.Thing.GetClassName())
-				{
-					Col = Colors[i];
-					Break;
-				}
-			}
+			if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
 		}
 		
 		Float Amount = MRGoreParts_Amount;
@@ -771,14 +796,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		else
 		{
 			if(mo.BloodColor==0 && mo.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
-			For(int i=0;i<Monsters.Size();i++)
-			{
-				if(Monsters[i]==mo.GetClassName())
-				{
-					Col = Colors[i];
-					Break;
-				}
-			}
+			if(BldCols.CheckKey(mo.GetClassName()))Col = BldCols.Get(mo.GetClassName());
 		}
 		
 		Let Plr = Players[ConsolePlayer].Camera;
@@ -817,13 +835,6 @@ Class MR_GoreParticlesHandler: EventHandler
 			else mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3), Pitch: CFrandom(1.1, 1.2));
 			SAmount++;
 		}
-					
-		/*if(MRGPartsCheckDraw(mo))For(int i=0;i<mo.Height*2*Amount;i++)
-		{
-			Float Bright = CFRandom(1, 2);
-			mo.A_SpawnParticle(Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright)), SPF_RELATIVE, 40, CRandom(2, 5), CRandom(0, 360), CFRandom(0, mo.Radius), 0, CRandom(5, mo.Height),
-				CRandom(-1, 1),0,CFRandom(0, 2), 0,0,-CFRandom(.3, .4), 1, 0, -CFRandom(.006, .01));
-		}*/
 	}
 	
 	Void DoOtherBlood(Actor mo)
@@ -877,9 +888,25 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void NetworkProcess(ConsoleEvent e)
 	{
-		if(e.name ~== "MRGP_UpdateEffects")
-		{
+		if(e.name ~== "MRGP_UpdateEffects"){
 			UpdateEffects();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateColors"){
+			SetUpColors();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateBlacklist"){
+			SetUpBlacklist();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateSounds"){
+			SetUpSounds();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateRemoveBlood"){
+			SetUpBloodRemove();
+			Return;
 		}
 	}
 				
@@ -908,41 +935,6 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(!ShowRecs)Return;
 			if(e.args[0]>0)ShowingRecs = 35*e.args[0];
 		}
-		/*if(e.name ~== "MRGP_ListUserCVars")
-		{
-			Console.Printf("\cfCached user CVars:");
-			
-			Console.Printf("\cvBools:");
-			Console.Printf("\cgMRGoreParts_Draw\c- "..MRGoreParts_Draw.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_Draw").GetBool());
-			Console.Printf("\cgMRGoreParts_Quake2\c- "..MRGoreParts_Quake2.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_Quake2").GetBool());
-			Console.Printf("\cgMRGoreParts_DripOnImpact\c- "..MRGoreParts_DripOnImpact.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_DripOnImpact").GetBool());
-			Console.Printf("\cgMRGoreParts_UseCustomColor\c- "..MRGoreParts_UseCustomColor.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_UseCustomColor").GetBool());
-			Console.Printf("\cgMRGoreParts_FullBright\c- "..MRGoreParts_FullBright.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_FullBright").GetBool());
-			Console.Printf("\cgMRGoreParts_NoBloodMist\c- "..MRGoreParts_NoBloodMist.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_NoBloodMist").GetBool());
-			Console.Printf("\cgMRGoreParts_FuzzyBlood\c- "..MRGoreParts_FuzzyBlood.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_FuzzyBlood").GetBool());
-			Console.Printf("\cgMRGoreParts_FlyingBood\c- "..MRGoreParts_DrawFlyingBood.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_FlyingBood").GetBool());
-			Console.Printf("\cgMRGoreParts_CheckLimit\c- "..MRGoreParts_CheckLimit.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_CheckLimit").GetBool());
-			Console.Printf("\cgMRGoreParts_LowAlpha\c- "..MRGoreParts_LowAlpha.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_LowAlpha").GetBool());
-			Console.Printf("\cgMRGoreParts_DrawWounds\c- "..MRGoreParts_DrawWounds.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_DrawWounds").GetBool());
-			
-			Console.Printf("\cvInts:");
-			Console.Printf("\cgMRGoreParts_CorpseWounds\c- "..MRGoreParts_CorpseWounds.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_CorpseWounds").GetInt());
-			Console.Printf("\cgMRGoreParts_FloorSpots\c- "..MRGoreParts_FloorSpots.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_FloorSpots").GetInt());
-			Console.Printf("\cgMRGoreParts_SpotsTime\c- "..MRGoreParts_SpotsTime.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_SpotsTime").GetInt());
-			Console.Printf("\cgMRGoreParts_MistTexture\c- "..MRGoreParts_MistTexture.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_MistTexture").GetInt());
-			
-			Console.Printf("\cvFloats:");
-			Console.Printf("\cgMRGoreParts_Amount\c- "..MRGoreParts_Amount.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_Amount").GetFloat());
-			Console.Printf("\cgMRGoreParts_Distance\c- "..MRGoreParts_Distance.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_Distance").GetFloat());
-			Console.Printf("\cgMRGoreParts_CheckLimitOffset\c- "..MRGoreParts_CheckLimitOffset.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_CheckLimitOffset").GetFloat());
-			Console.Printf("\cgMRGoreParts_Speed\c- "..MRGoreParts_Speed.." \cdCVar:\c- "..CVar.FindCVar("MRGoreParts_Speed").GetFloat());
-			
-			Console.printf("\cvColors:");
-			Color Col = CVar.FindCVar("MRGoreParts_Color").GetInt();
-			Console.Printf("\cgMRGoreParts_Color\c- "..MRGoreParts_Color.." \cdCVar:\c- "..Col);
-			Col = CVar.FindCVar("MRGoreParts_NoBloodMistColor").GetInt();
-			Console.Printf("\cgMRGoreParts_NoBloodMistColor\c- "..MRGoreParts_NoBloodMistColor.." \cdCVar:\c- "..Col);
-		}*/
 	}
 	
 	Ui Array<String> RecS;
