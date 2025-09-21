@@ -35,5 +35,3 @@ __Mod requires GZDoom 4.12 or newer__
 * Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
 * Work on projectiles impcat
-* Add underwater blood
-* Add setting for minimization of alpha channel usage
