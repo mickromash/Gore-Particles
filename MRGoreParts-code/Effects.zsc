@@ -249,7 +249,7 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 			Float Life = Min(45, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
 			if(Water)Life *= 2;
 			
-			Double Size = CFRandom(.9, 3)*Dist*Scale;
+			Double Size = CFRandom(.9, 3)*Dist*Scale*MRGoreParts_Size;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			
 			
@@ -316,7 +316,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 			
 			if(Water)Life = Min(90, Life*2);
 			
-			Double Size = Scale*(abs(HorzStrn.Length()*20))*Dist;
+			Double Size = Scale*MRGoreParts_Size*(abs(HorzStrn.Length()*20))*Dist;
 			if(Flags&SGPF_NoVel)Size = Scale*Dist;
 			
 			Float Bright = CFRandom(.9, 1.4);
@@ -375,7 +375,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 		Angle += CRandom(-30, 30);
 		Double Forw = CFRandom(1.4, 3);
 		Vector3 Strn;
-		Double Size = CFRandom(1.2, 1.6)*Dist;
+		Double Size = CFRandom(1.2, 1.6)*MRGoreParts_Size*Dist;
 		Float Life = CFRandom(35, 40)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
 							
@@ -449,7 +449,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		//Angle += CRandom(-15, 15);
 		Double Forw = CFRandom(.01, .2);
 		Double Strn = CFRandom(.4, .6);
-		Double Size = CFRandom(3.4, 3.7)*Dist;
+		Double Size = CFRandom(3.4, 3.7)*MRGoreParts_Size*Dist;
 		Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
 		Double StartLife = Life;
@@ -517,7 +517,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 		Angle += CRandom(-30, 30);
 		Double Forw = CFRandom(1.4, 3);
 		Vector3 Strn;
-		Double Size = CFRandom(1.2, 1.6)*Dist;
+		Double Size = CFRandom(1.2, 1.6)*MRGoreParts_Size*Dist;
 		Float Life = CFRandom(35, 40)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
 							
@@ -607,7 +607,7 @@ Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
 			Vel += mo.Vel*moVel;
 			
 			Float Life = FRandom(25, 35)/MRGoreParts_Speed*LifeM;//Min(25, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
-			Double Size = CFRandom(.7, .8)*Dist*Scale;
+			Double Size = CFRandom(.7, .8)*Dist*MRGoreParts_Size*Scale;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			
 			Color ColTmp = Color(255,Random(180, 255),Random(0, 80));

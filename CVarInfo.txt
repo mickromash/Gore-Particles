@@ -14,6 +14,7 @@ nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wo
 nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
 
 nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash)
+nosave float MRGoreParts_Size = 1;//Size of particles
 
 server int MRGoreParts_OnlyModsBlood = 1;//0 - leave other mods/vanila blood, 1 - only hide other blood, but not destroy, 2 - destroy any other blood
 server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters blood types in other mods blood
