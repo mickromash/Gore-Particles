@@ -2,41 +2,26 @@
 	Bleeding wounds
 */
 
-Class MR_GoreParticlesWound: Thinker
+Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 {
 	Vector3 Locs[MRGP_MaxWounds];
 	Float Ages[MRGP_MaxWounds], Fov;
-	Double Angles[MRGP_MaxWounds];
-	Double Heights[MRGP_MaxWounds];
+	Double Angles[MRGP_MaxWounds], Heights[MRGP_MaxWounds];
 	Color Col;
 	Actor Owner;
-	MR_GoreParticlesHandler Handler;
-	
-	Bool MRGPartsCheckDraw()
-	{
-		Let Plr = Players[ConsolePlayer];
-		if(!Plr.Camera)Return false;
-		if(!MRGoreParts_Draw)Return false;
-		if(!MRGoreParts_DrawWounds)Return false;
 		
-		if(!Owner)Return True;
-		
-		
-		Return Owner.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(Owner)))<Fov;
-	}
-	
 	Override Void OnDestroy()
 	{
-		Handler.Wounds.Delete(Handler.Wounds.Find(Self));
 		Handler.Wounded.Delete(Handler.Wounded.Find(Owner));
-		Super.OnDestroy();
+		Handler.Wounds.Delete(Handler.Wounds.Find(Self));
 	}
 	
 	Override Void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
-		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		Fov = CVar.FindCVar("FOV").GetFloat();
+		Handler.Wounded.Push(Owner);
+		Handler.Wounds.Insert(Handler.Wounded.Find(Owner), Self);
 	}
 	
 	Override Void Tick()
@@ -48,8 +33,6 @@ Class MR_GoreParticlesWound: Thinker
 		
 		if(!Sprt.IsValid())Return;
 		
-		Float Z = Texman.CheckRealHeight(Sprt);
-		Z *= Owner.Scale.Y;
 		Vector2 Size = Texman.GetScaledOffset(Sprt);
 		
 		Double Angle = Owner.Angle;
@@ -70,15 +53,18 @@ Class MR_GoreParticlesWound: Thinker
 		{
 			if(Ages[i]>0)
 			{
-					
-				Ages[i]-=Random(1, 3);
+				Float Z = Locs[i].Z*Owner.Height;
+				if(Owner.Health<1)Z = Locs[i].Z*Texman.CheckRealHeight(Sprt)*Owner.Scale.Y;
+				Ages[i]-=CRandom(1, 3);
 				if(Ages[i]<0){Ages[i]=0;Continue;}
 				Wounds++;
 				if(Corpse==0)Continue;
 				Bool Draw = MRGPartsCheckDraw();
-				if(!(Owner is 'PlayerPawn') && Draw){
-					For(int j=0;j<2;j++)Owner.A_SpawnParticle(Color(int(int(Col.R*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.G*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.B*1.5)*Min(1, Ages[i]/(35*6)))), SPF_RELPOS, 1, Ages[i]/(35*15)*2, Angle, Locs[i].X, Locs[i].Y, Min(Z, Locs[i].Z),
-						Owner.Vel.X, Owner.Vel.Y, Owner.Vel.Z);
+				//Console.Printf("InitZ: "..Locs[i].Z.." Z: "..Z);
+				if(!(Owner is 'PlayerPawn') && Draw){//Wound
+					For(int j=0;j<2;j++)Owner.A_SpawnParticle(Color(int(int(Col.R*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.G*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.B*1.5)*Min(1, Ages[i]/(35*6)))),
+						SPF_RELPOS, 1, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z,
+						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z);
 				}
 				
 				int Rand = CRandom(0, 5);
@@ -86,9 +72,9 @@ Class MR_GoreParticlesWound: Thinker
 				if(35*CRandom(3, 40)<Ages[i] && Rand>0 && MaxBlood>0)
 				{
 					MaxBlood--;
-					if(Draw && Corpse>1)For(float j=0;j<CRandom(1, 5);j++)Owner.A_SpawnParticle(Col, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X, Locs[i].Y, Min(Z, Locs[i].Z-j*.5*(Ages[i]/(35*15))),
-						Owner.Vel.X, Owner.Vel.Y, Owner.Vel.Z, 0,0,-.3);
-					if(MRGoreParts_FloorSpots>0 && Draw && Corpse>1)
+					if(Draw && Corpse>1)For(float j=0;j<CRandom(1, 5);j++)Owner.A_SpawnParticle(Col, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),//Dripping blood
+						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3);
+					if(MRGoreParts_FloorSpots>0 && Draw && Corpse>1)//Spots
 					{
 						Vector2 Pos = Owner.Pos.XY;
 						if(Owner.Health>0||MRGoreParts_Voxel)
@@ -105,13 +91,14 @@ Class MR_GoreParticlesWound: Thinker
 
 						if(35*15-Ages[i]>(Locs[i].Z-FloorZ)/4)
 						{
-							Owner.A_SpawnParticle(Col, SPF_RELPOS, MRGoreParts_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1), Locs[i].Y+CFRandom(-1, 1), 1-(Owner.Pos.Z-FloorZ));
+							Owner.A_SpawnParticle(Col, SPF_RELPOS, MRGoreParts_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
+								FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
 							Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 							Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
 						}
 					}
 					if(Ages[i]>35*3 && Draw)//Random(0, 10)>7 && Ages[i]>35*3)
-					{
+					{//Splash
 						Double Angl = VectorAngle(Locs[i].X, Locs[i].Y);
 						Vector2 Pos = (0,0);
 						if(Owner.Health>0||MRGoreParts_Voxel)
@@ -124,7 +111,7 @@ Class MR_GoreParticlesWound: Thinker
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
 							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
 						}
-						MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_SimpleSplash', Owner, 0, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Min(Z, Locs[i].Z)-5));
+						MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_SimpleSplash', Owner, 0, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Z-5));
 					}
 				}
 			}
