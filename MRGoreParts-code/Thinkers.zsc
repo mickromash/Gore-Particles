@@ -1,0 +1,108 @@
+/*
+	My implementation of client-side thinkers
+	
+	Ticks are called from event handler;
+	For wounds thinker, check Wounds.zsc
+*/
+
+
+Class MR_GoreParticlesThinker: Object play
+{
+	MR_GoreParticlesHandler Handler;
+	
+	Static Bool MRGPartsCheckDraw(Actor mo=null, float dist=0)
+	{
+		if(!MRGoreParts_Draw)Return false;
+		
+		if(!mo)Return True;
+		
+		Let Plr = Players[ConsolePlayer].Camera;
+		if(!Plr)Return false;
+		
+		
+		if(dist!=0 && Plr.Distance3D(mo)>Dist)Return false;
+		
+		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat())Return false;
+		
+		Return Plr.CheckSight(mo);
+	}
+		
+	Virtual Void Tick(){if(Level.IsFrozen())Return;}
+	Virtual Void PostBeginPlay()
+	{
+		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+	}
+}
+
+Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
+{
+	Color Bld;
+	Bool Sos, Artery, Draw;
+	Float Mid, Fov;
+	Actor Owner;
+	int Age;
+		
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		if(!Owner)Return;
+		Mid = Owner.Height*.5;
+		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO);
+		Fov = CVar.FindCVar("FOV").GetFloat();
+	}
+	
+	Override Void OnDestroy()
+	{
+		Handler.Dyings.Delete(Handler.Dyings.Find(Self));
+		Super.OnDestroy();
+	}
+	
+	Override Void Tick()
+	{
+		if(Age>60||!Owner){Destroy();Return;}
+		Super.Tick();
+		Age++;
+		
+		if(Owner.instatesequence(Owner.CurState, Owner.ResolveState("gib")))
+		{
+			Handler.SpawnXDeath(Owner);
+			Destroy();
+			Return;
+		}
+		
+		if(Age%2!=0 || !MRGPartsCheckDraw(Owner))Return;
+		
+		TextureID Sprt = Owner.CurState.GetSpriteTexture(0);
+		
+		if(Sprt.IsValid())
+		{
+			
+			Float y = Texman.CheckRealHeight(Sprt)*.9;
+			y *= Owner.Scale.Y;
+
+			Float Posy = Y;
+			Double Pitch = -90;
+			if(Mid<Y)
+			{
+				Pitch = -(Mid/y)*45;
+				//Mid = Pitch;
+			}
+			
+			Double Angle = Owner.Angle;
+			if(!MRGoreParts_Voxel && Players[ConsolePlayer].Camera)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
+			
+			if(MRGoreParts_DrawFlyingBlood && CRandom(-500+Artery*200, 70)>Age)
+			{
+				Float Strn = CRandom(3, 5);
+				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
+				MR_GoreParticlesFlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Scale:4*CFRandom(1, 2), Vel:Vel);
+				S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2), Pitch: CFrandom(1.1, 1.2));
+			}
+			if(Age<CRandom(-40, 60))
+			{
+				if(Handler.Effects.Size()>0)
+					Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, 0, Angle, Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
+			}
+		}
+	}
+}
