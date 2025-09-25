@@ -9,6 +9,7 @@ MRGoreParts_Draw = "\cdጸ\c-Draw gore particles";
 MRGoreParts_BloodSpawnMenu = "Blood spawn settings";
 ////{
 MRGoreParts_OnlyModsBlood = "\cv⊛\c-Remove other gore";
+MRGoreParts_HideOtherBlood = "\cdጸ\c-Hide other gore";
 MRGoreParts_OnlyModsBlood0 = "No";
 MRGoreParts_OnlyModsBlood1 = "Only hide";
 MRGoreParts_OnlyModsBlood2 = "Yes";
@@ -22,10 +23,10 @@ MRGoreParts_Quake2 = "\cdጸ\c-Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
 
-MRGoreParts_Blacklist = "\cv⊛\c-Monsters black list:";
-MRGoreParts_BlacklistOn = "\cv⊛\c-Blacklist:";
-MRGP_UpdateBlacklist = "\cv⊛\c-Apply blacklist";
-MRGoreParts_NoBloodMonsters = "\cv⊛\c-Force blood for monsters with \"+NOBLOOD\" flag";
+MRGoreParts_Blacklist = "\cdጸ\c-Monsters black list:";
+MRGoreParts_BlacklistOn = "\cdጸ\c-Blacklist:";
+MRGP_UpdateBlacklist = "\cdጸ\c-Apply blacklist";
+MRGoreParts_NoBloodMonsters = "\cdጸ\c-Force blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_NoBloodMist = "\cdጸ\c-Spec. impact effect for monsters with no blood";
 MRGoreParts_NoBloodMistColor = "\cdጸ\c-Effect color";
 ////}
@@ -41,8 +42,7 @@ MRGoreParts_LowAlphaTip = "Improves performance by minimizing particles Transpar
 
 MRGoreParts_Speed = "\cdጸ\c-Particles speed/lifetime";
 MRGoreParts_DripOnImpact = "\cdጸ\c-Dripping blood on impact";
-MRGoreParts_FlyingBlood = "\cv⊛\c-Quake gibs style blood streams";
-MRGoreParts_DrawFlyingBlood = "\cdጸ\c-Draw blood streams";
+MRGoreParts_DrawFlyingBlood = "\cdጸ\c-Quake gibs style blood streams";
 
 MRGoreParts_MistTexture = "\cdጸ\c-Blood mist texture";
 MRGoreParts_MistTexture0 = "Mod (128x128)";
@@ -66,8 +66,9 @@ MRGoreParts_EffectsUpdated = "Effects list updated";
 
 MRGoreParts_WoundsMenu = "Wounds settings";
 ////{
-MRGoreParts_Wounds = "\cv⊛\c-Bleeding wounds";
-MRGoreParts_DrawWounds = "\cdጸ\c-Draw wounds";
+MRGoreParts_Wounds = "\cdጸ\c-Bleeding wounds";
+MRGoreParts_MaxWounded = "\cdጸ\c-Max wounded";
+MRGoreParts_MaxWounds = "\cdጸ\c-Max wounds on one actor";
 
 MRGoreParts_CorpseWounds = "\cdጸ\c-Wounds on corpses";
 MRGoreParts_CorpseWounds0 = "None";
@@ -79,8 +80,8 @@ MRGoreParts_Voxel = "\cdጸ\c-Voxel enemies";
 
 MRGP_Recs = "Show recommend settings";
 
-MRGoreParts_MaxDying = "\cv⊛\c-Maximum bleeding deaths at the same time";
-MRGoreParts_MaxGibing = "\cv⊛\c-Maximum gibbing at the same time";
+MRGoreParts_MaxDying = "\cdጸ\c-Maximum bleeding deaths at the same time";
+MRGoreParts_MaxGibing = "\cdጸ\c-Maximum gibbing at the same time";
 
 MRGoreParts_FloorSpots = "\cdጸ\c-Spots on surfaces";
 MRGoreParts_FloorSpots0 = "None";
@@ -91,6 +92,7 @@ MRGoreParts_SpotsTime = "\cdጸ\c-Spots life time in seconds";
 
 MRGoreParts_UseCustomColor = "\cdጸ\c-Use custom blood color";
 MRGoreParts_Color = "\cdጸ\c-Custom blood color";
+MRGoreParts_Brightness = "\cdጸ\c-Blood brightness";
 MRGoreParts_FullBright = "\cdጸ\c-Glowing blood";
 
 MRGoreParts_UpdateMenu = "Update mod's data";
@@ -133,7 +135,8 @@ MRGoreParts_Draw = "\cdጸ\c-Рендер частиц";
 
 MRGoreParts_BloodSpawnMenu = "Настройки появления крови";
 ////{
-MRGoreParts_OnlyModsBlood = "\cv⊛\c-Только кровь из мода";
+MRGoreParts_OnlyModsBlood = "\cv⊛\c-Уничтожать другую кровь";
+MRGoreParts_HideOtherBlood = "\cdጸ\c-Скрывать другую кровь";
 MRGoreParts_OnlyModsBlood0 = "Нет";
 MRGoreParts_OnlyModsBlood1 = "Скрывать другую кровь, но не уничтожать";
 MRGoreParts_OnlyModsBlood2 = "Да";
@@ -147,10 +150,10 @@ MRGoreParts_Quake2 = "\cdጸ\c-Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
 MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами";
 
-MRGoreParts_Blacklist = "\cv⊛\c-Чёрный список монстров:";
-MRGoreParts_BlacklistOn = "\cv⊛\c-Чёрный список монстров:";
-MRGP_UpdateBlacklist = "\cv⊛\c-Применить чёрный список";
-MRGoreParts_NoBloodMonsters = "\cv⊛\c-Включить кровь для монстров с флагом \"+NOBLOOD\"";
+MRGoreParts_Blacklist = "\cdጸ\c-Чёрный список монстров:";
+MRGoreParts_BlacklistOn = "\cdጸ\c-Чёрный список монстров:";
+MRGP_UpdateBlacklist = "\cdጸ\c-Применить чёрный список";
+MRGoreParts_NoBloodMonsters = "\cdጸ\c-Включить кровь для монстров с флагом \"+NOBLOOD\"";
 MRGoreParts_NoBloodMist = "\cdጸ\c-Спец. эффекты для безкровных";
 MRGoreParts_NoBloodMistColor = "\cdጸ\c-Цвет эффектов";
 ////}
@@ -166,8 +169,7 @@ MRGoreParts_LowAlphaTip = "Улучшает производительность
 
 MRGoreParts_Speed = "\cdጸ\c-Скоровть/время жизни частиц";
 MRGoreParts_DripOnImpact = "\cdጸ\c-Падающая кровь при уроне";
-MRGoreParts_FlyingBlood = "\cv⊛\c-Струи крови (как в Quake)";
-MRGoreParts_DrawFlyingBlood = "\cdጸ\c-Отображать струи крови";
+MRGoreParts_DrawFlyingBlood = "\cdጸ\c-Струи крови (как в Quake)";
 
 MRGoreParts_MistTexture = "\cdጸ\c-Текстура дымки";
 MRGoreParts_MistTexture0 = "Из мода (128x128)";
@@ -192,8 +194,9 @@ MRGoreParts_EffectsUpdated = "Список эффектов обновлён";
 
 MRGoreParts_WoundsMenu = "Настройки ран";
 ////{
-MRGoreParts_Wounds = "\cv⊛\c-Кровоточащие раны";
-MRGoreParts_DrawWounds = "\cdጸ\c-Отображать кровавые раны";
+MRGoreParts_Wounds = "\cdጸ\c-Кровоточащие раны";
+MRGoreParts_MaxWounded = "\cdጸ\c-Максимум раненых";
+MRGoreParts_MaxWounds = "\cdጸ\c-Максимум ран на одном акторе";
 
 MRGoreParts_CorpseWounds = "\cdጸ\c-Раны на трупах";
 MRGoreParts_CorpseWounds0 = "Нет";
@@ -204,8 +207,8 @@ MRGoreParts_Voxel = "\cdጸ\c-Воксельные враги";
 
 MRGP_Recs = "Показать рекоммендованные настройки";
 
-MRGoreParts_MaxDying = "\cv⊛\c-Максимум посмертных кровотечений";
-MRGoreParts_MaxGibing = "\cv⊛\c-Максимум джибсов";
+MRGoreParts_MaxDying = "\cdጸ\c-Максимум посмертных кровотечений";
+MRGoreParts_MaxGibing = "\cdጸ\c-Максимум джибсов";
 
 MRGoreParts_FloorSpots = "\cdጸ\c-Кровь на поверхностях";
 MRGoreParts_FloorSpots0 = "Нет";
@@ -216,6 +219,7 @@ MRGoreParts_SpotsTime = "\cdጸ\c-Удалять пятна спустя * се�
 
 MRGoreParts_UseCustomColor = "\cdጸ\c-Кровь одного цвета";
 MRGoreParts_Color = "\cdጸ\c-Цвет крови";
+MRGoreParts_Brightness = "\cdጸ\c-Яркость крови";
 MRGoreParts_FullBright = "\cdጸ\c-Светящаяся кровь";
 
 MRGoreParts_Multiplayer = "Режим игры по сети";
