@@ -26,6 +26,7 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
+	Slider "$MRGoreParts_Brightness", "MRGoreParts_Brightness", 0, 4, .1
 	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
@@ -45,7 +46,8 @@ OptionMenu "MRGoreParts_Menu"
 OptionMenu "MRGoreParts_BloodSpawnMenu"
 {
 	Title "$MRGoreParts_BloodSpawnMenu"
-	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "MRGoreParts_OtherBlood"
+	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
+	Option "$MRGoreParts_HideOtherBlood", "MRGoreParts_HideOtherBlood", "YesNo"
 	StaticText "$MRGoreParts_OnlyModsBloodText", "Fire"
 	Option "$MRGoreParts_BloodTypes", "MRGoreParts_BloodTypes", "YesNo"
 	StaticText "$MRGoreParts_BloodTypesText", "Fire"
@@ -73,8 +75,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	StaticText "$MRGoreParts_LowAlphaTip", "Fire"
 	Slider "$MRGoreParts_Speed", "MRGoreParts_Speed", .1, 3, .1
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
-	Option "$MRGoreParts_FlyingBlood", "MRGoreParts_FlyingBlood", "OnOff"
-	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "YesNo", "MRGoreParts_FlyingBlood", 1, 0
+	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "OnOff"
 	Option "$MRGoreParts_MistTexture", "MRGoreParts_MistTexture", "MRGoreParts_MistTextureOption"
 	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
 	StaticText ""
@@ -84,9 +85,10 @@ OptionMenu "MRGoreParts_WoundsMenu"
 {
 	Title "$MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
-	Option "$MRGoreParts_DrawWounds", "MRGoreParts_DrawWounds", "YesNo", "MRGoreParts_Wounds"
+	Slider "$MRGoreParts_MaxWounded", "MRGoreParts_MaxWounded", 1, 50, 1, 0, "MRGoreParts_Wounds"
+	Slider "$MRGoreParts_MaxWounds", "MRGoreParts_MaxWounds", 1, 10, 1, 0, "MRGoreParts_Wounds"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
-	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds"
+	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds", 1, 0
 	StaticText ""
 }
 
