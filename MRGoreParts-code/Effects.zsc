@@ -104,8 +104,8 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		Sector CurSector = LevelLocals.PointInSector(Pos.XY+Vel.XY);
 		
 		if(CurSector){
-			if(CurSector.CenterFloor()>=Pos.Z+Vel.Z){if(Draw)HitSurface(TRACE_HitFloor, Null, (Pos.XY+Vel.XY, CurSector.CenterFloor()));Landed = true;}
-			else if(CurSector.CenterCeiling()<=Pos.Z+Vel.Z){if(Draw)HitSurface(TRACE_HitCeiling, Null, (Pos.XY+Vel.XY, CurSector.CenterCeiling()));Landed = true;}
+			if(CurSector.CenterFloor()+2>=Pos.Z+Vel.Z){if(Draw)HitSurface(TRACE_HitFloor, Null, (Pos.XY+Vel.XY, CurSector.CenterFloor()));Landed = true;}
+			else if(CurSector.CenterCeiling()-2<=Pos.Z+Vel.Z){if(Draw)HitSurface(TRACE_HitCeiling, Null, (Pos.XY+Vel.XY, CurSector.CenterCeiling()));Landed = true;}
 		}
 		
 		if(Landed){Destroy();Return;}
@@ -337,7 +337,7 @@ class MR_GoreParticlesSightTracer : LineTracer
 		return TRACE_Skip;
 	}
 }
-
+/*
 Class Pista: Pistol
 {
 	States
@@ -346,14 +346,14 @@ Class Pista: Pistol
 			PISG B 2{
 				Float posy = Player.ViewZ-Pos.Z;
 				//MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_CurveLine', Self, 0, Angle, Pitch, Color(255,255,255), Offset:(0,0,posy));
-				Vector3 PVel = (AngleToVector(Angle, 7)*Cos(Pitch), -Sin(Pitch)*7);
+				Vector3 PVel = (AngleToVector(Angle, 10)*Cos(Pitch), -Sin(Pitch)*10);
 				
 				MR_GoreParticlesFlyingBlood.Create((Pos.XY, Player.ViewZ), Color(255,0,0), Vel:PVel+Vel);
 			}
 			PISG B 3;
 			Goto Ready;
 	}
-}
+}*/
 
 
 enum MRGP_EffectFlag{
