@@ -62,6 +62,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 				Bool Draw = MRGPartsCheckDraw();
 				//Console.Printf("InitZ: "..Locs[i].Z.." Z: "..Z);
 				if(!(Owner is 'PlayerPawn') && Draw){//Wound
+					Color Col = Color(int(Col.R*MRGoreParts_Brightness),int(Col.G*MRGoreParts_Brightness),int(Col.B*MRGoreParts_Brightness));
 					For(int j=0;j<2;j++)Owner.A_SpawnParticle(Color(int(int(Col.R*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.G*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.B*1.5)*Min(1, Ages[i]/(35*6)))),
 						SPF_RELPOS, 1, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z,
 						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z);
@@ -72,8 +73,12 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 				if(35*CRandom(3, 40)<Ages[i] && Rand>0 && MaxBlood>0)
 				{
 					MaxBlood--;
-					if(Draw && Corpse>1)For(float j=0;j<CRandom(1, 5);j++)Owner.A_SpawnParticle(Col, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),//Dripping blood
-						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3);
+					if(Draw && Corpse>1)For(float j=0;j<CRandom(1, 5);j++){//Dripping blood
+						Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
+						Owner.A_SpawnParticle(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)),
+							SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),
+							Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3);
+					}
 					if(MRGoreParts_FloorSpots>0 && Draw && Corpse>1)//Spots
 					{
 						Vector2 Pos = Owner.Pos.XY;
@@ -91,9 +96,9 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 
 						if(35*15-Ages[i]>(Locs[i].Z-FloorZ)/4)
 						{
-							Owner.A_SpawnParticle(Col, SPF_RELPOS, MRGoreParts_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
+							Float Bright = MRGoreParts_Brightness*CFRandom(.8,1.8);
+							Owner.A_SpawnParticle(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), SPF_RELPOS, MRGoreParts_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
 								FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
-							Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 							Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
 						}
 					}

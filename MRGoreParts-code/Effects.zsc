@@ -124,7 +124,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	{
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-		Float Brightnes = MRGoreParts_Brightness+CFRandom(-.3, .5);
+		Float Brightnes = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 		
 		Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 		
@@ -139,7 +139,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		p.Vel = Vel;
 		
 		p.Pos = Pos;
-		Float Bright = MRGoreParts_Brightness+CFRandom(-.3, .5);
+		Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 		Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 		p.Color1 = TempCol;
 		p.LifeTime = 1;
@@ -158,7 +158,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 			Float Step = i;
 			Step /= Dif.Length();
 
-			Brightnes = MRGoreParts_Brightness+CFRandom(-.3, .5);
+			Float Brightes = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 			CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 			
 			Float Rand = CFRandom(-Scale*MRGoreParts_Size*.1, Scale*MRGoreParts_Size*.1);
@@ -199,7 +199,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.Pos = HitPos - (0,0,i);
 					Float Pitch = CRandom(0, 40);
 					p.Vel = -Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*2);
-					Float Bright = MRGoreParts_Brightness+CFRandom(-.3, .5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					p.Color1 = TempCol;
 					p.LifeTime = CRandom(15, 21);
@@ -221,7 +221,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.Pos = HitPos + (Actor.AngleToVector(Angle, CFRandom(-3, 3)), CFRandom(-3, 3)-i);
 					p.Pos.XY -= Actor.AngleToVector(Angle+90, 1);
 					p.Vel = (0,0,-.01);
-					Float Bright = MRGoreParts_Brightness+CFRandom(-.3, .5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					p.Color1 = TempCol;
 					p.LifeTime = MRGoreParts_SpotsTime*35;
@@ -247,7 +247,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.Pos = HitPos - (0,0,i);
 					Float Pitch = CRandom(0, 40);
 					p.Vel = -Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*Ofst*2);
-					Float Bright = MRGoreParts_Brightness+CFRandom(-.3, .5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					p.Color1 = TempCol;
 					p.LifeTime = CRandom(15, 21);
@@ -268,7 +268,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.Vel = (0,0,0);
 					
 					p.Pos = HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst);
-					Float Bright = MRGoreParts_Brightness+CFRandom(-.3, .5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					p.Color1 = TempCol;
 					p.LifeTime = MRGoreParts_SpotsTime*35;
@@ -287,7 +287,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.Vel = (0,0,0);
 					
 					p.Pos = HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst);
-					Float Bright = MRGoreParts_Brightness+CFRandom(-.3, .5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					p.Color1 = TempCol;
 					p.LifeTime = 40;
@@ -345,17 +345,10 @@ Class Pista: Pistol
 		Fire:
 			PISG B 2{
 				Float posy = Player.ViewZ-Pos.Z;
-				MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_CurveLine', Self, 0, Angle, Pitch, Color(255,255,255), Offset:(0,0,posy));
-				/*MR_GoreParticlesFlyingBlood a = New('MR_GoreParticlesFlyingBlood');
-				a.Init();
-				if(!a.bDestroyed){
-					a.Pos = (Pos.XY, Player.ViewZ);
-					a.Pos += (AngleToVector(Angle, 5*Abs(Cos(Pitch))), -Sin(Pitch)*5);
-					a.Gravity = .2;
-					a.Vel = (AngleToVector(Angle, 5*Abs(Cos(Pitch))), -Sin(Pitch)*5);
-					a.Col = Color(200,0,0);
-					a.Scale = 5;
-				}*/
+				//MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_CurveLine', Self, 0, Angle, Pitch, Color(255,255,255), Offset:(0,0,posy));
+				Vector3 PVel = (AngleToVector(Angle, 7)*Cos(Pitch), -Sin(Pitch)*7);
+				
+				MR_GoreParticlesFlyingBlood.Create((Pos.XY, Player.ViewZ), Color(255,0,0), Vel:PVel+Vel);
 			}
 			PISG B 3;
 			Goto Ready;
@@ -452,7 +445,7 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 			
 			
 			
-			Float Bright = Max(MRGoreParts_Brightness-MRGP_MinBright, Min(MRGoreParts_Brightness+.5, 1.5+Vel.Z*1.5));
+			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, 1.5+Vel.Z*1.5));
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			Vector3 Ofst = Vel;
@@ -517,7 +510,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 			Double Size = Scale*MRGoreParts_Size*(abs(HorzStrn.Length()*20))*Dist;
 			if(Flags&SGPF_NoVel)Size = Scale*Dist;
 			
-			Float Bright = MRGoreParts_Brightness+CFRandom(-.1, .4);
+			Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			Double PAlpha = CFRandom(.2, .4);
@@ -605,7 +598,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 			
 			if(Water){Vel *= .5;Accel *= .5;}
 			
-			Float Bright = Max(MRGoreParts_Brightness-MRGP_MinBright, Min(MRGoreParts_Brightness+.5, (Strn.Z/(.3*j)+.75)*2));
+			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, (Strn.Z/(.3*j)+.75)*2));
 			Bright += CFRandom(-.05, .05);
 			
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
@@ -675,7 +668,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 			
 			if(Water){Vel *= .5;Accel *= .5;}
 
-			Float Bright = Max(MRGoreParts_Brightness-MRGP_MinBright, Min(MRGoreParts_Brightness+.5, 1.2+Sin(-Pit)*.5));
+			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, 1.2+Sin(-Pit)*.5));
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 
@@ -747,7 +740,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 			
 			if(Water){Vel *= .5;Accel *= .5;}
 			
-			Float Bright = Max(MRGoreParts_Brightness-MRGP_MinBright, Min(MRGoreParts_Brightness+.5, (Strn.Z/(.3*j)+.75)*2));
+			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, (Strn.Z/(.3*j)+.75)*2));
 			Bright += CFRandom(-.05, .05);
 			
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
