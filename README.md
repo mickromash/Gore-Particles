@@ -19,7 +19,7 @@ But because all of the blood is visualized with particles, I highly recommend us
 
 (GZDoom particles aren't working in such a way that when their amount hit the limit, and new particle need to spawn, old ones will wanish, instead, new particles won't spawn until one of the old ones won't disappear)
 
-__Mod requires GZDoom 4.12 or newer__
+__Mod requires GZDoom 4.14.2 or newer__
 
 ## TO DO
 
@@ -30,7 +30,7 @@ __Mod requires GZDoom 4.12 or newer__
 * Change vanilla monsters blood color on sapwn
 * Blood amount and size based on damage
 * Wounds size based on damage
-* Configurable blood brightness and transparancy
+* Configurable blood transparancy
 * Partially invisible blood
 * Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
