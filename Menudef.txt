@@ -86,7 +86,7 @@ OptionMenu "MRGoreParts_WoundsMenu"
 	Title "$MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
 	Slider "$MRGoreParts_MaxWounded", "MRGoreParts_MaxWounded", 1, 50, 1, 0, "MRGoreParts_Wounds"
-	Slider "$MRGoreParts_MaxWounds", "MRGoreParts_MaxWounds", 1, 10, 1, 0, "MRGoreParts_Wounds"
+	Slider "$MRGoreParts_MaxWounds", "MRGoreParts_MaxWounds", 1, 15, 1, 0, "MRGoreParts_Wounds"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds", 1, 0
 	StaticText ""
