@@ -43,6 +43,7 @@ nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
 nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
+nosave string MRGoreParts_NoBloodEffectsList = "2 6";//Effects spawn for non bleeding actors
 
 nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
 nosave bool MRGoreParts_LowAlpha = false;//Minimize usage of alpha channel for particles
