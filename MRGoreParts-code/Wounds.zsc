@@ -12,8 +12,10 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 		
 	Override Void OnDestroy()
 	{
-		Handler.Wounded.Delete(Handler.Wounded.Find(Owner));
-		Handler.Wounds.Delete(Handler.Wounds.Find(Self));
+		if(!Handler)Return;
+		if(Handler.Wounded.Find(Owner)!=Handler.Wounded.Size())Handler.Wounded.Delete(Handler.Wounded.Find(Owner));
+		if(Handler.Wounds.Find(Self)!=Handler.Wounds.Size())Handler.Wounds.Delete(Handler.Wounds.Find(Self));
+		Super.OnDestroy();
 	}
 	
 	Override Void PostBeginPlay()

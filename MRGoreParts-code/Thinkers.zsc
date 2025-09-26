@@ -53,6 +53,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	
 	Override Void OnDestroy()
 	{
+		if(!Handler)Return;
 		Handler.Dyings.Delete(Handler.Dyings.Find(Self));
 		Super.OnDestroy();
 	}

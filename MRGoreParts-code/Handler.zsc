@@ -483,6 +483,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		else
 		{
+			if(Wounded.Find(Thing)>=Wounds.Size())Return;
 			Token = Wounds[Wounded.Find(Thing)];
 		}
 		
