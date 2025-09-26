@@ -1,6 +1,6 @@
 /*
-	Main frame
-	Blood, gibs, death effects spawning
+	Main frame (or smth idk)
+	effects spawning, data handling
 */
 
 Class MR_GoreParticlesStaticHandler: StaticEventHandler
@@ -24,6 +24,11 @@ Class MR_GoreParticlesStaticHandler: StaticEventHandler
 				}
 			}
 		}
+		
+		if(!MRGoreParts_Debug)Return;
+		
+		Console.Printf("\cdAll particles blood effects:");
+		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName());
 	}
 }
 
@@ -86,6 +91,13 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())AlwaysEffects.Push(Handler.Effects[Num.ToInt()]);
 		}
+		
+		if(!MRGoreParts_Debug)Return;
+		
+		Console.Printf("\cdRandom effects:");
+		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName());
+		Console.Printf("\cdAlways effects:");
+		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName());
 	}
 	
 	
@@ -156,7 +168,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 	}
 	
-	Array< Class <Actor> > BlackList;//Black listed monsters
+	Array< Class <Actor> > BlackList;//List of monsters that shouldn't bleed
 	
 	Void SetUpBlackList()
 	{
@@ -438,10 +450,10 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(!mo)Return true;
 		
 		
-		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
+		Return abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat() && mo.CheckSight(Plr.Camera);
 	}
 	
-	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)
+	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)//Spec. effects for non bleeding actors
 	{
 		if(MRGoreParts_NoBloodMist)
 		{
@@ -473,25 +485,27 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void SpawnWound(Actor Thing=Null, Actor Inflictor=Null, Actor DamageSource=Null, Color Col=Color(0,0,0))
 	{
-		MR_GoreParticlesWound Token;
-		if(Wounded.Find(Thing)==Wounded.Size())
+		MR_GoreParticlesWound Token;//Wound thinker we're working with
+		if(Wounded.Find(Thing)==Wounded.Size())//In case actor hasn't been wounded before, create a new wound thinker
 		{
 			MR_GoreParticlesWound a = New('MR_GoreParticlesWound');
 			a.Owner = Thing;
 			a.PostBeginPlay();
 			Token = a;
 		}
-		else
+		else//Otherwise, work with wound thinker linked to this actor
 		{
 			if(Wounded.Find(Thing)>=Wounds.Size())Return;
 			Token = Wounds[Wounded.Find(Thing)];
 		}
 		
+		if(!Token){if(MRGoreParts_Debug)Console.Printf("Couldn't find or create a wound for "..Thing.GetClassName().." at "..Thing.Pos);Return;}
+		
 		Token.Col = Col;
 		
-		if(Inflictor != Thing && Inflictor != DamageSource)
+		if(Inflictor != Thing && Inflictor != DamageSource)//Check if it wasn't SH (like bleeding in HDest)
 		{
-			Bool Replace = true;
+			Bool Replace = true;//Check wounds limit
 			For(int i=0;i<MRGoreParts_MaxWounds;i++)
 			{
 				if(Token.Ages[i]<1)
@@ -525,7 +539,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					Break;
 				}
 			}
-			if(Replace)
+			if(Replace)//Replace the oldest wound on actor
 			{
 				if(MRGoreParts_Debug)Console.Printf("Targ "..Thing.Pos.XY.." inf "..Inflictor.Pos.XY);
 				Vector3 Dif = LevelLocals.Vec3Diff(Inflictor.Pos, Thing.Pos);
@@ -554,7 +568,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				Token.Ages[0]=35*15;
 			}
 		}
-		else
+		else//Hideous bleeding
 		{
 			Array<int> Ages;
 			For(int i=0;i<MRGoreParts_MaxWounds;i++)
@@ -585,7 +599,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		{
 			if((e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters) || (MRGoreParts_BlacklistOn && BlackList.Find(e.Thing.GetClass())!=BlackList.Size()))
 			{
-				SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);
+				SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);//Special effects for non bleeding actors
 				Return;
 			}
 			
@@ -649,7 +663,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					SpawnWound(e.Thing, e.Inflictor, e.DamageSource, Col);
 				}
 				
-				if(e.Inflictor != e.Thing)
+				if(e.Inflictor != e.Thing)//Spawn effects
 				{
 					if(!e.DamageSource)Return;
 					Double Pitch = 0;
@@ -661,12 +675,15 @@ Class MR_GoreParticlesHandler: EventHandler
 					Double DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
 
 					if(e.Inflictor.Distance2D(e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
-
+					
+					int Fuzzy = 0;
+					if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
+					
 					if(Effects.Size()>0)
-						Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, 0, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
+						Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
 					For(int i=0;i<AlwaysEffects.Size();i++)
 					{
-						AlwaysEffects[i].DoParticleEffect(Spot, 0, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
+						AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
 					}
 					
 					if(Random(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO);
@@ -678,33 +695,30 @@ Class MR_GoreParticlesHandler: EventHandler
 						Float Strn = CRandom(4, 6);
 						Float Pitch = -CRandom(0, 60);
 						Vector3 Vel = (Actor.AngleToVector(e.Inflictor.AngleTo(e.DamageSource)+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
-						MR_GoreParticlesFlyingBlood.Create(e.Inflictor.Pos, Col, Scale:4*CFRandom(1, 2), Vel:Vel);
+						MR_GoreParticlesFlyingBlood.Create(e.Inflictor.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
 						S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3), Pitch: CFrandom(1.1, 1.2));
 					}
-					
-					For(int i=CRandom(0, 10)*Amount;i<20*Amount;i++)
-					{
-						Float Dist = 1;
-						if(e.DamageSource)Dist *= 1+(e.Inflictor.Distance3D(e.DamageSource)-80)*.0025;
-						Float Size = CFRandom(.8, 1.6)*Dist;
-						Float Pitch = e.Inflictor.Pos.Z/e.Thing.Height+CRandom(10, 20);
-						if(e.Inflictor is 'BulletPuff' && e.DamageSource)Pitch = e.DamageSource.Pitch+CRandom(10, 20);
-						Float Ang = CRandom(175, 185);
-						Float Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
-						if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
-						Vector3 Ofst = (Actor.AngleToVector(Angle, 1)*abs(Cos(Pitch)), Sin(Pitch))*Dist;
-								
-						if(i%2==0 && MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact)
-						{
+					//Dripping blood
+					if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact)
+						For(int i=CRandom(0, 5)*Amount;i<10*Amount;i++){
+							Float Dist = 1;
+							if(e.DamageSource)Dist *= 1+(e.Inflictor.Distance3D(e.DamageSource)-80)*.0025;
+							Float Size = CFRandom(.8, 1.6)*Dist;
+							Float Pitch = e.Inflictor.Pos.Z/e.Thing.Height+CRandom(10, 20);
+							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Pitch = e.DamageSource.Pitch+CRandom(10, 20);
+							Float Ang = CRandom(175, 185);
+							Float Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
+							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
+							Vector3 Ofst = (Actor.AngleToVector(Angle, 1)*abs(Cos(Pitch)), Sin(Pitch))*Dist;
+									
 							Ang = CRandom(140, 220)*Dist;
 							Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
 							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
 							Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
 							Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-							e.Inflictor.A_SpawnParticle(ColTmp, 0, CRandom(29, 40), Size*1.3, 0, Ofst.X*2,Ofst.Y*2,5,
+							e.Inflictor.A_SpawnParticle(ColTmp, Fuzzy, CRandom(29, 40), Size*1.3, 0, Ofst.X*2,Ofst.Y*2,5,
 									0,0,CFRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
 						}
-					}
 				}
 			}
 		}
@@ -776,7 +790,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		//Console.Printf(e.Thing.GetClassName());
 	}
 	
-	Void SpawnBloodDrop(Actor mo, Color Col)
+	Void SpawnBloodDrop(Actor mo, Color Col)//Mainly for hdest
 	{
 		Bool Draw = MRGoreParts_Draw;
 		
@@ -813,6 +827,9 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
 		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (mo.GetRenderStyle() == STYLE_OptFuzzy||mo.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
+		
 		Color Col = mo.BloodColor;
 		if(MRGoreParts_UseCustomColor)
 		{
@@ -839,13 +856,13 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(Draw){
 			Double Size = mo.Height;
 			if(mo.Height<mo.Radius)Size = mo.Radius;
-			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
+			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
 		}
 		
 		if(Draw)For(int i=0;i<Amount*CRandom(8, 12);i++)
 		{
 			if(Effects.Size()>0)
-				Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, 0, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
+				Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
 					(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
 		}
 				
@@ -857,14 +874,14 @@ Class MR_GoreParticlesHandler: EventHandler
 				Float Strn = CRandom(5, 7);
 				Float Pitch = -CRandom(40, 90);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
-				MR_GoreParticlesFlyingBlood.Create(mo.Pos, Col, Scale:4*CFRandom(1, 2), Vel:Vel);
+				MR_GoreParticlesFlyingBlood.Create(mo.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
 				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3), Pitch: CFrandom(1.1, 1.2));
 				SAmount++;
 			}
 		}
 	}
 	
-	Void DoOtherBlood(Actor mo)
+	Void DoOtherBlood(Actor mo)//Remove or hide other mods gore
 	{
 		Color Col = Gameinfo.DefaultBloodColor;
 		if(MRGoreParts_UseCustomColor)
@@ -975,8 +992,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		if((class<actor>)(Mod))
 		{
 			if(MRGoreParts_Quake2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Quake2").."\cc 0");
-			if(MRGoreParts_OnlyModsBlood<2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_OnlyModsBlood")..
-				"\cc "..StringTable.Localize("$MRGoreParts_OnlyModsBlood"..2));
+			if(!MRGoreParts_OnlyModsBlood)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_OnlyModsBlood")..
+				"\cc "..1);
 			if(MRGoreParts_BloodTypes)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BloodTypes").."\cc 0");
 			if(MRGoreParts_BlacklistOn)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BlacklistOn").."\cc 0");
 			if(MRGoreParts_Distance>0)Recs.Push("\cc"..StringTable.Localize("$MRGoreParts_EffectsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Distance").."\cc 0");
@@ -1051,7 +1068,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	}
 }
 
-Class MR_GoreParticlesDelayedSpawner: Actor//You'll never guess what mod it originates from; Spawn only when playing with Hideous Destructor
+Class MR_GoreParticlesDelayedSpawner: Actor//You'll never guess what mod it originates from
 {
 	Color Col;
 	Float Size, Fade, Resize;

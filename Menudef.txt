@@ -28,6 +28,7 @@ OptionMenu "MRGoreParts_Menu"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
 	Slider "$MRGoreParts_Brightness", "MRGoreParts_Brightness", 0, 4, .1
 	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
+	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
 	StaticText ""

@@ -1,12 +1,12 @@
 /*
-	Effects actors and classes
+	Blood effects actors(kinda) and classes
 */
 
 Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood stream (basically client side actor)
 {
 	Vector3 Pos, Prev, Vel;
 	Color Col;
-	int Age;
+	int Age, RenderStyle;
 	Double Gravity, Scale, FOV;
 	
 	Static Double AngleToVector2(Vector2 Pos, Vector2 Dir)
@@ -53,7 +53,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		Return CheckSight();
 	}
 	
-	Static MR_GoreParticlesFlyingBlood Create(Vector3 Pos, Color Col, Float Gravity=.4, Float Scale=3, Vector3 Vel=(0,0,0))
+	Static MR_GoreParticlesFlyingBlood Create(Vector3 Pos, Color Col, int Flags, Float Gravity=.4, Float Scale=3, Vector3 Vel=(0,0,0))
 	{
 		Let a = New('MR_GoreParticlesFlyingBlood');
 		a.Init();
@@ -63,6 +63,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		a.Col = Col;
 		a.Gravity = Gravity;
 		a.Scale = Scale;
+		if(Flags&SGPF_Fuzzy)a.RenderStyle = STYLE_Shadow;
 		Return a;
 	}
 	
@@ -155,6 +156,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		p.startalpha = 1;
 		p.fadestep = 0;
 		p.Flags = Glow;
+		p.Style = RenderStyle;
 		
 		Level.SpawnParticle(p);
 		
@@ -182,6 +184,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 			p.startalpha = 1;
 			p.fadestep = 0;
 			p.Flags = Glow;
+			p.Style = RenderStyle;
 			
 			Level.SpawnParticle(p);
 		}
@@ -215,6 +218,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.startalpha = 1;
 					p.fadestep = 0;
 					p.Flags = Glow;
+					p.Style = RenderStyle;
 					
 					Level.SpawnParticle(p);
 				}
@@ -237,6 +241,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.startalpha = 1;
 					p.fadestep = MRGoreParts_LowAlpha?0:-1;
 					p.Flags = Glow;
+					p.Style = RenderStyle;
 					
 					Level.SpawnParticle(p);
 				}
@@ -263,6 +268,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.startalpha = 1;
 					p.fadestep = 0;
 					p.Flags = Glow;
+					p.Style = RenderStyle;
 					
 					Level.SpawnParticle(p);
 				}
@@ -284,10 +290,11 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.startalpha = 1;
 					p.fadestep = (MRGoreParts_LowAlpha)?0:-1;
 					p.Flags = Glow;
+					p.Style = RenderStyle;
 					
 					Level.SpawnParticle(p);
 				}
-				if(HitType == TRACE_HitCeiling)For(int i=0;i<Random(0, 3)*4;i++)
+				if(HitType == TRACE_HitCeiling)For(int i=0;i<Random(0, 3)*4;i++)//Dripping from ceiling
 				{
 					FSpawnParticleParams p;
 					p.Accel = (0,0,-CFRandom(.1, .4));
@@ -303,6 +310,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					p.startalpha = 1;
 					p.fadestep = (MRGoreParts_LowAlpha)?0:-1;
 					p.Flags = Glow;
+					p.Style = RenderStyle;
 					
 					Level.SpawnParticle(p);
 				}
@@ -367,9 +375,10 @@ enum MRGP_EffectFlag{
 	SGPF_NoDist = 1,//Distance won't affect particles velocity and sizes
 	SGPF_FixAmount = 2,//Ignore particles amount CVar
 	SGPF_NoVel = 4,
+	SGPF_Fuzzy = 8,
 };
 
-Class MR_GoreParticlesEffect play Abstract
+Class MR_GoreParticlesEffect play abstract
 {
 	Virtual Void DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
 	{}
@@ -424,6 +433,8 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 		
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
 		Float Mult = (CRandom(1, 3)*3+1)/Max(1, Dist*.1)*Amount;
 		if(Water)Mult = Max(1, Mult*.5);
@@ -458,7 +469,7 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
 			
-			mo.A_SpawnParticle(ColTmp, Glow, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
+			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
 		}
 	}
@@ -490,6 +501,8 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 		
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
 		int Amnt = CRandom(1, 4)/Max(1, Dist*.1)*2*Amount;
 		if(Flags&SGPF_FixAmount)Amnt = Amount;
@@ -532,7 +545,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 				Case 3:Texture = Texman.CheckForTexture("glpart");Break;
 			}
 			
-			mo.A_SpawnParticleEx(ColTmp, Texture, STYLE_None, Glow, Life, Size, 0,
+			mo.A_SpawnParticleEx(ColTmp, Texture, Fuzzy, Glow, Life, Size, 0,
 				Offset.X,Offset.Y,5+Offset.Z,
 				Vel.X,Vel.Y,Vel.Z,
 				Accel.X,Accel.Y,Accel.Z,
@@ -568,6 +581,8 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 		
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
 		Pitch -= CFRandom(5, 8);
 		//Angle += CRandom(-30, 30);
@@ -611,7 +626,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			
-			mo.A_SpawnParticle(ColTmp, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.015, 1, 0, -((Size+j*3)/Life));
 			Life-=.5/MRGoreParts_Speed*LifeM;
 		}
@@ -642,6 +657,8 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
 		Pitch -= CRandom(5, 40);
 		//Angle += CRandom(-15, 15);
@@ -679,7 +696,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 
-			mo.A_SpawnParticle(ColTmp, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 				Vel.X,Vel.Y,Vel.Z, Accel.X,Accel.Y,Accel.Z, 1, 0, -(Size/Life));
 
 			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
@@ -710,6 +727,8 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 		
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
 		Pitch -= CFRandom(5, 8);
 		Angle += CRandom(-30, 30);
@@ -752,7 +771,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 			
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
-			mo.A_SpawnParticle(ColTmp, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 1.2/Life, ((Size+j*3)/Life)*.05);
 			Life-=.5/MRGoreParts_Speed*LifeM;
 		}

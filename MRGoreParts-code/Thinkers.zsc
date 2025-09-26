@@ -40,7 +40,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	Bool Sos, Artery, Draw;
 	Float Mid, Fov;
 	Actor Owner;
-	int Age;
+	int Age, Fuzzy;
 		
 	Override Void PostBeginPlay()
 	{
@@ -49,6 +49,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 		Mid = Owner.Height*.5;
 		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO);
 		Fov = CVar.FindCVar("FOV").GetFloat();
+		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
 	}
 	
 	Override Void OnDestroy()
@@ -96,13 +97,13 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 			{
 				Float Strn = CRandom(3, 5);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
-				MR_GoreParticlesFlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Scale:4*CFRandom(1, 2), Vel:Vel);
+				MR_GoreParticlesFlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
 				S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2), Pitch: CFrandom(1.1, 1.2));
 			}
 			if(Age<CRandom(-40, 60))
 			{
 				if(Handler.Effects.Size()>0)
-					Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, 0, Angle, Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
+					Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy, Angle, Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
 			}
 		}
 	}
