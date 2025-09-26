@@ -76,6 +76,13 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		Fov = CVar.FindCVar("FOV").GetFloat();
 	}
 	
+	Override Void OnDestroy()
+	{
+		if(!Handler)Return;
+		Handler.Streams.Delete(Handler.Streams.Find(Self));
+		Super.OnDestroy();
+	}
+	
 	Override Void Tick()
 	{
 		if(Level.IsFrozen())Return;
