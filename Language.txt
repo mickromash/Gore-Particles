@@ -1,6 +1,6 @@
 [eng enu default en]
 
-MRGoreParts_Settings = "\cg✺\c-Configure Particle gore";
+MRGoreParts_Settings = "\cg✺\c- Configure Particle gore";
 
 MRGoreParts_Title = "Particle Gore";
 //{
@@ -82,6 +82,7 @@ MRGP_Recs = "Show recommend settings";
 
 MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
 MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
+MRGoreParts_Crush = "Crushed corpses";
 
 MRGoreParts_FloorSpots = "Spots on surfaces";
 MRGoreParts_FloorSpots0 = "None";
@@ -128,7 +129,7 @@ MR_GoreParticlesEffect_Sparks = "Sparks";
 
 [ru]
 
-MRGoreParts_Settings = "\cg✺\c-Настроить кровавые частицы";
+MRGoreParts_Settings = "\cg✺\c- Настроить кровавые частицы";
 
 MRGoreParts_Title = "Кровавые частицы";
 //{
@@ -210,6 +211,7 @@ MRGP_Recs = "Показать рекоммендованные настройк�
 
 MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
 MRGoreParts_MaxGibing = "Максимум джибсов";
+MRGoreParts_Crush = "Раздавливание тел";
 
 MRGoreParts_FloorSpots = "Кровь на поверхностях";
 MRGoreParts_FloorSpots0 = "Нет";

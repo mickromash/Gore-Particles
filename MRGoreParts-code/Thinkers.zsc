@@ -108,3 +108,183 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 		}
 	}
 }
+
+Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
+{
+	Color Bld;
+	Sector CurSector;
+	int StartAmount, RenderStyle;
+	Vector2 Pos;
+	Double Radius, PosZ, PrevZ, FOV;
+	Array<float> RandX, RandY;
+	Array<Color> Colors;
+	Array<Float> Sizes;
+	
+	Static Double AngleToVector2(Vector2 Pos, Vector2 Dir)
+	{
+		Vector2 Dif = Levellocals.Vec2Diff(Pos, Dir);
+		
+		Return VectorAngle(Dif.X, Dif.Y);
+	}
+	
+	Static Double PitchToVector3(Vector3 Pos, Vector3 Dir)
+	{
+		Vector3 Dif = Levellocals.Vec3Diff(Pos, Dir);
+		
+		Return -atan2(Dif.Z, Dif.XY.Length());
+	}
+	
+	Bool CheckSight(Vector3 Pos)
+	{
+		Let Plr = Players[ConsolePlayer].Camera;
+		
+		if(!Plr.Player)Return true;
+		
+		Vector3 Dir = (Plr.Pos.XY, Plr.Player.ViewZ);
+		
+		Vector3 direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), cos(PitchToVector3(Pos, Dir))), -sin(PitchToVector3(Pos, Dir)));
+		Vector3 Dist = Level.Vec3Diff(Pos, Dir);
+		
+		let tracer = new('MR_GoreParticlesSightTracer');
+		if(!tracer)return false;
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
+		
+		Return Tracer.HitPlayer;
+	}
+	
+	Bool MRGPartsCheckDraw(float dist, Vector3 Pos)
+	{
+		if(!MRGoreParts_Draw)Return false;
+				
+		Let Plr = Players[ConsolePlayer].Camera;
+		if(!Plr)Return false;
+		
+		
+		Vector3 Dif = LevelLocals.Vec3Diff(Plr.Pos, Pos);
+		
+		if(dist!=0 && Dif.Length()>Dist)Return false;
+		
+		if(abs(Actor.DeltaAngle(AngleToVector2(Plr.Pos.XY, Pos.XY), Plr.Angle))>FOV && Abs(Actor.DeltaAngle(PitchToVector3(Plr.Pos, Pos), Plr.Pitch))>70)Return false;
+		
+		Return CheckSight(Pos);
+	}
+	
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		FOV = CVar.FindCVar("FOV").GetFloat();
+		Handler.Crashed.Push(Self);
+				
+		For(int i=0;i<360;i+=CRandom(2, 4))
+		{
+			For(float r=CFRandom(1, 4);r<Radius;r*=CFRandom(1.3, 2)){
+				Vector2 Pos = Pos+Actor.AngleToVector(i, r);
+				
+				Sector TempSect = LevelLocals.PointInSector(Pos);
+				
+				if(TempSect == CurSector||TempSect.CenterCeiling()==CurSector.CenterCeiling()){
+					RandX.Push(Pos.X);RandY.Push(Pos.Y);
+				}
+			}
+		}
+		
+		StartAmount = RandX.Size();
+		
+		For(int i=0;i<RandX.Size();i++){
+			Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
+			Color TempCol = Color(int(Bld.R*Bright),int(Bld.G*Bright),int(Bld.B*Bright));
+			Colors.Push(TempCol);
+			Sizes.Push(MRGoreParts_Size*CFRandom(.4, 2)*3);
+		}
+	}
+	
+	Override Void OnDestroy()
+	{
+		if(!Handler)Return;
+		Handler.Crashed.Delete(Handler.Crashed.Find(Self));
+		Super.OnDestroy();
+	}
+		
+	Override Void Tick(){
+		Super.Tick();
+		if(RandX.Size()<1){Destroy();Return;}
+		
+		if(CurSector.CenterFloor()>=CurSector.CenterCeiling())Return;
+		
+		PosZ = CurSector.CenterCeiling();
+		For(int i=0;i<CRandom(2, 4);i++)SpawnDrops();
+		SpawnStatic();
+		
+		PrevZ = PosZ;
+	}
+	
+	Void SpawnDrops()
+	{
+		if(RandX.Size()<CRandom(0, StartAmount))Return;
+		
+		FSpawnParticleParams p;
+		p.Accel = (0,0,-CFRandom(.3, .8));
+		p.Vel = (0,0,0);
+		
+		p.Pos = (0,0,PosZ);
+		
+		int Rand = CRandom(0, RandX.Size()-1);
+		
+		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
+		
+		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2), attenuation:ATTN_STATIC);
+		
+		if(!MRGPartsCheckDraw(1000, (RandX[Rand], RandY[Rand], CurSector.CenterFloor()+Mid*.5)))Return;
+		
+		p.Pos.XY = (RandX[Rand], RandY[Rand]);
+		
+		p.Color1 = Colors[Rand];
+		p.LifeTime = 50;
+		p.size = Sizes[Rand];
+		p.sizeStep = -(p.size/50.);
+		p.startalpha = 1;
+		p.fadestep = 0;
+		
+		int Glow = 0;
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		p.Flags = Glow;
+		p.Style = RenderStyle;
+		
+		Level.SpawnParticle(p);
+		
+		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
+	}
+	
+	Void SpawnStatic()
+	{
+		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
+		Float CurPos = PrevZ;
+		Float VelZ = PosZ-PrevZ;
+		if(PosZ<PrevZ)CurPos = PosZ;
+		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
+		For(int i=0;i<RandX.Size();i++){
+		
+			if(!MRGPartsCheckDraw(1000, (RandX[i], RandY[i], CurSector.CenterFloor()+Mid*.5)))Continue;
+		
+			FSpawnParticleParams p;
+			p.Accel = (0,0,0);
+			p.Vel = (0,0,VelZ);
+			
+			p.Pos = (RandX[i],RandY[i],CurPos-1);
+			
+			p.Color1 = Colors[i];
+			p.LifeTime = 1;
+			p.size = Sizes[i];
+			p.sizeStep = 0;
+			p.startalpha = 1;
+			p.fadestep = 0;
+			
+			int Glow = 0;
+			if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+			p.Flags = Glow;
+			p.Style = RenderStyle;
+			
+			Level.SpawnParticle(p);
+		}
+	}
+}

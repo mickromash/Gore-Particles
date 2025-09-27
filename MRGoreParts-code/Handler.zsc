@@ -43,6 +43,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Array<MR_GoreParticlesFlyingBlood> Streams;
 	Array<MR_GoreParticlesDeathThinker> Dyings;
+	Array<MR_GoreParticlesCrashedThinker> Crashed;
 	Array<int> GibsTime;
 	
 	Array<Actor> Wounded;
@@ -407,6 +408,10 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Dyings[i])Dyings[i].Tick();
 		}
 		
+		For(int i=0;i<Crashed.Size();i++){
+			if(Crashed[i])Crashed[i].Tick();
+		}
+		
 		For(int i=0;i<Wounds.Size();i++){
 			if(Wounds[i])Wounds[i].Tick();
 		}
@@ -764,6 +769,81 @@ Class MR_GoreParticlesHandler: EventHandler
 			Dyings.Push(a);
 		}
 	}
+	
+	Override void WorldThingGround (WorldEvent e)//Crush
+	{
+		if(!MRGoreParts_Crush)Return;
+		
+		if(!e.Thing)Return;
+		if(!e.Thing.bIsMonster&&!e.Thing.bCorpse)Return;
+		
+		if(MRGoreParts_Debug)Console.Printf(e.Thing.GetClassName().." at "..e.Thing.Pos.." Crushed! (ceiling: "..e.Thing.CeilingZ..")");
+
+		Color Col = e.Thing.BloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		else
+		{
+			if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
+		}
+		
+		Sector Crusher;
+		
+		Float Radius = GetDefaultByType(e.Thing.GetClass()).Radius*1.5;
+		
+		Float Lowest, CeilingZ;
+		CeilingZ = e.Thing.CeilingZ;
+		
+		For(int x = e.Thing.Pos.X-Radius;x<e.Thing.Pos.X+Radius;x+=5)
+		{
+			For(int Y = e.Thing.Pos.Y-Radius;Y<e.Thing.Pos.Y+Radius;Y+=5)
+			{
+				Sector TempSect = LevelLocals.PointInSector((X,Y));
+				
+				if(TempSect.CenterCeiling()!=CeilingZ)Continue;
+				
+				if(TempSect.PlaneMoving(1)){Crusher = TempSect;Break;}
+			}
+			if(Crusher)Break;
+		}
+		
+		MR_GoreParticlesCrashedThinker Nerd = New('MR_GoreParticlesCrashedThinker');
+		
+		//Nerd.ThingBox[0] = (e.Thing.Pos.X-Radius, e.Thing.Pos.Y-Radius);
+		//Nerd.ThingBox[1] = (e.Thing.Pos.X+Radius, e.Thing.Pos.Y+Radius);
+		Nerd.Radius = Radius;
+		Nerd.Pos = e.Thing.Pos.XY;
+		Nerd.Bld = Col;
+		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
+		
+		Nerd.RenderStyle = Fuzzy;
+		Nerd.CurSector = Crusher;
+				
+		Nerd.PostBeginPlay();
+		
+		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5);
+		
+		if(!MRGoreParts_Draw)Return;
+		
+		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
+		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
+		MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
+		
+		
+		For(int i=0;i<CRandom(40, 50)*MRGoreParts_Amount;i++){
+			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
+			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+			Float Size = CFRandom(4, 6)*MRGoreParts_Size;
+			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, Random(0, 360),
+				0,0,1, CFRandom(.6, 1),0,-.01, -CFRandom(.001, .005),0,0, 1, 0, -(Size/100.));
+		}
+	}
+	
 	
 	Override Void WorldThingSpawned(WorldEvent e)
 	{

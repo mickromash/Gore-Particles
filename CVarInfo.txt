@@ -51,6 +51,8 @@ nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifet
 
 nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
 
+nosave bool MRGoreParts_Crush = true;
+
 nosave bool MRGoreParts_CheckLimit = false;
 nosave float MRGoreParts_CheckLimitOffset = 0;
 server bool MRGoreParts_Debug = false;
