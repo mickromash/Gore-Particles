@@ -812,8 +812,6 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		MR_GoreParticlesCrashedThinker Nerd = New('MR_GoreParticlesCrashedThinker');
 		
-		//Nerd.ThingBox[0] = (e.Thing.Pos.X-Radius, e.Thing.Pos.Y-Radius);
-		//Nerd.ThingBox[1] = (e.Thing.Pos.X+Radius, e.Thing.Pos.Y+Radius);
 		Nerd.Radius = Radius;
 		Nerd.Pos = e.Thing.Pos.XY;
 		Nerd.Bld = Col;
@@ -835,12 +833,14 @@ Class MR_GoreParticlesHandler: EventHandler
 		MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
 		
 		
-		For(int i=0;i<CRandom(40, 50)*MRGoreParts_Amount;i++){
+		For(int i=0;i<CRandom(40, 50)*MRGoreParts_Amount;i++){//Splash
 			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
 			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
-			Float Size = CFRandom(4, 6)*MRGoreParts_Size;
-			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, Random(0, 360),
-				0,0,1, CFRandom(.6, 1),0,-.01, -CFRandom(.001, .005),0,0, 1, 0, -(Size/100.));
+			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
+			Size *= .05;
+			Size *= FRandom(.5, 1.5);
+			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, Random(0, 360),
+				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, 1, 0, -(Size/130.));
 		}
 	}
 	
