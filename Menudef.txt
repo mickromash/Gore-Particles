@@ -20,7 +20,8 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	Slider "$MRGoreParts_MaxDying", "MRGoreParts_MaxDying", 0, 30, 1
 	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1
-	Option "$MRGoreParts_Crush", "MRGoreParts_Crush", "OnOff"
+	Option "$MRGoreParts_FloorSplash", "MRGoreParts_FloorSplash", "OnOff", "MRGoreParts_MaxGibing", 1, 0
+	Slider "$MRGoreParts_Crush", "MRGoreParts_Crush", 0, 30, 1
 	StaticText ""
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
 	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 60, 2

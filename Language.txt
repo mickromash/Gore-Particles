@@ -82,7 +82,8 @@ MRGP_Recs = "Show recommend settings";
 
 MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
 MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
-MRGoreParts_Crush = "Crushed corpses";
+MRGoreParts_FloorSplash = "Floor splash on gibbing";
+MRGoreParts_Crush = "Maximum remains of crushed corpses";
 
 MRGoreParts_FloorSpots = "Spots on surfaces";
 MRGoreParts_FloorSpots0 = "None";
@@ -211,7 +212,8 @@ MRGP_Recs = "Показать рекоммендованные настройк�
 
 MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
 MRGoreParts_MaxGibing = "Максимум джибсов";
-MRGoreParts_Crush = "Раздавливание тел";
+MRGoreParts_FloorSplash = "Растекающиеся останки";
+MRGoreParts_Crush = "Максимум раздавленных останков";
 
 MRGoreParts_FloorSpots = "Кровь на поверхностях";
 MRGoreParts_FloorSpots0 = "Нет";

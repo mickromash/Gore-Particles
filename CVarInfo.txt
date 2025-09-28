@@ -38,6 +38,7 @@ nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent en
 server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
 nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding
 nosave int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
+nosave bool MRGoreParts_FloorSplash = true;//Floor splash on gibbing
 
 nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
 nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
@@ -51,7 +52,7 @@ nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifet
 
 nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
 
-nosave bool MRGoreParts_Crush = true;
+nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
 
 nosave bool MRGoreParts_CheckLimit = false;
 nosave float MRGoreParts_CheckLimitOffset = 0;
