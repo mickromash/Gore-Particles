@@ -116,6 +116,7 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 	int StartAmount, RenderStyle;
 	Vector2 Pos;
 	Double Radius, PosZ, PrevZ, FOV;
+	Bool Opened;
 	Array<float> RandX, RandY;
 	Array<Color> Colors;
 	Array<Float> Sizes;
@@ -147,7 +148,18 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		
 		let tracer = new('MR_GoreParticlesSightTracer');
 		if(!tracer)return false;
-		tracer.Trace(Pos, Level.PointInSector(Pos.XY), direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
+		tracer.Trace(Pos, CurSector, direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
+		
+		
+		if(Tracer.HitPlayer)Return true;
+		
+		Tracer = new('MR_GoreParticlesSightTracer');
+		
+		direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), 
+			cos(PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir))), -sin(PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir)));
+		Dist = Level.Vec3Diff((Pos.XY, CurSector.CenterCeiling()-1), Dir);
+		
+		tracer.Trace((Pos.XY, CurSector.CenterCeiling()-1), CurSector, direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
 		
 		Return Tracer.HitPlayer;
 	}
@@ -177,7 +189,7 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 				
 		For(int i=0;i<360;i+=CRandom(2, 4))
 		{
-			For(float r=CFRandom(1, 4);r<Radius;r*=CFRandom(1.3, 2)){
+			For(float r=CFRandom(1, 4);r<Radius;r*=CFRandom(1.3, 2)/Min(1, MRGoreParts_Amount)){
 				Vector2 Pos = Pos+Actor.AngleToVector(i, r);
 				
 				Sector TempSect = LevelLocals.PointInSector(Pos);
@@ -209,7 +221,48 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		Super.Tick();
 		if(RandX.Size()<1){Destroy();Return;}
 		
-		if(CurSector.CenterFloor()>=CurSector.CenterCeiling())Return;
+		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()){
+			
+			if(Opened){
+				Opened = false;
+				//Array<int> Delete;
+				Float CurPos = CurSector.CenterFloor()+1;
+				
+				Let Plr = Players[ConsolePlayer].Camera;
+				if(!Plr)Return;
+				
+				Vector3 Dif = Level.Vec3Diff((Pos, CurPos), Plr.Pos);
+				Bool InDist = Dif.Length()<500;
+				For(int i=0;i<RandX.Size();i++){
+					if(CRandom(0, 10)>3)Continue;
+										
+					if(InDist){
+						FSpawnParticleParams p;
+						p.Accel = (0,0,0);
+						p.Vel = (0,0,0);
+						
+						p.Pos = (RandX[i],RandY[i],CurPos);
+						
+						p.Color1 = Colors[i];
+						p.LifeTime = 50;
+						p.size = Sizes[i];
+						p.sizeStep = -(Sizes[i]/50.);
+						p.startalpha = 1;
+						p.fadestep = 0;
+						
+						int Glow = 0;
+						if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+						p.Flags = Glow;
+						p.Style = RenderStyle;
+						
+						Level.SpawnParticle(p);
+					}
+					RandX.Delete(i);RandY.Delete(i);Colors.Delete(i);Sizes.Delete(i);
+				}
+			}
+			Return;
+		}
+		Opened = true;
 		
 		PosZ = CurSector.CenterCeiling();
 		For(int i=0;i<CRandom(2, 4);i++)SpawnDrops();
@@ -234,7 +287,7 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		
 		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2), attenuation:ATTN_STATIC);
 		
-		if(!MRGPartsCheckDraw(1000, (RandX[Rand], RandY[Rand], CurSector.CenterFloor()+Mid*.5)))Return;
+		//if(!MRGPartsCheckDraw(1000, (RandX[Rand], RandY[Rand], CurSector.CenterFloor()+Mid*.5)))Return;
 		
 		p.Pos.XY = (RandX[Rand], RandY[Rand]);
 		
