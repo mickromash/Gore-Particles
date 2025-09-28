@@ -224,7 +224,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		Super.Tick();
 		if(RandX.Size()<1){Destroy();Return;}
 		
-		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()-5){
+		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()-8){
 			
 			if(Opened){//When the ceiling reaches the floor, leave some drops on the floor
 				Opened = false;
