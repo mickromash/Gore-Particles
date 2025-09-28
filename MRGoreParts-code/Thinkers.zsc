@@ -50,7 +50,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 		Super.PostBeginPlay();
 		if(!Owner)Return;
 		Mid = Owner.Height*.5;
-		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO);
+		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 		Fov = CVar.FindCVar("FOV").GetFloat();
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
 	}
@@ -101,7 +101,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 				Float Strn = CRandom(3, 5);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
 				MR_GoreParticlesFlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-				S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2), Pitch: CFrandom(1.1, 1.2));
+				S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol, Pitch: CFrandom(1.1, 1.2));
 			}
 			if(Age<CRandom(-40, 60))
 			{
@@ -247,9 +247,9 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 						p.Pos = (RandX[i],RandY[i],CurPos);
 						
 						p.Color1 = Colors[i];
-						p.LifeTime = 50;
+						p.LifeTime = 70;
 						p.size = Sizes[i];
-						p.sizeStep = -(Sizes[i]/50.);
+						p.sizeStep = -(Sizes[i]/70.);
 						p.startalpha = 1;
 						p.fadestep = 0;
 						
@@ -288,7 +288,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		
 		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
 		
-		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2), attenuation:ATTN_STATIC);
+		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol, attenuation:ATTN_STATIC);
 		
 		//if(!MRGPartsCheckDraw(1000, (RandX[Rand], RandY[Rand], CurSector.CenterFloor()+Mid*.5)))Return;
 		
