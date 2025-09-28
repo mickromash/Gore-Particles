@@ -361,10 +361,10 @@ Class Pista: Pistol
 		Fire:
 			PISG B 2{
 				Float posy = Player.ViewZ-Pos.Z;
-				//MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_CurveLine', Self, 0, Angle, Pitch, Color(255,255,255), Offset:(0,0,posy));
-				Vector3 PVel = (AngleToVector(Angle, 10)*Cos(Pitch), -Sin(Pitch)*10);
+				MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_CurveLine', Self, 0, Angle, Pitch, Color(255,255,255), Offset:(0,0,posy));
+				//Vector3 PVel = (AngleToVector(Angle, 10)*Cos(Pitch), -Sin(Pitch)*10);
 				
-				MR_GoreParticlesFlyingBlood.Create((Pos.XY, Player.ViewZ), Color(255,0,0), Vel:PVel+Vel);
+				//MR_GoreParticlesFlyingBlood.Create((Pos.XY, Player.ViewZ), Color(255,0,0), Vel:PVel+Vel);
 			}
 			PISG B 3;
 			Goto Ready;
@@ -661,7 +661,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		int Fuzzy = STYLE_NONE;
 		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
-		Pitch -= CRandom(5, 40);
+		//Pitch -= CRandom(5, 40);
 		//Angle += CRandom(-15, 15);
 		Double Forw = CFRandom(.01, .2);
 		Double Strn = CFRandom(.4, .6);
@@ -672,13 +672,13 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		
 		Double Roll = CRandom(175, 360);
 		
-		int CircleStart = CFRandom(0, 360);
-		float CircleLength = CRandom(120, 270);
+		int CircleStart = 0;//CFRandom(0, 360);
+		float CircleLength = CRandom(120, 360);
 
 		For(float j=CircleStart;j<CircleStart+CircleLength;j+=Size*.75*Max(1, Dist*.1)/Amount)
 		{
 			Double Ang = Angle+(j+CFRandom(-1.5, 1.5))*Cos(Roll);
-			Double Pit = Pitch+(j+CFRandom(-1.5, 1.5))*Sin(Roll);
+			Double Pit = Pitch+(j+CFRandom(-1.5, 1.5))*Cos(Roll);
 			
 			Vector3 Vel = (Actor.AngleToVector(Ang, Strn)*Cos(-Abs(Pit)), -Sin(Pit)*Strn);
 			Vel += (Actor.AngleToVector(Angle, Forw)*Cos(Abs(Pitch)), -Sin(Pitch)*Forw);
