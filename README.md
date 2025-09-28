@@ -23,15 +23,12 @@ __Mod requires GZDoom 4.14.2 or newer__
 
 ## TO DO
 
-* Add effect for squishing
 * Rework gibbing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
-* Wounds pitch on dead bodies from their initial position
 * Change vanilla monsters blood color on sapwn
 * Blood amount and size based on damage
 * Wounds size based on damage
 * Configurable blood transparancy
-* Partially invisible blood
 * Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
 * Work on projectiles impcat
