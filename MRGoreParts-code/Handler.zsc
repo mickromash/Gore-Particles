@@ -39,7 +39,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Array<MR_GoreParticlesFlyingBlood> Streams;
 	Array<MR_GoreParticlesDeathThinker> Dyings;
-	Array<MR_GoreParticlesCrushedThinker> Crashed;
+	Array<MR_GoreParticlesCrushedThinker> Crushed;
 	Array<int> GibsTime;
 	
 	Array<Actor> Wounded;
@@ -406,8 +406,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Dyings[i])Dyings[i].Tick();
 		}
 		
-		For(int i=0;i<Crashed.Size();i++){
-			if(Crashed[i])Crashed[i].Tick();
+		For(int i=0;i<Crushed.Size();i++){
+			if(Crushed[i])Crushed[i].Tick();
 		}
 		
 		For(int i=0;i<Wounds.Size();i++){
@@ -770,7 +770,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override void WorldThingGround (WorldEvent e)//Crush
 	{
-		if(!MRGoreParts_Crush)Return;
+		if(MRGoreParts_Crush<1)Return;
 		
 		if(!e.Thing)Return;
 		if(!e.Thing.bIsMonster&&!e.Thing.bCorpse)Return;
@@ -824,6 +824,10 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5);
 		
+		if(Crushed.Size()>=MRGoreParts_Crush){
+			if(Crushed[0])Crushed[0].DropAll();
+		}
+		
 		if(!MRGoreParts_Draw)Return;
 		
 		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
@@ -831,7 +835,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
 		
 		
-		For(int i=0;i<CRandom(40, 50)*MRGoreParts_Amount;i++){//Splash
+		For(int i=0;i<CRandom(40, 50)*MRGoreParts_Amount;i++){//Floor splash
 			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
 			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
@@ -935,13 +939,23 @@ Class MR_GoreParticlesHandler: EventHandler
 			Double Size = mo.Height;
 			if(mo.Height<mo.Radius)Size = mo.Radius;
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
-		}
 		
-		if(Draw)For(int i=0;i<Amount*CRandom(8, 12);i++)
-		{
-			if(Effects.Size()>0)
-				Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
-					(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
+			For(int i=0;i<Amount*CRandom(8, 12);i++)
+			{
+				if(Effects.Size()>0)
+					Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
+						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
+			}
+			
+			For(int i=0;i<CRandom(30, 40)*MRGoreParts_Amount;i++){//Floor splash
+				Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
+				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
+				Size *= .04;
+				Size *= FRandom(.5, 1.5);
+				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, Random(0, 360),
+					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, 1, 0, -(Size/100.));
+				}
 		}
 				
 		if(MRGoreParts_DrawFlyingBlood){
@@ -957,6 +971,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				SAmount++;
 			}
 		}
+		
 	}
 	
 	Void DoOtherBlood(Actor mo)//Remove or hide other mods gore
