@@ -48,7 +48,9 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		Let Plr = Players[ConsolePlayer].Camera;
 		if(!Plr)Return false;
 			
-		if(abs(Actor.DeltaAngle(AngleToVector2(Plr.Pos.XY, Pos.XY), Plr.Angle))>FOV && Plr.Distance2D(Self)>Plr.Radius*2)Return false;
+		vector2 Dif = Level.Vec2Diff(Plr.Pos.XY, Pos.XY);
+		
+		if(abs(Actor.DeltaAngle(AngleToVector2(Plr.Pos.XY, Pos.XY), Plr.Angle))>FOV && Dif.Length()>Plr.Radius*2)Return false;
 		
 		Return CheckSight();
 	}

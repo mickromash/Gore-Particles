@@ -447,13 +447,13 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if(!MRGoreParts_Draw)Return false;
 		
-		Let Plr = Players[ConsolePlayer];
-		if(!Plr.Camera)Return true;
+		Let Plr = Players[ConsolePlayer].Camera;
+		if(!Plr)Return true;
 		
 		if(!mo)Return true;
 		
 		
-		Return (abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2) && mo.CheckSight(Plr.Camera);
+		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2) && mo.CheckSight(Plr);
 	}
 	
 	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)//Spec. effects for non bleeding actors
