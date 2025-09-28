@@ -31,6 +31,7 @@ OptionMenu "MRGoreParts_Menu"
 	Slider "$MRGoreParts_Brightness", "MRGoreParts_Brightness", 0, 4, .1
 	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
 	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
+	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .1
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
 	StaticText ""

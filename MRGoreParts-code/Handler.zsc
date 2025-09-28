@@ -689,8 +689,8 @@ Class MR_GoreParticlesHandler: EventHandler
 						AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
 					}
 					
-					if(Random(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO);
-					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO);
+					if(Random(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
+					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 
 
 					if(MRGoreParts_DrawFlyingBlood && CRandom(0, 100)>95)
@@ -699,7 +699,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						Float Pitch = -CRandom(0, 60);
 						Vector3 Vel = (Actor.AngleToVector(e.Inflictor.AngleTo(e.DamageSource)+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
 						MR_GoreParticlesFlyingBlood.Create(e.Inflictor.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-						S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3), Pitch: CFrandom(1.1, 1.2));
+						S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol, Pitch: CFrandom(1.1, 1.2));
 					}
 					//Dripping blood
 					if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact)
@@ -822,7 +822,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				
 		Nerd.PostBeginPlay();
 		
-		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5);
+		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol);
 		
 		if(Crushed.Size()>=MRGoreParts_Crush){
 			if(Crushed[0])Crushed[0].DropAll();
@@ -900,12 +900,12 @@ Class MR_GoreParticlesHandler: EventHandler
 		a.Alpha = Alph;
 		a.Ofst = (0,0,1);
 		
-		mo.A_StartSound(DripSound, CHAN_AUTO, attenuation: ATTN_STATIC);
+		mo.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol, attenuation: ATTN_STATIC);
 	}
 	
 	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
 	{
-		mo.A_StartSound(GibSound, CHAN_AUTO);
+		mo.A_StartSound(GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 		
 		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
 		
@@ -967,7 +967,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				Float Pitch = -CRandom(40, 90);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
 				MR_GoreParticlesFlyingBlood.Create(mo.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3), Pitch: CFrandom(1.1, 1.2));
+				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol, Pitch: CFrandom(1.1, 1.2));
 				SAmount++;
 			}
 		}

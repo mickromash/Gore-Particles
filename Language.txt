@@ -97,6 +97,7 @@ MRGoreParts_Color = "Custom blood color";
 MRGoreParts_Brightness = "Blood brightness";
 MRGoreParts_FullBright = "Glowing blood";
 MRGoreParts_FuzzyBlood = "Fuzzy blood";
+MRGoreParts_SndVol = "Gore sounds volume";
 
 MRGoreParts_UpdateMenu = "Update mod's data";
 ////{
@@ -227,6 +228,7 @@ MRGoreParts_Color = "Цвет крови";
 MRGoreParts_Brightness = "Яркость крови";
 MRGoreParts_FullBright = "Светящаяся кровь";
 MRGoreParts_FuzzyBlood = "Полупрозрачная кровь";
+MRGoreParts_SndVol = "Громкость крови";
 
 MRGoreParts_Multiplayer = "Режим игры по сети";
 

@@ -106,7 +106,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 								Float Bright = MRGoreParts_Brightness*CFRandom(.8,1.8);
 								Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, MRGoreParts_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
 									FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
-								Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2, attenuation: ATTN_STATIC);
+								Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2*MRGoreParts_SndVol, attenuation: ATTN_STATIC);
 							}
 							Spot = false;
 						}
