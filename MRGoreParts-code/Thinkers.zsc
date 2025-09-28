@@ -3,6 +3,9 @@
 	
 	Ticks are called from event handler;
 	For wounds thinker, check Wounds.zsc
+	
+	- Why not using visual thinkers?
+	- I forgot about them
 */
 
 
@@ -22,7 +25,7 @@ Class MR_GoreParticlesThinker: Object play
 		
 		if(dist!=0 && Plr.Distance3D(mo)>Dist)Return false;
 		
-		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat())Return false;
+		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat() && Plr.Distance2D(mo)>Plr.Radius*2)Return false;
 		
 		Return Plr.CheckSight(mo);
 	}
@@ -67,7 +70,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 		
 		if(Owner.instatesequence(Owner.CurState, Owner.ResolveState("gib")))
 		{
-			Handler.SpawnXDeath(Owner);
+			Handler.SpawnXDeath(Owner);//In HDest, actors getting gibbed only after dying
 			Destroy();
 			Return;
 		}
@@ -109,7 +112,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	}
 }
 
-Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
+Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 {
 	Color Bld;
 	Sector CurSector;
@@ -187,7 +190,7 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		FOV = CVar.FindCVar("FOV").GetFloat();
 		Handler.Crashed.Push(Self);
 				
-		For(int i=0;i<360;i+=CRandom(2, 4))
+		For(int i=0;i<360;i+=CRandom(2, 4))//Setting up drops places
 		{
 			For(float r=CFRandom(1, 4);r<Radius;r*=CFRandom(1.3, 2)/Min(1, MRGoreParts_Amount)){
 				Vector2 Pos = Pos+Actor.AngleToVector(i, r);
@@ -202,7 +205,7 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		
 		StartAmount = RandX.Size();
 		
-		For(int i=0;i<RandX.Size();i++){
+		For(int i=0;i<RandX.Size();i++){//Setting up colors and sizes
 			Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 			Color TempCol = Color(int(Bld.R*Bright),int(Bld.G*Bright),int(Bld.B*Bright));
 			Colors.Push(TempCol);
@@ -223,9 +226,9 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		
 		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()){
 			
-			if(Opened){
+			if(Opened){//When the ceiling reaches the floor, leave some drops on the floor
 				Opened = false;
-				//Array<int> Delete;
+
 				Float CurPos = CurSector.CenterFloor()+1;
 				
 				Let Plr = Players[ConsolePlayer].Camera;
@@ -265,10 +268,10 @@ Class MR_GoreParticlesCrashedThinker: MR_GoreParticlesThinker
 		Opened = true;
 		
 		PosZ = CurSector.CenterCeiling();
-		For(int i=0;i<CRandom(2, 4);i++)SpawnDrops();
-		SpawnStatic();
+		For(int i=0;i<CRandom(2, 4);i++)SpawnDrops();//Drops leaves ceiling
+		SpawnStatic();//Drops on the ceiling
 		
-		PrevZ = PosZ;
+		PrevZ = PosZ;//Interpolation
 	}
 	
 	Void SpawnDrops()

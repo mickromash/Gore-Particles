@@ -12,16 +12,12 @@ Class MR_GoreParticlesStaticHandler: StaticEventHandler
 	{
 		Effects.Clear();
 		
-		For(int i=0;i<AllClasses.Size();i++)
+		For(int i=0;i<AllClasses.Size();i++)//Caching particle effects data
 		{
-			if(AllClasses[i] is 'MR_GoreParticlesEffect')
+			if(AllClasses[i] is 'MR_GoreParticlesEffect' && !AllClasses[i].IsAbstract())
 			{
-				if(AllClasses[i].IsAbstract())Continue;
-				else
-				{
-					MR_GoreParticlesEffect Clas = MR_GoreParticlesEffect(New(AllClasses[i].GetClassName()));
-					Effects.Push(Clas);
-				}
+				MR_GoreParticlesEffect Clas = MR_GoreParticlesEffect(New(AllClasses[i].GetClassName()));
+				Effects.Push(Clas);
 			}
 		}
 		
@@ -43,7 +39,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Array<MR_GoreParticlesFlyingBlood> Streams;
 	Array<MR_GoreParticlesDeathThinker> Dyings;
-	Array<MR_GoreParticlesCrashedThinker> Crashed;
+	Array<MR_GoreParticlesCrushedThinker> Crashed;
 	Array<int> GibsTime;
 	
 	Array<Actor> Wounded;
@@ -111,7 +107,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		UpdateEffects();
 	}
 	
-	Map<String, Color> BldCols;//Monsters that supposed to have different blood color
+	Map<String, Color> BldCols;//(Vanilla) monsters that supposed to have different blood color
 	
 	/*
 		MRPRTCOL (MickRomash's gore PaRTiCle COLours) lump stores information
@@ -123,6 +119,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		example:
 		HellKnight (10 80 10)
 		Cacodemon (30 30 120)
+		
+		(check filter folder)
 	*/
 	
 	Void SetUpColors()
@@ -205,7 +203,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	String HitSound, SpraySound, DripSound, GibSound;
 	
-	Void SetUpSounds()
+	Void SetUpSounds()//Utilize gore sounds from other mods, if sfx add-on wasn't loaded
 	{
 		HitSound = "MRGP/Splash";
 		DripSound = "MRGP/Drip";
@@ -294,7 +292,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	Array<String> RemoveBloods, RemoveBloodTypes;
 	String RemoveBloodBase;
 	
-	Void SetUpBloodRemove()
+	Void SetUpBloodRemove()//Caching blood actors that will be hidden/removed
 	{
 		RemoveBloods.Clear();
 		RemoveBloodTypes.Clear();
@@ -455,7 +453,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(!mo)Return true;
 		
 		
-		Return abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat() && mo.CheckSight(Plr.Camera);
+		Return (abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2) && mo.CheckSight(Plr.Camera);
 	}
 	
 	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)//Spec. effects for non bleeding actors
@@ -810,7 +808,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Crusher)Break;
 		}
 		
-		MR_GoreParticlesCrashedThinker Nerd = New('MR_GoreParticlesCrashedThinker');
+		MR_GoreParticlesCrushedThinker Nerd = New('MR_GoreParticlesCrushedThinker');
 		
 		Nerd.Radius = Radius;
 		Nerd.Pos = e.Thing.Pos.XY;
@@ -923,7 +921,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Let Plr = Players[ConsolePlayer].Camera;
 		Bool Draw = true;
-		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat();
+		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2;
 		
 		Float Amount = MRGoreParts_Amount;
 		
