@@ -355,7 +355,7 @@ class MR_GoreParticlesSightTracer : LineTracer
 		return TRACE_Skip;
 	}
 }
-/*
+
 Class Pista: Pistol
 {
 	States
@@ -371,7 +371,7 @@ Class Pista: Pistol
 			PISG B 3;
 			Goto Ready;
 	}
-}*/
+}
 
 
 enum MRGP_EffectFlag{
@@ -674,13 +674,13 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		
 		Double Roll = CRandom(175, 360);
 		
-		int CircleStart = 0;//CFRandom(0, 360);
 		float CircleLength = CRandom(120, 360);
-
+		int CircleStart = CircleLength-180;//CFRandom(0, 360);
+		
 		For(float j=CircleStart;j<CircleStart+CircleLength;j+=Size*.75*Max(1, Dist*.1)/Amount)
 		{
-			Double Ang = Angle+(j+CFRandom(-1.5, 1.5))*Cos(Roll);
-			Double Pit = Pitch+(j+CFRandom(-1.5, 1.5))*Cos(Roll);
+			Double Ang = (j+CFRandom(-1.5, 1.5))*Cos(Roll);
+			Double Pit = (j+CFRandom(-1.5, 1.5))*Sin(Roll);
 			
 			Vector3 Vel = (Actor.AngleToVector(Ang, Strn)*Cos(-Abs(Pit)), -Sin(Pit)*Strn);
 			Vel += (Actor.AngleToVector(Angle, Forw)*Cos(Abs(Pitch)), -Sin(Pitch)*Forw);
