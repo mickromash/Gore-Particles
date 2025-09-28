@@ -10,7 +10,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 	Color Col;
 	Actor Owner;
 	int Fuzzy;
-	Bool Spot;//Spawn spots each second drop
+	Bool Spot;//Spawn spots every second drop
 		
 	Override Void OnDestroy()
 	{
