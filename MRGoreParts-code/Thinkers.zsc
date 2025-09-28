@@ -188,7 +188,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	{
 		Super.PostBeginPlay();
 		FOV = CVar.FindCVar("FOV").GetFloat();
-		Handler.Crashed.Push(Self);
+		Handler.Crushed.Push(Self);
 				
 		For(int i=0;i<360;i+=CRandom(2, 4))//Setting up drops places
 		{
@@ -216,7 +216,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	Override Void OnDestroy()
 	{
 		if(!Handler)Return;
-		Handler.Crashed.Delete(Handler.Crashed.Find(Self));
+		Handler.Crushed.Delete(Handler.Crushed.Find(Self));
 		Super.OnDestroy();
 	}
 		
@@ -224,7 +224,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		Super.Tick();
 		if(RandX.Size()<1){Destroy();Return;}
 		
-		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()){
+		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()-5){
 			
 			if(Opened){//When the ceiling reaches the floor, leave some drops on the floor
 				Opened = false;
@@ -341,6 +341,16 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 			p.Style = RenderStyle;
 			
 			Level.SpawnParticle(p);
+		}
+	}
+	
+	Void DropAll()
+	{
+		Destroy();
+		if(!Opened)Return;
+		
+		For(int i=0;i<RandX.Size();i++){
+			SpawnDrops();
 		}
 	}
 }
