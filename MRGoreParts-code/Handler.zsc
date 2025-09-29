@@ -1017,13 +1017,17 @@ Class MR_GoreParticlesHandler: EventHandler
 			}
 		}
 		
-		if(MRGoreParts_Quake2 && Players[ConsolePlayer].Camera)
+		if(MRGoreParts_Draw && MRGoreParts_Quake2 && Players[ConsolePlayer].Camera){
+			
+			int Glow = 0;
+			if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 			For(Int i=0;i<CRandom(6, 9)*MRGoreParts_Amount;i++)
 			{
 				Float Bright = MRGoreParts_Brightness*CFrandom(.8, 1.5);
-				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel, 25, CFRandom(1.5, 2.5), mo.AngleTo(Players[ConsolePlayer].Camera),
-					Xoff:CFRandom(-1.5, 1.5), CFRandom(-1.5, 1.5), CFRandom(4, 7), .1,0,.5, 0,0,-.05);
+				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel|Glow, 25, CFRandom(1.5, 2.5)*MRGoreParts_Size, mo.AngleTo(Players[ConsolePlayer].Camera),
+					Xoff:CFRandom(-1.5, 1.5),CFRandom(-1.5, 1.5),CFRandom(4, 7), .1*MRGoreParts_Speed,0,.5*MRGoreParts_Speed, 0,0, -.05*MRGoreParts_Size*MRGoreParts_Speed);
 			}
+		}
 		
 		if(MRGoreParts_OnlyModsBlood){mo.Destroy();Return;}
 		
