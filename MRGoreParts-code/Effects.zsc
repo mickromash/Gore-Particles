@@ -356,35 +356,19 @@ class MR_GoreParticlesSightTracer : LineTracer
 	}
 }
 
-Class Pista: Pistol
-{
-	States
-	{
-		Fire:
-			PISG B 2{
-				Float posy = Player.ViewZ-Pos.Z;
-				MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_CurveLine', Self, 0, Angle, Pitch, Color(255,255,255), Offset:(0,0,posy));
-				//Vector3 PVel = (AngleToVector(Angle, 10)*Cos(Pitch), -Sin(Pitch)*10);
-				
-				//MR_GoreParticlesFlyingBlood.Create((Pos.XY, Player.ViewZ), Color(255,0,0), Vel:PVel+Vel);
-			}
-			PISG B 3;
-			Goto Ready;
-	}
-}
-
 
 enum MRGP_EffectFlag{
 	SGPF_NoDist = 1,//Distance won't affect particles velocity and sizes
 	SGPF_FixAmount = 2,//Ignore particles amount CVar
 	SGPF_NoVel = 4,
 	SGPF_Fuzzy = 8,
+	SGPF_TEST = 16,
 };
 
 Class MR_GoreParticlesEffect play abstract
 {
-	Virtual Void DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
-	{}
+	Virtual int DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
+	{Return 0;}
 	/*
 		mo - actor that spawns particles
 		Amount - particles amount multiplier
@@ -408,20 +392,37 @@ Class MR_GoreParticlesEffect play abstract
 			Spawner.Destroy();
 		}
 	}
-		
-	Clearscope Virtual String GetName(){Return StringTable.Localize("$"..GetClassName());}//Effect name that will be displayedin the menu
+
+	//Data for included effects menu
+	Clearscope Virtual String GetName(){Return StringTable.Localize("$"..GetClassName());}
 	Clearscope Virtual Bool UsesAlpha(){Return false;}
+	
+	int MinParticles, MaxParticles;
+	Void CountParticles(int cycles=1)
+	{
+		MaxParticles = MinParticles = -1;
+		For(int i=0;i<cycles;i++){
+			int Amt = DoParticleEffect(players[consolePlayer].Camera, SGPF_TEST);
+			
+			if(MaxParticles==-1){MinParticles = MaxParticles = Amt;Continue;}
+			
+			if(MinParticles>Amt)MinParticles = Amt;
+			else if(MaxParticles<Amt)MaxParticles = Amt;
+		}
+	}
 }
 
 Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 {
-	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
-		if(!MRGoreParts_Draw)Return;
+		if(!MRGoreParts_Draw)Return 0;
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
-		if(Amount<=0)Return;
+		if(Amount<=0)Return 0;
+		
+		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		
@@ -472,9 +473,12 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
 			
-			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/Life));
+			Particles++;
 		}
+		
+		Return Particles;
 	}
 }
 
@@ -483,13 +487,15 @@ Class MR_GoreParticlesEffect_Sprays: MR_GoreParticlesEffect
 
 Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 {
-	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
-		if(!MRGoreParts_Draw)Return;
+		if(!MRGoreParts_Draw)Return 0;
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
-		if(Amount<=0)Return;
+		if(Amount<=0)Return 0;
+		
+		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		
@@ -548,13 +554,17 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 				Case 3:Texture = Texman.CheckForTexture("glpart");Break;
 			}
 			
-			mo.A_SpawnParticleEx(ColTmp, Texture, Fuzzy, Glow, Life, Size, 0,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texture, Fuzzy, Glow, Life, Size, 0,
 				Offset.X,Offset.Y,5+Offset.Z,
 				Vel.X,Vel.Y,Vel.Z,
 				Accel.X,Accel.Y,Accel.Z,
 				PAlpha, PAlpha/Life, Size*MRGoreParts_Speed*.1*(Water?.5:1)
 			);
+			
+			Particles++;
 		}
+		
+		Return Particles;
 	}
 	
 	Override Bool UsesAlpha(){Return true;}
@@ -562,13 +572,15 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 
 Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 {
-	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
-		if(!MRGoreParts_Draw)Return;
+		if(!MRGoreParts_Draw)Return 0;
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
-		if(Amount<=0)Return;
+		if(Amount<=0)Return 0;
+		
+		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		if(Water)Amount *= .5;
@@ -629,24 +641,30 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			
-			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.015, 1, 0, -((Size+j*3)/Life));
 			Life-=.5/MRGoreParts_Speed*LifeM;
+			
+			Particles++;
 		}
+		
+		Return Particles;
 	}
 }
 
 Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 {
-	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
-		if(!MRGoreParts_Draw)Return;
+		if(!MRGoreParts_Draw)Return 0;
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
-		if(Amount<=0)Return;
+		if(Amount<=0)Return 0;
 		Amount = Min(1.1, Amount);
 		Float Dist = MRGP_DistanceMult;
+		
+		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		if(Water)Amount *= .5;
@@ -699,22 +717,28 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 
-			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 				Vel.X,Vel.Y,Vel.Z, Accel.X,Accel.Y,Accel.Z, 1, 0, -(Size/Life));
 
 			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
+			
+			Particles++;
 		}
+		
+		Return Particles;
 	}
 }
 
 Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 {
-	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
-		if(!MRGoreParts_Draw)Return;
+		if(!MRGoreParts_Draw)Return 0;
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
+		
+		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		if(Water)Amount *= .5;
@@ -774,10 +798,14 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 			
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
-			mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-(j-.1)*.01, 1, 1.2/Life, ((Size+j*3)/Life)*.05);
 			Life-=.5/MRGoreParts_Speed*LifeM;
+			
+			Particles++;
 		}
+		
+		Return Particles;
 	}
 	
 	Override Bool UsesAlpha(){Return true;}
@@ -785,21 +813,23 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 
 Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
 {
-	Override Void DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
-		if(!mo||!Players[ConsolePlayer].Camera)Return;
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
-		if(!MRGoreParts_Draw)Return;
+		if(!MRGoreParts_Draw)Return 0;
 		
 		if(mo.Waterlevel>2)
 		{
 			int Rand = Random(170, 200);
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, Flags, Angle, Pitch, Color(Rand,Rand,Rand), Amount, Scale, Alpha, Offset, LifeM, MoVel);
-			Return;
+			Return 0;
 		}
 		
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
-		if(Amount<=0)Return;
+		if(Amount<=0)Return 0;
+		
+		int Particles;
 		
 		Float Dist = MRGP_DistanceMult;
 		
@@ -834,8 +864,12 @@ Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
 			
-			mo.A_SpawnParticle(ColTmp, SPF_FULLBRIGHT, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticle(ColTmp, SPF_FULLBRIGHT, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z-.4, 1, 0, -(Size/Life));
+			
+			Particles++;
 		}
+		
+		Return Particles;
 	}
 }

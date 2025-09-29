@@ -18,7 +18,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 	
 	int CursX, CursY, CurlY, UpdLineTime;
 	string Undo;
-	bool ViewList, Editing;
+	bool ViewList, Editing, UpdateData;
 	
 	override void Init(menu parent){
 		super.Init(parent);
@@ -29,6 +29,10 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		CurlY = CursY = statustimer = 0;
 		CursX = -1;
 		UpdateList(true);
+		if(Players[ConsolePlayer].Camera){
+			EventHandler.SendNetworkEvent("MRGP_UpdateEffectsData");
+			UpdateData = true;
+		}
 
 		WorkingString[MRGP_Menu_EffectsString]=cvar.findcvar("MRGoreParts_EffectsList").getstring();
 		WorkingString[MRGp_Menu_EffectsString2]=cvar.findcvar("MRGoreParts_EffectsList2").getstring();
@@ -255,6 +259,14 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			{
 				String Nam = Handler.Effects[i].GetName();
 				if(Handler.Effects[i].UsesAlpha())Nam = Nam.." \cf*\c-";
+				if(Handler.Effects[i].MaxParticles>0){
+					if(Handler.Effects[i].MaxParticles==Handler.Effects[i].MinParticles)
+						Nam = Nam.." \cc"..Handler.Effects[i].MinParticles..
+							StringTable.Localize("$MRGoreParts_EffectsListMenuParticles");
+					else Nam = Nam.." \cc"..Handler.Effects[i].MinParticles.."-"..Handler.Effects[i].MaxParticles..
+							StringTable.Localize("$MRGoreParts_EffectsListMenuParticles");
+				}
+				else if(!Players[ConsolePlayer].Camera && i<1)Nam = Nam.." \cc"..StringTable.Localize("$MRGoreParts_EffectsListMenuNoParticles");
 				EffectsNames.Push(Nam);
 			}
 			if(EffectsNames.Size()>0){Return;}
@@ -323,11 +335,16 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			i--;
 		}
 	}
-	
+
+
+	////////////////////////////////////////////////////////////////////////////
 	int blinktimer;
 	int statustimer;
 	override void Drawer(){
 		Super.Drawer();
+		
+		if(UpdateData)UpdateList(true);
+		
 		playerinfo cplayer=players[consoleplayer];
 		if(!cplayer)return;
 		int vcurs=9;

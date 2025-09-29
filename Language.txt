@@ -61,6 +61,8 @@ MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effect wi
 MRGoreParts_AlwaysEffectsList = "Constant effects list";
 MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these effects will appear on impact";
 MRGoreParts_EffectsUpdated = "Effects list updated";
+MRGoreParts_EffectsListMenuParticles = " particles";
+MRGoreParts_EffectsListMenuNoParticles = "(enter a level to know particles amount)";
 
 ////}
 
@@ -193,6 +195,8 @@ MRGoreParts_EffectsListTip = "\cgСписок случайных эффекто�
 MRGoreParts_AlwaysEffectsList = "Список обязательных эффектов";
 MRGoreParts_AlwaysEffectsListTip = "\cgСписок обязательных эффектов\cb - каждый из этих эффектов появится при уроне";
 MRGoreParts_EffectsUpdated = "Список эффектов обновлён";
+MRGoreParts_EffectsListMenuParticles = " частиц";
+MRGoreParts_EffectsListMenuNoParticles = "(начните игру чтобы узнать кол-во частиц)";
 
 ////}
 

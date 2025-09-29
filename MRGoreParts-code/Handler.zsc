@@ -97,6 +97,15 @@ Class MR_GoreParticlesHandler: EventHandler
 		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName());
 	}
 	
+	Void UpdateEffectsData()
+	{
+		MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+
+		For(int i=0;i<Handler.Effects.Size();i++){
+			if(Handler.Effects[i])Handler.Effects[i].CountParticles(100);
+		}
+	}
+	
 	
 	Override Void OnRegister()
 	{
@@ -1043,6 +1052,13 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		if(e.name ~== "MRGP_UpdateRemoveBlood"){
 			SetUpBloodRemove();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateEffectsData"){
+			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			Handler.OnRegister();
+			UpdateEffects();
+			UpdateEffectsData();
 			Return;
 		}
 	}
