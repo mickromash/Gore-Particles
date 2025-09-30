@@ -35,13 +35,76 @@ Class MR_GoreParticlesThinker: Object play
 	{
 		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 	}
+	
+	Void SpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=-1, Double SizeStep=0)
+	{
+		FSpawnParticleParams p;
+		p.Accel = Accel;
+		p.Vel = Vel;
+		
+		p.Pos = Pos;
+		
+		p.Color1 = Col;
+		p.LifeTime = Life;
+		p.size = Size;
+		p.sizeStep = SizeStep;
+		p.startalpha = Alpha;
+		p.fadestep = Fade;
+		
+		int Glow = 0;
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		p.Flags = Glow|Flags;
+		p.Style = Style;
+		
+		Level.SpawnParticle(p);
+	}
+}
+
+Class MR_GoreParticlesDelayedSpawner: MR_GoreParticlesThinker//You'll never guess what mod it originates from
+{
+	Color Col;
+	Double Alpha, Size, Fade, Resize;
+	Vector3 Ofst, Vely, Accel,  Pos;
+	int Delay, Life, Fuzzy,  Age;
+	Bool PlaySound;
+	
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		if(Handler)Handler.Spawners.Push(Self);
+	}
+	
+	Override VOid OnDestroy()
+	{
+		if(!Handler)Return;
+		Handler.Spawners.Delete(Handler.Spawners.Find(Self));
+		Super.OnDestroy();
+	}
+	
+	Override Void Tick()
+	{
+		Super.Tick();
+		
+		Sector CurSector = Level.PointInSector(Pos.XY);
+		if(CurSector)Pos.Z = CurSector.CenterFloor();
+		
+		if((Delay>-1&&Age>=Delay)||Delay<0)
+		{
+			SpawnParticle(Col, 0, Fuzzy, Life, Size, 0, Pos+Ofst, Vely, Accel, Alpha, Fade, Resize);
+			if(PlaySound)S_StartSoundAt(Pos+Ofst, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
+			Destroy();
+			Return;
+		}
+		
+		Age++;
+	}
 }
 
 Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 {
 	Color Bld;
 	Bool Sos, Artery, Draw;
-	Float Mid, Fov;
+	Float Mid;
 	Actor Owner;
 	int Age, Fuzzy;
 		
@@ -51,7 +114,6 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 		if(!Owner)Return;
 		Mid = Owner.Height*.5;
 		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
-		Fov = CVar.FindCVar("FOV").GetFloat();
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
 	}
 	
@@ -240,25 +302,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 					if(CRandom(0, 10)>3)Continue;
 										
 					if(InDist){
-						FSpawnParticleParams p;
-						p.Accel = (0,0,0);
-						p.Vel = (0,0,0);
-						
-						p.Pos = (RandX[i],RandY[i],CurPos);
-						
-						p.Color1 = Colors[i];
-						p.LifeTime = 70;
-						p.size = Sizes[i];
-						p.sizeStep = -(Sizes[i]/70.);
-						p.startalpha = 1;
-						p.fadestep = 0;
-						
-						int Glow = 0;
-						if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-						p.Flags = Glow;
-						p.Style = RenderStyle;
-						
-						Level.SpawnParticle(p);
+						SpawnParticle(Colors[i], 0, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Fade:0, SizeStep:-(Sizes[i]/70.));
 					}
 					RandX.Delete(i);RandY.Delete(i);Colors.Delete(i);Sizes.Delete(i);
 				}
@@ -278,35 +322,10 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	{
 		if(RandX.Size()<CRandom(0, StartAmount))Return;
 		
-		FSpawnParticleParams p;
-		p.Accel = (0,0,-CFRandom(.3, .8));
-		p.Vel = (0,0,0);
-		
-		p.Pos = (0,0,PosZ);
-		
 		int Rand = CRandom(0, RandX.Size()-1);
 		
-		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
-		
 		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol, attenuation:ATTN_STATIC);
-		
-		//if(!MRGPartsCheckDraw(1000, (RandX[Rand], RandY[Rand], CurSector.CenterFloor()+Mid*.5)))Return;
-		
-		p.Pos.XY = (RandX[Rand], RandY[Rand]);
-		
-		p.Color1 = Colors[Rand];
-		p.LifeTime = 50;
-		p.size = Sizes[Rand];
-		p.sizeStep = -(p.size/50.);
-		p.startalpha = 1;
-		p.fadestep = 0;
-		
-		int Glow = 0;
-		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-		p.Flags = Glow;
-		p.Style = RenderStyle;
-		
-		Level.SpawnParticle(p);
+		SpawnParticle(Colors[Rand], 0, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), SizeStep:-(Sizes[Rand]/50.));
 		
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
 	}
@@ -318,29 +337,10 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		Float VelZ = PosZ-PrevZ;
 		if(PosZ<PrevZ)CurPos = PosZ;
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
+		
 		For(int i=0;i<RandX.Size();i++){
-		
 			if(!MRGPartsCheckDraw(1000, (RandX[i], RandY[i], CurSector.CenterFloor()+Mid*.5)))Continue;
-		
-			FSpawnParticleParams p;
-			p.Accel = (0,0,0);
-			p.Vel = (0,0,VelZ);
-			
-			p.Pos = (RandX[i],RandY[i],CurPos-1);
-			
-			p.Color1 = Colors[i];
-			p.LifeTime = 1;
-			p.size = Sizes[i];
-			p.sizeStep = 0;
-			p.startalpha = 1;
-			p.fadestep = 0;
-			
-			int Glow = 0;
-			if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-			p.Flags = Glow;
-			p.Style = RenderStyle;
-			
-			Level.SpawnParticle(p);
+			SpawnParticle(Colors[i], 0, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ));
 		}
 	}
 	
