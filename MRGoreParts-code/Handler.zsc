@@ -41,6 +41,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	Array<MR_GoreParticlesDeathThinker> Dyings;
 	Array<MR_GoreParticlesCrushedThinker> Crushed;
 	Array<int> GibsTime;
+	Array<MR_GoreParticlesDelayedSpawner> Spawners;
 	
 	Array<Actor> Wounded;
 	Array<MR_GoreParticlesWound> Wounds;
@@ -406,7 +407,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Streams[i])Streams[i].Tick();
 		}
 		
-		For(int i=0;i<GibsTime.Size();i++){
+		For(int i=0;i<GibsTime.Size();i++){//Not a thinker actually, but who cares
 			GibsTime[i]++;
 			if(GibsTime[i]>(MRGP_GibbingTime/MRGoreParts_Speed)){GibsTime.Delete(i);i--;}
 		}
@@ -421,6 +422,10 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		For(int i=0;i<Wounds.Size();i++){
 			if(Wounds[i])Wounds[i].Tick();
+		}
+		
+		For(int i=0;i<Spawners.Size();i++){
+			if(Spawners[i])Spawners[i].Tick();
 		}
 	}
 	
@@ -596,7 +601,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			else
 			{
 				Token.Ages[0]=35*15;
-				Token.Locs[0]=(Actor.AngleToVector(CRandom(0, 360), Thing.Radius*.3), CRandom(5, Thing.Height));
+				Token.Locs[0]=(Actor.AngleToVector(CRandom(0, 360), Thing.Radius*.3), CFRandom(.15, 1));
 			}
 		}
 	}
@@ -890,8 +895,9 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(Draw)For(int i=0;i<CRandom(2, 5);i++)
 			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
 		
-		MR_GoreParticlesDelayedSpawner a = 
-			MR_GoreParticlesDelayedSpawner(mo.Spawn("MR_GoreParticlesDelayedSpawner", (mo.pos.x+frandom(-1, 1), mo.pos.y+frandom(-1, 1), mo.floorz)));
+		MR_GoreParticlesDelayedSpawner a = New('MR_GoreParticlesDelayedSpawner');
+		
+		a.PostBeginPlay();
 		
 		int Delay = 1;
 		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
@@ -901,6 +907,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		Double Alph = FRandom(.8, .9);
+		a.Pos = (mo.pos.x+frandom(-1, 1), mo.pos.y+frandom(-1, 1), mo.floorz);
 		a.Col = Col;
 		a.Size = FRandom(2, 4);
 		a.Delay = Delay;
@@ -908,8 +915,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		a.Fade = Alph/100;
 		a.Alpha = Alph;
 		a.Ofst = (0,0,1);
-		
-		mo.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol, attenuation: ATTN_STATIC);
+		a.PlaySound = true;
 	}
 	
 	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
@@ -1178,39 +1184,5 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(RecsAnim>0)RecsAnim--;
 		
 		Sb.FullscreenOffsets = OriginalOffsets;
-	}
-}
-
-Class MR_GoreParticlesDelayedSpawner: Actor//You'll never guess what mod it originates from
-{
-	Color Col;
-	Float Size, Fade, Resize;
-	Vector3 Ofst, Vely, Accel;
-	int Delay, Life;
-	
-	Static Bool MRGPartsCheckDraw(Actor mo = Null)
-	{
-		if(!MRGoreParts_Draw)Return false;
-		
-		Let Plr = Players[ConsolePlayer];
-		if(!Plr.Camera)Return true;
-		
-		if(!mo)Return true;
-		
-		
-		Return mo.CheckSight(Plr.Camera) && abs(Actor.DeltaAngle(Plr.Camera.Angle, Plr.Camera.AngleTo(mo)))<120;
-	}
-		
-	Override Void Tick()
-	{
-		Super.Tick();
-		if(Delay<0){A_SpawnParticle(Col, 0, 1, Size, StartAlphaf:Alpha);Destroy();Return;}
-				
-		if((Delay>-1&&GetAge()>Delay)||(Delay<0&&Pos.Z==FloorZ))
-		{
-			A_SpawnParticle(Col, SPF_RELATIVE, Life, Size, 0, Ofst.X, Ofst.Y, Ofst.Z,
-				Vely.X, Vely.Y, Vely.Z, Accel.X, AcceL.Y, Accel.Z, Alpha, Fade, Resize);
-			Destroy();
-		}
 	}
 }
