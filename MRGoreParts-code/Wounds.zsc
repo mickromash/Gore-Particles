@@ -9,8 +9,8 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 	Double Angles[MRGP_MaxWounds], Heights[MRGP_MaxWounds];
 	Color Col;
 	Actor Owner;
-	int Fuzzy;
-	Bool Spot;//Spawn spots every second drop
+	int Fuzzy, 
+		Spot;//Spawn spots every third drop
 		
 	Override Void OnDestroy()
 	{
@@ -71,7 +71,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 					Color Col = Color(int(Col.R*MRGoreParts_Brightness),int(Col.G*MRGoreParts_Brightness),int(Col.B*MRGoreParts_Brightness));
 					For(int j=0;j<2;j++)Owner.A_SpawnParticleEx(Color(int(int(Col.R*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.G*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.B*1.5)*Min(1, Ages[i]/(35*6)))),
 						Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 1, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z,
-						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z);
+						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, StartAlphaf:MRGoreParts_Alpha, FadeStepf:0);
 				}
 				
 				int Rand = CRandom(0, 5);
@@ -83,11 +83,11 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 						Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
 						Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)),
 							Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),
-							Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3);
+							Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3, MRGoreParts_Alpha);
 					}
 					if(MRGoreParts_FloorSpots && Draw && Corpse>1)//Spots
 					{
-						if(Spot){
+						if(Spot>1){
 							Vector2 Pos = Owner.Pos.XY;
 							if(Owner.Health>0||MRGoreParts_Voxel)
 							{
@@ -104,13 +104,14 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 							if(35*15-Ages[i]>(Locs[i].Z-FloorZ)/4)
 							{
 								Float Bright = MRGoreParts_Brightness*CFRandom(.8,1.8);
-								Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, MRGoreParts_SpotsTime*35, Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
-									FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
+								Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, MRGoreParts_SpotsTime*35, 
+									Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
+									StartAlphaf:MRGoreParts_Alpha, FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
 								Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2*MRGoreParts_SndVol, attenuation: ATTN_STATIC);
 							}
-							Spot = false;
+							Spot=0;
 						}
-						else Spot = true;
+						else Spot++;
 					}
 					if(Ages[i]>35*3 && Draw)//Random(0, 10)>7 && Ages[i]>35*3)
 					{//Splash
