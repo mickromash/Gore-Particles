@@ -28,7 +28,6 @@ __Mod requires GZDoom 4.14.2 or newer__
 * Change vanilla monsters blood color on sapwn
 * Blood amount and size based on damage
 * Wounds size based on damage
-* Configurable blood transparancy
 * Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
 * Work on projectiles impcat
