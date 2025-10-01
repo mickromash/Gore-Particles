@@ -1,0 +1,6 @@
+Bishop (1 1 1)
+FireDemon (255 135 15)
+Heresiarch (155 15 184)
+IceGuy (21 83 226)
+Korax (15 68 15)
+Wraith (123 99 79)
