@@ -23,6 +23,7 @@ server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters bl
 nosave bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
 nosave color MRGoreParts_Color = "0 96 0";
 nosave float MRGoreParts_Brightness = 1;
+nosave float MRGoreParts_Alpha = 1;
 nosave bool MRGoreParts_FullBright = false;//Glowing particles
 
 nosave bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag

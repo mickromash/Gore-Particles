@@ -80,6 +80,18 @@ MRGoreParts_CorpseWounds2 = "Wounds, splashes and dripping blood";
 MRGoreParts_Voxel = "Voxel enemies";
 ////}
 
+MRGoreParts_AppearanceMenu = "Blood appearance settings";
+////{
+MRGoreParts_UseCustomColor = "Use custom blood color";
+MRGoreParts_Color = "Custom blood color";
+MRGoreParts_Brightness = "Blood brightness";
+MRGoreParts_Alpha = "Blood opacity";
+MRGoreParts_FullBright = "Glowing blood";
+MRGoreParts_FuzzyBlood = "Fuzzy blood";
+MRGoreParts_FuzzyBloodTip = "For transparent monsters";
+MRGoreParts_SndVol = "Gore sounds volume";
+////}
+
 MRGP_Recs = "Show recommend settings";
 
 MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
@@ -93,13 +105,6 @@ MRGoreParts_FloorSpots1 = "Only leaved by wounds";
 MRGoreParts_FloorSpots2 = "All";
 
 MRGoreParts_SpotsTime = "Spots life time in seconds";
-
-MRGoreParts_UseCustomColor = "Use custom blood color";
-MRGoreParts_Color = "Custom blood color";
-MRGoreParts_Brightness = "Blood brightness";
-MRGoreParts_FullBright = "Glowing blood";
-MRGoreParts_FuzzyBlood = "Fuzzy blood";
-MRGoreParts_SndVol = "Gore sounds volume";
 
 MRGoreParts_UpdateMenu = "Update mod's data";
 ////{
@@ -213,6 +218,18 @@ MRGoreParts_CorpseWounds2 = "Раны и капающая кровь";
 MRGoreParts_Voxel = "Воксельные враги";
 ////}
 
+MRGoreParts_AppearanceMenu = "Внейшний вид крови";
+////{
+MRGoreParts_UseCustomColor = "Кровь одного цвета";
+MRGoreParts_Color = "Цвет крови";
+MRGoreParts_Brightness = "Яркость крови";
+MRGoreParts_Alpha = "Непрозрачность крови";
+MRGoreParts_FullBright = "Светящаяся кровь";
+MRGoreParts_FuzzyBlood = "Полупрозрачная кровь";
+MRGoreParts_FuzzyBloodTip = "Для полупрозрачных врагов";
+MRGoreParts_SndVol = "Громкость крови";
+////}
+
 MRGP_Recs = "Показать рекоммендованные настройки";
 
 MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
@@ -226,15 +243,6 @@ MRGoreParts_FloorSpots1 = "Только кровь из ран";
 MRGoreParts_FloorSpots2 = "Вся";
 
 MRGoreParts_SpotsTime = "Удалять пятна спустя * секунд";
-
-MRGoreParts_UseCustomColor = "Кровь одного цвета";
-MRGoreParts_Color = "Цвет крови";
-MRGoreParts_Brightness = "Яркость крови";
-MRGoreParts_FullBright = "Светящаяся кровь";
-MRGoreParts_FuzzyBlood = "Полупрозрачная кровь";
-MRGoreParts_SndVol = "Громкость крови";
-
-MRGoreParts_Multiplayer = "Режим игры по сети";
 
 MRGoreParts_UpdateMenu = "Обновить данные мода";
 ////{
