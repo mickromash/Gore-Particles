@@ -15,6 +15,7 @@ OptionMenu "MRGoreParts_Menu"
 	SubMenu "$MRGoreParts_BloodSpawnMenu", "MRGoreParts_BloodSpawnMenu"
 	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
 	SubMenu "$MRGoreParts_WoundsMenu", "MRGoreParts_WoundsMenu"
+	SubMenu "$MRGoreParts_AppearanceMenu", "MRGoreParts_AppearanceMenu"
 	StaticText ""
 	Control "$MRGP_Recs", "InterfaceEvent MRGP_OpenRecs"
 	StaticText ""
@@ -25,13 +26,6 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
 	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 60, 2
-	StaticText ""
-	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
-	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
-	Slider "$MRGoreParts_Brightness", "MRGoreParts_Brightness", 0, 4, .1
-	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
-	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
-	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .1
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
 	StaticText ""
@@ -94,6 +88,21 @@ OptionMenu "MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds", 1, 0
 	StaticText ""
+}
+
+OptionMenu "MRGoreParts_AppearanceMenu"
+{
+	Title "$MRGoreParts_AppearanceMenu"
+	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
+	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
+	Slider "$MRGoreParts_Brightness", "MRGoreParts_Brightness", 0, 4, .1
+	Slider "$MRGoreParts_Alpha", "MRGoreParts_Alpha", .1, 1, .1
+	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
+	StaticText ""
+	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
+	StaticText "$MRGoreParts_FuzzyBloodTip", "Fire"
+	StaticText ""
+	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .1
 }
 
 OptionMenu "MRGoreParts_UpdateMenu"
