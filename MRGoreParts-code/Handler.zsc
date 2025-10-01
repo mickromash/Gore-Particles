@@ -824,7 +824,6 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		MR_GoreParticlesCrushedThinker Nerd = New('MR_GoreParticlesCrushedThinker');
 		
-		Nerd.Radius = Radius;
 		Nerd.Pos = e.Thing.Pos.XY;
 		Nerd.Bld = Col;
 		
@@ -833,7 +832,20 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Nerd.RenderStyle = Fuzzy;
 		Nerd.CurSector = Crusher;
+		
+		For(int i=0;i<360;i+=CRandom(2, 4))//Setting up drops places
+		{
+			For(float r=CFRandom(1, 4);r<Radius;r*=CFRandom(1.3, 2)/Min(1, MRGoreParts_Amount)){
+				Vector2 Pos = Nerd.Pos+Actor.AngleToVector(i, r);
 				
+				Sector TempSect = LevelLocals.PointInSector(Pos);
+				
+				if(TempSect == Nerd.CurSector||TempSect.CenterCeiling()==Nerd.CurSector.CenterCeiling()){
+					Nerd.RandX.Push(Pos.X);Nerd.RandY.Push(Pos.Y);
+				}
+			}
+		}
+		
 		Nerd.PostBeginPlay();
 		
 		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol);
@@ -856,7 +868,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Size *= .05;
 			Size *= FRandom(.5, 1.5);
 			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, Random(0, 360),
-				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, 1, 0, -(Size/130.));
+				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, MRGoreParts_Alpha, 0, -(Size/130.));
 		}
 	}
 	
@@ -962,14 +974,14 @@ Class MR_GoreParticlesHandler: EventHandler
 						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
 			}
 			
-			For(int i=0;i<CRandom(30, 40)*MRGoreParts_Amount;i++){//Floor splash
+			if(MRGoreParts_FloorSplash)For(int i=0;i<CRandom(30, 40)*MRGoreParts_Amount;i++){//Floor splash
 				Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
 				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
 				Size *= .04;
 				Size *= FRandom(.5, 1.5);
 				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, Random(0, 360),
-					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, 1, 0, -(Size/100.));
+					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, MRGoreParts_Alpha, 0, -(Size/100.));
 				}
 		}
 				
