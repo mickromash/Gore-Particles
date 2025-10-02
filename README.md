@@ -12,14 +12,14 @@ Mod uses sound effects from loaded gore mods, but you can also use
     * Configurable size, speed and particles amount of the effects
     * Configurable color, brightness and trasparancy of the blood
 * Most of the mods settings are client-side and won't affect other users games when playing in multiplayer
-  (server settings are marked with "🌐" symbol)
+   (server settings are marked with "🌐" symbol)
 
 * Bleeding wounds
 * Built in blood colours for vanilla monsters (like green blood for hell knight or blue for cacodemon)
 * Compatibility with other gameplay, monsters or gore mods
 #
 
-The mod doesn't use any actors, which lowers its impacto on the performance and makes most of the options client side
+There is no actors in the mod, which lowers its impacto on the performance and makes most of the options client side
 
 __Mod requires GZDoom 4.14.2 or newer__
 
