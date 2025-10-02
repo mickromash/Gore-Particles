@@ -1018,6 +1018,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
 					0,0,0, 0,0,0, Alph, Alph/100.);
 				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
 				Return;
 			}
 			
@@ -1031,6 +1032,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
 				SpawnBloodDrop(mo, Col);
 				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
 				Return;
 			}
 		}
@@ -1049,7 +1051,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		if(MRGoreParts_OnlyModsBlood){mo.Destroy();Return;}
 		
-		mo.A_SetRenderStyle(0, STYLE_NONE);
+		mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
 	}
 	
 
