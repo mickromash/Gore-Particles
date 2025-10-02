@@ -1,61 +1,63 @@
 nosave bool MRGoreParts_Draw = true;//Doesn't affect anything besides actual particles spawning
 
-nosave bool MRGoreParts_Wounds = true;//Bleeding wounds
-nosave bool MRGoreParts_DrawWounds = true;
-nosave int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
-nosave bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face player
-nosave int MRGoreParts_MaxWounded = 7;//Max wounded entities
-nosave int MRGoreParts_MaxWounds = 10;//Max wounds per entity
-
-nosave bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
-nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
-
-nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
-nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
-
-nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash)
-nosave float MRGoreParts_Size = 1;//Size of particles
-
+//Blood spawn menu
 server bool MRGoreParts_OnlyModsBlood = true;//Destroyes blood actors from other mods
 nosave bool MRGoreParts_HideOtherBlood = false;//Hides blood actors from other mods
 server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters blood types in other mods blood
 
+nosave bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
+
+nosave bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag
+nosave string MRGoreParts_Blacklist = "LostSoul, Revenant";
+nosave bool MRGoreParts_BlacklistOn = true;
+nosave bool MRGoreParts_NoBloodMist = true;//Spawn dust for non bleeding things
+nosave color MRGoreParts_NoBloodMistColor = "70 70 70";//Color of dust
+//
+
+//Effects menu
+nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash)
+nosave float MRGoreParts_Size = 1;//Size of particles
+nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
+nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
+nosave bool MRGoreParts_LowAlpha = false;//Minimize usage of alpha channel for particles
+nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
+nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
+nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
+///Included effects menu
+nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
+nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
+nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
+nosave string MRGoreParts_NoBloodEffectsList = "2 6";//Effects spawn for non bleeding actors
+///
+//
+
+//Blood appearance
 nosave bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
 nosave color MRGoreParts_Color = "0 96 0";
 nosave float MRGoreParts_Brightness = 1;
 nosave float MRGoreParts_Alpha = 1;
 nosave bool MRGoreParts_FullBright = false;//Glowing particles
-
-nosave bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag
-
-nosave string MRGoreParts_Blacklist = "LostSoul, Revenant";
-nosave bool MRGoreParts_BlacklistOn = true;
-
-nosave bool MRGoreParts_NoBloodMist = true;//Spawn dust for non bleeding things
-nosave color MRGoreParts_NoBloodMistColor = "70 70 70";//Color of dust
-
 nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
+nosave float MRGoreParts_SndVol = 1;
+//
+
+//Wounds menu
+nosave bool MRGoreParts_Wounds = true;//Bleeding wounds
+nosave int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
+nosave bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face player
+nosave int MRGoreParts_MaxWounded = 7;//Max wounded entities
+nosave int MRGoreParts_MaxWounds = 10;//Max wounds per entity
+//
+
+nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
+nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
 
 server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
 nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding
 nosave int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
 nosave bool MRGoreParts_FloorSplash = true;//Floor splash on gibbing
-
-nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
-nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
-nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
-nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
-nosave string MRGoreParts_NoBloodEffectsList = "2 6";//Effects spawn for non bleeding actors
-
-nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
-nosave bool MRGoreParts_LowAlpha = false;//Minimize usage of alpha channel for particles
-nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
-
-nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
-
 nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
 
-nosave float MRGoreParts_SndVol = 1;
 
 nosave bool MRGoreParts_CheckLimit = false;
 nosave float MRGoreParts_CheckLimitOffset = 0;
