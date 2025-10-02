@@ -8,7 +8,7 @@ Mod uses sound effects from loaded gore mods, but you can also use
 
 * Various volumetric blood effects based on GZDoom particles
 * High customization level:
-    * You can choose what effects will or will not appear
+    * You can choose which effects will or will not appear
     * Configurable size, speed and particles amount of the effects
     * Configurable color, brightness and trasparancy of the blood
 * Bleeding wounds
