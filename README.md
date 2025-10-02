@@ -7,17 +7,18 @@ Mod uses sound effects from loaded gore mods, but you can also use
 ## Features
 
 * Various volumetric blood effects based on GZDoom particles
+* High customization level:
+    * You can choose what effects will or will not appear
+    * Configurable size, speed and particles amount of the effects
+    * Configurable color, brightness and trasparancy of the blood
+* Most of the mods settings are client-side and won't affect other users games when playing in multiplayer (server settings are marked with "🌐" symbol)
+
 * Bleeding wounds
 * Built in blood colours for vanilla monsters (like green blood for hell knight or blue for cacodemon)
-* Customizable blood colour
 * Compatibility with other gameplay, monsters or gore mods
 #
 
-Because most of the blood effects are only made of particles (excluding blood streams), mod dosen't create any new actors and won't affect performance much.
-
-But because all of the blood is visualized with particles, I highly recommend use other mods in case you want blood puddles and spots.
-
-(GZDoom particles aren't working in such a way that when their amount hit the limit, and new particle need to spawn, old ones will wanish, instead, new particles won't spawn until one of the old ones won't disappear)
+The mod doesn't use any actors, which lowers its impacto on the performance and makes most of the options client side
 
 __Mod requires GZDoom 4.14.2 or newer__
 
