@@ -45,7 +45,7 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 {
 	Title "$MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
-	Option "$MRGoreParts_HideOtherBlood", "MRGoreParts_HideOtherBlood", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 0
+	Option "$MRGoreParts_HideOtherBlood", "MRGoreParts_HideOtherBlood", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 1
 	StaticText "$MRGoreParts_OnlyModsBloodText", "Fire"
 	Option "$MRGoreParts_BloodTypes", "MRGoreParts_BloodTypes", "YesNo"
 	StaticText "$MRGoreParts_BloodTypesText", "Fire"
