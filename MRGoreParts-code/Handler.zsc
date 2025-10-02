@@ -477,7 +477,9 @@ Class MR_GoreParticlesHandler: EventHandler
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
 			if(Inflictor&&Inflictor.Distance2D(mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
-
+			
+			if(!Who)Return;
+			
 			Float Bright = CFRandom(.7, 1.4);
 			
 			Color Col = MRGoreParts_NoBloodMistColor;
@@ -491,6 +493,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
 			if(Inflictor&&Inflictor.Distance2D(mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
+			
+			if(!Who)Return;
 			
 			Double Pitch = 0;
 			if(Source && PlayerPawn(Source) && Inflictor)Pitch = Inflictor.PitchTo(Source, 5, Source.Player.ViewZ-Source.Pos.Z);
