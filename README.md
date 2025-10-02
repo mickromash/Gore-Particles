@@ -18,7 +18,7 @@ Mod uses sound effects from loaded gore mods, but you can also use
    Most of the mod's options are only affecting one player's game, and even more, it won't cause desync if only one of the players will has the mod loaded, till all of the server options are turned off (server options are marked with the "🌐" symbol)
 #
 
-There is no actors in the mod, which lowers its impacto on the performance and makes most of the options client side
+There is no actors in the mod, which lowers its impact on the performance and makes most of the options client side
 
 __Mod requires GZDoom 4.14.2 or newer__
 
