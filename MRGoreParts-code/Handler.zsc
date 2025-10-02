@@ -711,7 +711,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 
 
-					if(MRGoreParts_DrawFlyingBlood && CRandom(0, 100)>95)
+					if(MRGoreParts_DrawFlyingBlood && CFRandom(0, 1)<MRGoreParts_FlyingBloodChance)
 					{
 						Float Strn = CRandom(4, 6);
 						Float Pitch = -CRandom(0, 60);
@@ -991,7 +991,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				
 		if(MRGoreParts_DrawFlyingBlood){
 			int SAmount;
-			For(int i=0;i<CRandom(9, 12);i++)
+			For(int i=0;i<CRandom(9, 12)*MRGoreParts_FlyingBloodChance;i++)
 			{
 				if(SAmount>5*Amount)Break;
 				Float Strn = CRandom(5, 7);

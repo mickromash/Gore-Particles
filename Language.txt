@@ -43,6 +43,7 @@ MRGoreParts_LowAlphaTip = "Improves performance by minimizing particles Transpar
 MRGoreParts_Speed = "Particles speed/lifetime";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_DrawFlyingBlood = "Quake gibs style blood streams";
+MRGoreParts_FlyingBloodChance = "Blood streams spawn chance";
 
 MRGoreParts_MistTexture = "Blood mist texture";
 MRGoreParts_MistTexture0 = "Mod (128x128)";
@@ -181,6 +182,7 @@ MRGoreParts_LowAlphaTip = "Улучшает производительность
 MRGoreParts_Speed = "Скоровть/время жизни частиц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_DrawFlyingBlood = "Струи крови (как в Quake)";
+MRGoreParts_FlyingBloodChance = "Шанс появления струи";
 
 MRGoreParts_MistTexture = "Текстура дымки";
 MRGoreParts_MistTexture0 = "Из мода (128x128)";

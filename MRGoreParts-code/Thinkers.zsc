@@ -158,7 +158,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 			Double Angle = Owner.Angle;
 			if(!MRGoreParts_Voxel && Players[ConsolePlayer].Camera)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
 			
-			if(MRGoreParts_DrawFlyingBlood && CRandom(-500+Artery*200, 70)>Age)
+			if(MRGoreParts_DrawFlyingBlood && CRandom(-500+Artery*200, 70)*(MRGoreParts_FlyingBloodChance*1.5)>Age)
 			{
 				Float Strn = CRandom(3, 5);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
