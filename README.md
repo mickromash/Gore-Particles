@@ -15,7 +15,7 @@ Mod uses sound effects from loaded gore mods, but you can also use
 * Built in blood colours for vanilla monsters (like green blood for hell knight or blue for cacodemon)
 * Compatibility with other gameplay, monsters or gore mods
 * Client-side:
-   Most of the mod's options are only affecting one player's game, and even more, it won't cause desync if only one of the players will has the mod loaded, till all of the server options are turned off (server options are marked with the "🌐" symbol).
+   Most of the mod's options are only affecting one player's game, and even more, it won't cause desync if only one of the players will has the mod loaded, till all of the server options are turned off (server options are marked with the "🌐" symbol)
 #
 
 There is no actors in the mod, which lowers its impacto on the performance and makes most of the options client side
