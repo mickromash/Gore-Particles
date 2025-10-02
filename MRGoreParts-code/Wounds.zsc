@@ -113,7 +113,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 						}
 						else Spot++;
 					}
-					if(Ages[i]>35*3 && Draw)//Random(0, 10)>7 && Ages[i]>35*3)
+					if(Ages[i]>35*3 && Draw)//CRandom(0, 10)>7 && Ages[i]>35*3)
 					{//Splash
 						Double Angl = VectorAngle(Locs[i].X, Locs[i].Y);
 						Vector2 Pos = (0,0);

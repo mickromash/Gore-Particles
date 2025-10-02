@@ -234,7 +234,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 						HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), Alpha:MRGoreParts_Alpha, Fade:(MRGoreParts_LowAlpha)?0:-1,
 						SizeStep:(MRGoreParts_LowAlpha)?-(Size/(MRGoreParts_SpotsTime*35)):0);
 				}
-				if(HitType == TRACE_HitCeiling)For(int i=0;i<Random(0, 3)*4;i++)//Dripping from ceiling
+				if(HitType == TRACE_HitCeiling)For(int i=0;i<CRandom(0, 3)*4;i++)//Dripping from ceiling
 				{
 					
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
@@ -750,7 +750,7 @@ Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
 		
 		if(mo.Waterlevel>2)
 		{
-			int Rand = Random(170, 200);
+			int Rand = CRandom(170, 200);
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, Flags, Angle, Pitch, Color(Rand,Rand,Rand), Amount, Scale, Alpha, Offset, LifeM, MoVel);
 			Return 0;
 		}
@@ -785,11 +785,11 @@ Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
-			Float Life = FRandom(25, 35)/MRGoreParts_Speed*LifeM;//Min(25, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
+			Float Life = CFRandom(25, 35)/MRGoreParts_Speed*LifeM;//Min(25, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
 			Double Size = CFRandom(.7, .8)*Dist*MRGoreParts_Size*Scale;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			
-			Color ColTmp = Color(255,Random(180, 255),Random(0, 80));
+			Color ColTmp = Color(255,CRandom(180, 255),CRandom(0, 80));
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
 			

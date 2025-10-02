@@ -703,7 +703,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
 					}
 					
-					if(Random(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
+					if(CRandom(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 
 
@@ -866,8 +866,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
 			Size *= .05;
-			Size *= FRandom(.5, 1.5);
-			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, Random(0, 360),
+			Size *= CFRandom(.5, 1.5);
+			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, CRandom(0, 360),
 				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, MRGoreParts_Alpha, 0, -(Size/130.));
 		}
 	}
@@ -918,10 +918,10 @@ Class MR_GoreParticlesHandler: EventHandler
 			Delay++;
 		}
 		
-		Double Alph = FRandom(.8, .9);
-		a.Pos = (mo.pos.x+frandom(-1, 1), mo.pos.y+frandom(-1, 1), mo.floorz);
+		Double Alph = CFRandom(.8, .9);
+		a.Pos = (mo.pos.x+CFRandom(-1, 1), mo.pos.y+CFRandom(-1, 1), mo.floorz);
 		a.Col = Col;
-		a.Size = FRandom(2, 4);
+		a.Size = CFRandom(2, 4);
 		a.Delay = Delay;
 		a.Life = 150;
 		a.Fade = Alph/100;
@@ -979,8 +979,8 @@ Class MR_GoreParticlesHandler: EventHandler
 				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
 				Size *= .04;
-				Size *= FRandom(.5, 1.5);
-				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, Random(0, 360),
+				Size *= CFRandom(.5, 1.5);
+				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, CRandom(0, 360),
 					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, MRGoreParts_Alpha, 0, -(Size/100.));
 				}
 		}
