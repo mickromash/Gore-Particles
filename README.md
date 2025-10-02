@@ -11,7 +11,8 @@ Mod uses sound effects from loaded gore mods, but you can also use
     * You can choose what effects will or will not appear
     * Configurable size, speed and particles amount of the effects
     * Configurable color, brightness and trasparancy of the blood
-* Most of the mods settings are client-side and won't affect other users games when playing in multiplayer (server settings are marked with "🌐" symbol)
+* Most of the mods settings are client-side and won't affect other users games when playing in multiplayer
+  (server settings are marked with "🌐" symbol)
 
 * Bleeding wounds
 * Built in blood colours for vanilla monsters (like green blood for hell knight or blue for cacodemon)
