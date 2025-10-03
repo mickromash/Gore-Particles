@@ -23,12 +23,14 @@ MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
 
+MRGoreParts_MenuNoBloodTitle = "Non-bleeding settings";
 MRGoreParts_Blacklist = "Monsters black list:";
 MRGoreParts_BlacklistOn = "Blacklist:";
 MRGP_UpdateBlacklist = "Apply blacklist";
 MRGoreParts_NoBloodMonsters = "Force blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_NoBloodMist = "Spec. impact effect for monsters with no blood";
 MRGoreParts_NoBloodMistColor = "Effect color";
+MRGoreParts_NoBloodSndVol = "Hit sound volume";
 ////}
 
 MRGoreParts_EffectsMenu = "Effects settings";
@@ -162,12 +164,14 @@ MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
 MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами";
 
+MRGoreParts_MenuNoBloodTitle = "Настройки монстров без крови";
 MRGoreParts_Blacklist = "Чёрный список монстров:";
 MRGoreParts_BlacklistOn = "Чёрный список монстров:";
 MRGP_UpdateBlacklist = "Применить чёрный список";
 MRGoreParts_NoBloodMonsters = "Включить кровь для монстров с флагом \"+NOBLOOD\"";
 MRGoreParts_NoBloodMist = "Спец. эффекты для безкровных";
 MRGoreParts_NoBloodMistColor = "Цвет эффектов";
+MRGoreParts_NoBloodSndVol = "Громкость попадания";
 ////}
 
 MRGoreParts_EffectsMenu = "Настройки эффектов";

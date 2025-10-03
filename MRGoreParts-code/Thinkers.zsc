@@ -27,7 +27,7 @@ Class MR_GoreParticlesThinker: Object play
 		
 		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat() && Plr.Distance2D(mo)>Plr.Radius*2)Return false;
 		
-		Return Plr.CheckSight(mo);
+		Return Plr.CheckSight(mo, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
 		
 	Virtual Void Tick(){if(Level.IsFrozen())Return;}

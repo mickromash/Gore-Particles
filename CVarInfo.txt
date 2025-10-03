@@ -40,6 +40,7 @@ nosave float MRGoreParts_Alpha = 1;
 nosave bool MRGoreParts_FullBright = false;//Glowing particles
 nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 nosave float MRGoreParts_SndVol = 1;
+nosave float MRGoreParts_NoBloodSndVol = 1;
 //
 
 //Wounds menu
