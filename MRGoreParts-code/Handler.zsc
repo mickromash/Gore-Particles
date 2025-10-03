@@ -8,6 +8,7 @@ Class MR_GoreParticlesStaticHandler: StaticEventHandler
 	Ui Bool RecsShown;
 	Array<MR_GoreParticlesEffect> Effects;
 	
+	
 	Override Void OnRegister()
 	{
 		Effects.Clear();
@@ -211,7 +212,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	}
 	
 	
-	String HitSound, SpraySound, DripSound, GibSound;
+	String HitSound, SpraySound, DripSound, GibSound, WoundSound, NoBloodSound;
 	
 	Void SetUpSounds()//Utilize gore sounds from other mods, if sfx add-on wasn't loaded
 	{
@@ -219,6 +220,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		DripSound = "MRGP/Drip";
 		GibSound = "MRGP/XDeath";
 		SpraySound = "MRGP/Spray";
+		WoundSound = "MRGP/Wound";
+		NoBloodSound = "MRGP/NoBlood";
 		
 		String Mod;
 		
@@ -467,7 +470,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(!mo)Return true;
 		
 		
-		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2) && mo.CheckSight(Plr);
+		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
 	
 	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)//Spec. effects for non bleeding actors
@@ -487,6 +490,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*90, Col, Offset:(0,0,ZOfst));
+			if(MRGoreParts_NoBloodSndVol>0)Who.A_StartSound(NoBloodSound, CHAN_AUTO, Volume:MRGoreParts_NoBloodSndVol);
 		}
 		if(HDestArmor)
 		{
