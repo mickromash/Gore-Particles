@@ -830,7 +830,10 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Crusher)Break;
 		}
 		
-		if(!Crusher)Return;
+		if(!Crusher){
+			SpawnXDeath(e.Thing);
+			Return;
+		}
 		
 		MR_GoreParticlesCrushedThinker Nerd = New('MR_GoreParticlesCrushedThinker');
 		
