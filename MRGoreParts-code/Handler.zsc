@@ -830,6 +830,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Crusher)Break;
 		}
 		
+		if(!Crusher)Return;
+		
 		MR_GoreParticlesCrushedThinker Nerd = New('MR_GoreParticlesCrushedThinker');
 		
 		Nerd.Pos = e.Thing.Pos.XY;
@@ -840,14 +842,14 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Nerd.RenderStyle = Fuzzy;
 		Nerd.CurSector = Crusher;
-		
+
 		For(int i=0;i<360;i+=CRandom(2, 4))//Setting up drops places
 		{
 			For(float r=CFRandom(1, 4);r<Radius;r*=CFRandom(1.3, 2)/Min(1, MRGoreParts_Amount)){
 				Vector2 Pos = Nerd.Pos+Actor.AngleToVector(i, r);
 				
 				Sector TempSect = LevelLocals.PointInSector(Pos);
-				
+				if(!TempSect)Continue;
 				if(TempSect == Nerd.CurSector||TempSect.CenterCeiling()==Nerd.CurSector.CenterCeiling()){
 					Nerd.RandX.Push(Pos.X);Nerd.RandY.Push(Pos.Y);
 				}
