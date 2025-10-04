@@ -293,8 +293,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			Mod = 'TB_BloodActor';//Trailblazer
 			if((Class<Actor>)(Mod))
 			{
-				DripSound "BloodyMess/BloodDrop";
-				GibSound "BloodyMess/XDeath";
+				DripSound = "BloodyMess/BloodDrop";
+				GibSound = "BloodyMess/XDeath";
 			}
 			Break;
 		}
