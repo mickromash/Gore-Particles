@@ -290,6 +290,12 @@ Class MR_GoreParticlesHandler: EventHandler
 				Break;
 			}
 			
+			Mod = 'TB_BloodActor';//Trailblazer
+			if((Class<Actor>)(Mod))
+			{
+				DripSound "BloodyMess/BloodDrop";
+				GibSound "BloodyMess/XDeath";
+			}
 			Break;
 		}
 		if(MRGoreParts_Debug){
@@ -383,7 +389,16 @@ Class MR_GoreParticlesHandler: EventHandler
 				RemoveBloods.Push('Brutal_FlyingBlood');
 				Break;
 			}
-					
+			
+			Mod = 'TB_BloodActor';//Trailblazer
+			if((Class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'TB_BaseBloodActor';
+				RemoveBloods.Push('TB_MainBlood');
+				RemoveBloods.Push('TB_TraditionalBlood');
+				RemoveBloods.Push('TB_BloodActor');
+				Break;
+			}
 			/*Mod = 'PileOfGibs';//Splatter gore
 			if((Class<Actor>)(Mod))
 			{
