@@ -253,7 +253,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		if(Init)
 		{
 			EffectsNames.Clear();
-			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Return;}
 			
 			For(int i=0;i<Handler.Effects.Size();i++)
@@ -272,7 +272,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			}
 			if(EffectsNames.Size()>0){Return;}
 			
-			MR_GoreParticlesHandler Handle = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+			Let Handle = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
 		
 			For(int i=0;i<Handle.Effects.Size();i++)
 			{

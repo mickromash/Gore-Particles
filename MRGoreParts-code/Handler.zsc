@@ -17,7 +17,7 @@ Class MR_GoreParticlesStaticHandler: StaticEventHandler
 		{
 			if(AllClasses[i] is 'MR_GoreParticlesEffect' && !AllClasses[i].IsAbstract())
 			{
-				MR_GoreParticlesEffect Clas = MR_GoreParticlesEffect(New(AllClasses[i].GetClassName()));
+				Let Clas = MR_GoreParticlesEffect(New(AllClasses[i].GetClassName()));
 				Effects.Push(Clas);
 			}
 		}
@@ -53,7 +53,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void UpdateEffects()
 	{
-		MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+		Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");}
 		Effects.Clear();
 		
@@ -101,7 +101,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void UpdateEffectsData()
 	{
-		MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+		Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Return;}
 		For(int i=0;i<Handler.Effects.Size();i++){
 			if(Handler.Effects[i])Handler.Effects[i].CountParticles(100);
@@ -818,7 +818,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		else if(MRGoreParts_MaxDying>0)
 		{
-			MR_GoreParticlesDeathThinker a = New('MR_GoreParticlesDeathThinker');
+			Let a = New('MR_GoreParticlesDeathThinker');
 			a.Owner = e.Thing;
 			a.PostBeginPlay();
 			a.Bld = Col;
@@ -963,7 +963,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		For(int i=0;i<CRandom(2, 5);i++)
 			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
 		
-		MR_GoreParticlesDelayedSpawner a = New('MR_GoreParticlesDelayedSpawner');
+		Let a = New('MR_GoreParticlesDelayedSpawner');
 		if(!a)Return;
 		a.PostBeginPlay();
 		
@@ -1137,7 +1137,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Return;
 		}
 		if(e.name ~== "MRGP_UpdateEffectsData"){
-			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");}
 			Handler.OnRegister();
 			UpdateEffects();
@@ -1159,7 +1159,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		{
 			if(e.args[1])
 			{
-				MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+				Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 				if(!Handler)Return;
 				if(Handler.RecSShown)Return;
 			}
@@ -1197,7 +1197,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		if(GameStart)
 		{
-			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
 			if(!Handler)Return;
 			Handler.RecSShown = true;
 			

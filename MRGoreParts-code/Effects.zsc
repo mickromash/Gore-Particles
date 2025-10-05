@@ -316,7 +316,7 @@ Class MR_GoreParticlesEffect play abstract
 	Static Void SpawnEffect(Class<Object> Effect, Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
 	{
 		if(!mo)Return;
-		MR_GoreParticlesEffect Spawner = MR_GoreParticlesEffect(New(Effect));
+		Let Spawner = MR_GoreParticlesEffect(New(Effect));
 		
 		if(Spawner){
 			Spawner.DoParticleEffect(mo, Flags, Angle, Pitch, Col, Amount, Scale, Alpha, Offset, LifeM, MoVel);
