@@ -73,6 +73,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	{
 		if(!MRGoreParts_DrawFlyingBlood){Destroy();Return;}
 		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 		Handler.Streams.Push(Self);
 		Gravity = .4;
 		Scale = 3;
@@ -89,10 +90,11 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	Override Void Tick()
 	{
 		if(Level.IsFrozen())Return;
+		
 		Age++;
 		if(Age>35*3){Destroy();Return;}
 		
-		Bool Draw = MRGPartsCheckDraw();
+		Let Draw = MRGPartsCheckDraw();
 		
 		Double Angle = VectorAngle(Vel.X, Vel.Y);
 		Double Pitch = -atan2(Vel.Z, Vel.XY.Length());

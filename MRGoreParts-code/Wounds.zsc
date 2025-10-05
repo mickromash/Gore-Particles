@@ -23,6 +23,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 	Override Void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
+		if(!Handler)Return;
 		Fov = CVar.FindCVar("FOV").GetFloat();
 		Handler.Wounded.Push(Owner);
 		Handler.Wounds.Insert(Handler.Wounded.Find(Owner), Self);
@@ -33,7 +34,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 	Override Void Tick()
 	{
 		if(!Owner){Destroy();Return;}
-		Super.Tick();
+		if(!TickCheck())Return;
 		TextureID Sprt = Owner.CurState.GetSpriteTexture(0);//Abs(Round(Actor.DeltaAngle(Owner.AngleTo(Players[ConsolePlayer].Camera), Owner.Angle)*2.07/24)));
 		//Console.Printf(""..(Actor.DeltaAngle(Owner.AngleTo(Players[ConsolePlayer].Camera), Owner.Angle)*1.07/24));
 		//if(!Sprt.IsValid())Sprt = Owner.CurState.GetSpriteTexture(0);

@@ -2,7 +2,6 @@
 	My implementation of client-side thinkers
 	
 	Ticks are called from event handler;
-	For wounds thinker, check Wounds.zsc
 	
 	- Why not using visual thinkers?
 	- I forgot about them
@@ -29,11 +28,20 @@ Class MR_GoreParticlesThinker: Object play
 		
 		Return Plr.CheckSight(mo, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
+	
+	Bool TickCheck()
+	{
+		if(!MRGoreParts_Draw){Destroy();Return false;}
+		if(Level.isFrozen())Return false;
+		Return true;
+	}
 		
-	Virtual Void Tick(){if(Level.IsFrozen())Return;}
+	Virtual Void Tick(){}
+	
 	Virtual Void PostBeginPlay()
 	{
 		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 	}
 	
 	Void SpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
@@ -71,6 +79,7 @@ Class MR_GoreParticlesDelayedSpawner: MR_GoreParticlesThinker//You'll never gues
 	Override Void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
+		if(!Handler)Return;
 		if(Handler)Handler.Spawners.Push(Self);
 	}
 	
@@ -83,7 +92,7 @@ Class MR_GoreParticlesDelayedSpawner: MR_GoreParticlesThinker//You'll never gues
 	
 	Override Void Tick()
 	{
-		Super.Tick();
+		if(!TickCheck())Return;
 		
 		Sector CurSector = Level.PointInSector(Pos.XY);
 		if(CurSector)Pos.Z = CurSector.CenterFloor();
@@ -97,6 +106,8 @@ Class MR_GoreParticlesDelayedSpawner: MR_GoreParticlesThinker//You'll never gues
 		}
 		
 		Age++;
+		
+		Return;
 	}
 }
 
@@ -111,7 +122,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	Override Void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
-		if(!Owner)Return;
+		if(!Owner||!Handler)Return;
 		Mid = Owner.Height*.5;
 		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
@@ -127,7 +138,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	Override Void Tick()
 	{
 		if(Age>60||!Owner){Destroy();Return;}
-		Super.Tick();
+		if(!TickCheck())Return;
 		Age++;
 		
 		if(Owner.instatesequence(Owner.CurState, Owner.ResolveState("gib")))
@@ -250,6 +261,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	{
 		Super.PostBeginPlay();
 		FOV = CVar.FindCVar("FOV").GetFloat();
+		if(!Handler)Return;
 		Handler.Crushed.Push(Self);
 		
 		StartAmount = RandX.Size();
@@ -270,7 +282,8 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	}
 		
 	Override Void Tick(){
-		Super.Tick();
+		if(!TickCheck())Return;
+		
 		if(RandX.Size()<1){Destroy();Return;}
 		
 		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()-8){
