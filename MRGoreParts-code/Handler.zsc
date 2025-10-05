@@ -54,7 +54,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	Void UpdateEffects()
 	{
 		MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
-		
+		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");}
 		Effects.Clear();
 		
 		String TempStr = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
@@ -102,7 +102,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	Void UpdateEffectsData()
 	{
 		MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
-
+		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Return;}
 		For(int i=0;i<Handler.Effects.Size();i++){
 			if(Handler.Effects[i])Handler.Effects[i].CountParticles(100);
 		}
@@ -447,6 +447,29 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 	}
 	
+	Void ThinkersClear()
+	{
+		For(int i=0;i<Streams.Size();i++){
+			if(Streams[i])Streams[i].Destroy();
+		}
+				
+		For(int i=0;i<Dyings.Size();i++){
+			if(Dyings[i])Dyings[i].Destroy();
+		}
+		
+		For(int i=0;i<Crushed.Size();i++){
+			if(Crushed[i])Crushed[i].Destroy();
+		}
+		
+		For(int i=0;i<Wounds.Size();i++){
+			if(Wounds[i])Wounds[i].Destroy();
+		}
+		
+		For(int i=0;i<Spawners.Size();i++){
+			if(Spawners[i])Spawners[i].Destroy();
+		}
+	}
+	
 	Override Void WorldTick()
 	{
 		ThinkersTick();
@@ -454,6 +477,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		/////////////////////////////
 				
 		if(!MRGoreParts_CheckLimit)Return;
+		
 		Let Plr = Players[ConsolePlayer].Camera;
 		if(!Plr)Return;
 		
@@ -635,6 +659,8 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldThingDamaged(WorldEvent e)
 	{
+		if(!MRGoreParts_Draw)Return;
+		
 		if(e.Thing.bIsMonster||e.Thing is 'PlayerPawn'||e.Thing.bCorpse)
 		{
 			if((e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters) || (MRGoreParts_BlacklistOn && BlackList.Find(e.Thing.GetClass())!=BlackList.Size()))
@@ -766,6 +792,8 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override Void WorldThingDied(WorldEvent e)
 	{
+		if(!MRGoreParts_Draw)Return;
+		
 		if(!e.Thing||!(e.Thing.bIsMonster || e.Thing is 'PlayerPawn')||(e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters)||
 			(BlackList.Find(e.Thing.GetClass())!=BlackList.Size()&&MRGoreParts_BlacklistOn) )Return;
 		
@@ -807,6 +835,8 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Override void WorldThingGround (WorldEvent e)//Crush
 	{
+		if(!MRGoreParts_Draw)Return;
+		
 		if(MRGoreParts_Crush<1)Return;
 		
 		if(!e.Thing)Return;
@@ -881,9 +911,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(Crushed.Size()>=MRGoreParts_Crush){
 			if(Crushed[0])Crushed[0].DropAll();
 		}
-		
-		if(!MRGoreParts_Draw)Return;
-		
+				
 		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
 		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
 		MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
@@ -928,15 +956,15 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void SpawnBloodDrop(Actor mo, Color Col)//Mainly for hdest
 	{
-		Bool Draw = MRGoreParts_Draw;
+		if(!MRGoreParts_Draw)Return;
 		
 		Float TempGrav = -.3;
 		
-		if(Draw)For(int i=0;i<CRandom(2, 5);i++)
+		For(int i=0;i<CRandom(2, 5);i++)
 			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
 		
 		MR_GoreParticlesDelayedSpawner a = New('MR_GoreParticlesDelayedSpawner');
-		
+		if(!a)Return;
 		a.PostBeginPlay();
 		
 		int Delay = 1;
@@ -960,6 +988,8 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
 	{
+		if(!MRGoreParts_Draw)Return;
+		
 		mo.A_StartSound(GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
 		
 		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
@@ -1108,6 +1138,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		if(e.name ~== "MRGP_UpdateEffectsData"){
 			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");}
 			Handler.OnRegister();
 			UpdateEffects();
 			UpdateEffectsData();
@@ -1129,6 +1160,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(e.args[1])
 			{
 				MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+				if(!Handler)Return;
 				if(Handler.RecSShown)Return;
 			}
 			
@@ -1166,7 +1198,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(GameStart)
 		{
 			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
-			
+			if(!Handler)Return;
 			Handler.RecSShown = true;
 			
 			if(RecS.Size()<1)Return;

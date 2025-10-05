@@ -254,7 +254,8 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		{
 			EffectsNames.Clear();
 			MR_GoreParticlesStaticHandler Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
-		
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Return;}
+			
 			For(int i=0;i<Handler.Effects.Size();i++)
 			{
 				String Nam = Handler.Effects[i].GetName();
