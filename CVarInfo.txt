@@ -3,7 +3,7 @@ nosave bool MRGoreParts_Draw = true;//Doesn't affect anything besides actual par
 //Blood spawn menu
 server bool MRGoreParts_OnlyModsBlood = true;//Destroyes blood actors from other mods
 nosave bool MRGoreParts_HideOtherBlood = false;//Hides blood actors from other mods
-server bool MRGoreParts_BloodTypes = true;//Include blood written in monsters blood types in other mods blood
+server bool MRGoreParts_BloodTypes = false;//Include blood written in monsters blood types in other mods blood
 
 nosave bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
 
@@ -19,7 +19,7 @@ nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash
 nosave float MRGoreParts_Size = 1;//Size of particles
 nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
 nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
-nosave bool MRGoreParts_LowAlpha = false;//Minimize usage of alpha channel for particles
+nosave bool MRGoreParts_LowAlpha = true;//Minimize usage of alpha channel for particles
 nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
 nosave float MRGoreParts_FlyingBloodChance = .2;
@@ -40,15 +40,19 @@ nosave float MRGoreParts_Alpha = 1;
 nosave bool MRGoreParts_FullBright = false;//Glowing particles
 nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
 nosave float MRGoreParts_SndVol = 1;
+nosave float MRGoreParts_HitSndVol = 1;
+nosave float MRGoreParts_SpraySndVol = 1;
+nosave float MRGoreParts_GibSndVol = 1;
+nosave float MRGoreParts_DripSndVol = 1;
 nosave float MRGoreParts_NoBloodSndVol = 1;
 //
 
 //Wounds menu
 nosave bool MRGoreParts_Wounds = true;//Bleeding wounds
-nosave int MRGoreParts_CorpseWounds = 2;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
+nosave int MRGoreParts_CorpseWounds = 1;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
 nosave bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face player
-nosave int MRGoreParts_MaxWounded = 7;//Max wounded entities
-nosave int MRGoreParts_MaxWounds = 10;//Max wounds per entity
+nosave int MRGoreParts_MaxWounded = 5;//Max wounded entities
+nosave int MRGoreParts_MaxWounds = 7;//Max wounds per entity
 //
 
 nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
@@ -57,7 +61,7 @@ nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
 server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
 nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding
 nosave int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
-nosave bool MRGoreParts_FloorSplash = true;//Floor splash on gibbing
+nosave bool MRGoreParts_FloorSplash = false;//Floor splash on gibbing
 nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
 
 

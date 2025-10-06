@@ -173,7 +173,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	{
 		int Ofst = -1;
 		int Glow = 0;
-		S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol, attenuation:ATTN_STATIC);
+		S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
 		if(!MRGoreParts_Draw)Return;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 		Switch(HitType){

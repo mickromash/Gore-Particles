@@ -28,7 +28,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 		Handler.Wounded.Push(Owner);
 		Handler.Wounds.Insert(Handler.Wounded.Find(Owner), Self);
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
-		Owner.A_StartSound(Handler.WoundSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*.5, attenuation:ATTN_STATIC);
+		Owner.A_StartSound(Handler.WoundSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*.5*MRGoreParts_HitSndVol, attenuation:ATTN_STATIC);
 	}
 	
 	Override Void Tick()
@@ -109,7 +109,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 								Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, MRGoreParts_SpotsTime*35, 
 									Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
 									StartAlphaf:MRGoreParts_Alpha, FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
-								Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2*MRGoreParts_SndVol, attenuation: ATTN_STATIC);
+								Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation: ATTN_STATIC);
 							}
 							Spot=0;
 						}

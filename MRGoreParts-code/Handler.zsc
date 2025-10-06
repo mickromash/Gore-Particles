@@ -529,7 +529,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*90, Col, Offset:(0,0,ZOfst));
-			if(MRGoreParts_NoBloodSndVol>0)Who.A_StartSound(NoBloodSound, CHAN_AUTO, Volume:MRGoreParts_NoBloodSndVol);
+			if(MRGoreParts_NoBloodSndVol>0)Who.A_StartSound(NoBloodSound, CHAN_AUTO, Volume:MRGoreParts_NoBloodSndVol*MRGoreParts_SndVol);
 		}
 		if(HDestArmor)
 		{
@@ -752,8 +752,8 @@ Class MR_GoreParticlesHandler: EventHandler
 						AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
 					}
 					
-					if(CRandom(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
-					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
+					if(CRandom(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
+					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_HitSndVol*MRGoreParts_SndVol);
 
 
 					if(MRGoreParts_DrawFlyingBlood && CFRandom(0, 1)<MRGoreParts_FlyingBloodChance)
@@ -762,7 +762,7 @@ Class MR_GoreParticlesHandler: EventHandler
 						Float Pitch = -CRandom(0, 60);
 						Vector3 Vel = (Actor.AngleToVector(e.Inflictor.AngleTo(e.DamageSource)+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
 						MR_GoreParticlesFlyingBlood.Create(e.Inflictor.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-						S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol, Pitch: CFrandom(1.1, 1.2));
+						S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 					}
 					//Dripping blood
 					if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact)
@@ -906,7 +906,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Nerd.PostBeginPlay();
 		
-		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol);
+		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol*MRGoreParts_GibSndVol);
 		
 		if(Crushed.Size()>=MRGoreParts_Crush){
 			if(Crushed[0])Crushed[0].DropAll();
@@ -990,7 +990,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if(!MRGoreParts_Draw)Return;
 		
-		mo.A_StartSound(GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol);
+		mo.A_StartSound(GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_GibSndVol);
 		
 		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
 		
@@ -1052,7 +1052,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				Float Pitch = -CRandom(40, 90);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
 				MR_GoreParticlesFlyingBlood.Create(mo.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol, Pitch: CFrandom(1.1, 1.2));
+				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 				SAmount++;
 			}
 		}

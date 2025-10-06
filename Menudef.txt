@@ -83,17 +83,6 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	StaticText ""
 }
 
-OptionMenu "MRGoreParts_WoundsMenu"
-{
-	Title "$MRGoreParts_WoundsMenu"
-	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
-	Slider "$MRGoreParts_MaxWounded", "MRGoreParts_MaxWounded", 1, 50, 1, 0, "MRGoreParts_Wounds"
-	Slider "$MRGoreParts_MaxWounds", "MRGoreParts_MaxWounds", 1, 15, 1, 0, "MRGoreParts_Wounds"
-	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
-	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds", 1, 0
-	StaticText ""
-}
-
 OptionMenu "MRGoreParts_AppearanceMenu"
 {
 	Title "$MRGoreParts_AppearanceMenu"
@@ -106,7 +95,24 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
 	StaticText "$MRGoreParts_FuzzyBloodTip", "Fire"
 	StaticText ""
-	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .1
+	StaticText "$MRGoreParts_Sound", "Gold"
+	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .05, 2
+	Slider "$MRGoreParts_HitSndVol", "MRGoreParts_HitSndVol", 0, 1, .1
+	Slider "$MRGoreParts_SpraySndVol", "MRGoreParts_SpraySndVol", 0, 1, .1
+	Slider "$MRGoreParts_GibSndVol", "MRGoreParts_GibSndVol", 0, 1, .1
+	Slider "$MRGoreParts_DripSndVol", "MRGoreParts_DripSndVol", 0, 1, .1
+	Slider "$MRGoreParts_NoBloodSndVol", "MRGoreParts_NoBloodSndVol", 0, 1, .1, 1, "MRGoreParts_NoBloodMist"
+}
+
+OptionMenu "MRGoreParts_WoundsMenu"
+{
+	Title "$MRGoreParts_WoundsMenu"
+	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
+	Slider "$MRGoreParts_MaxWounded", "MRGoreParts_MaxWounded", 1, 50, 1, 0, "MRGoreParts_Wounds"
+	Slider "$MRGoreParts_MaxWounds", "MRGoreParts_MaxWounds", 1, 15, 1, 0, "MRGoreParts_Wounds"
+	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
+	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds", 1, 0
+	StaticText ""
 }
 
 OptionMenu "MRGoreParts_UpdateMenu"

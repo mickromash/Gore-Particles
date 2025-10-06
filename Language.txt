@@ -30,7 +30,7 @@ MRGP_UpdateBlacklist = "Apply blacklist";
 MRGoreParts_NoBloodMonsters = "Force blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_NoBloodMist = "Spec. impact effect for monsters with no blood";
 MRGoreParts_NoBloodMistColor = "Effect color";
-MRGoreParts_NoBloodSndVol = "Hit sound volume";
+MRGoreParts_NoBloodSndVol = "Non-bleeding hit sound volume";
 ////}
 
 MRGoreParts_EffectsMenu = "Effects settings";
@@ -66,7 +66,23 @@ MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these 
 MRGoreParts_EffectsUpdated = "Effects list updated";
 MRGoreParts_EffectsListMenuParticles = " particles";
 MRGoreParts_EffectsListMenuNoParticles = "(enter a level to know particles amount)";
+////}
 
+MRGoreParts_AppearanceMenu = "Blood appearance/Sound settings";
+////{
+MRGoreParts_UseCustomColor = "Use custom blood color";
+MRGoreParts_Color = "Custom blood color";
+MRGoreParts_Brightness = "Blood brightness";
+MRGoreParts_Alpha = "Blood opacity";
+MRGoreParts_FullBright = "Glowing blood";
+MRGoreParts_FuzzyBlood = "Fuzzy blood";
+MRGoreParts_FuzzyBloodTip = "For transparent monsters";
+MRGoreParts_Sound = "Sound";
+MRGoreParts_SndVol = "Master gore volume";
+MRGoreParts_HitSndVol = "Hit sound volume";
+MRGoreParts_SpraySndVol = "Death sprays sound volume";
+MRGoreParts_DripSndVol = "Dripping blood volume";
+MRGoreParts_GibSndVol = "Gib sound volume";
 ////}
 
 MRGoreParts_WoundsMenu = "Wounds settings";
@@ -81,18 +97,6 @@ MRGoreParts_CorpseWounds1 = "Only wounds and splashes";
 MRGoreParts_CorpseWounds2 = "Wounds, splashes and dripping blood";
 
 MRGoreParts_Voxel = "Voxel enemies";
-////}
-
-MRGoreParts_AppearanceMenu = "Blood appearance settings";
-////{
-MRGoreParts_UseCustomColor = "Use custom blood color";
-MRGoreParts_Color = "Custom blood color";
-MRGoreParts_Brightness = "Blood brightness";
-MRGoreParts_Alpha = "Blood opacity";
-MRGoreParts_FullBright = "Glowing blood";
-MRGoreParts_FuzzyBlood = "Fuzzy blood";
-MRGoreParts_FuzzyBloodTip = "For transparent monsters";
-MRGoreParts_SndVol = "Gore sounds volume";
 ////}
 
 MRGP_Recs = "Show recommend settings";
@@ -171,7 +175,7 @@ MRGP_UpdateBlacklist = "Применить чёрный список";
 MRGoreParts_NoBloodMonsters = "Включить кровь для монстров с флагом \"+NOBLOOD\"";
 MRGoreParts_NoBloodMist = "Спец. эффекты для безкровных";
 MRGoreParts_NoBloodMistColor = "Цвет эффектов";
-MRGoreParts_NoBloodSndVol = "Громкость попадания";
+MRGoreParts_NoBloodSndVol = "Громкость попадания по безкровным";
 ////}
 
 MRGoreParts_EffectsMenu = "Настройки эффектов";
@@ -208,7 +212,23 @@ MRGoreParts_AlwaysEffectsListTip = "\cgСписок обязательных э�
 MRGoreParts_EffectsUpdated = "Список эффектов обновлён";
 MRGoreParts_EffectsListMenuParticles = " частиц";
 MRGoreParts_EffectsListMenuNoParticles = "(начните игру чтобы узнать кол-во частиц)";
+////}
 
+MRGoreParts_AppearanceMenu = "Внейшний вид крови/Звук";
+////{
+MRGoreParts_UseCustomColor = "Кровь одного цвета";
+MRGoreParts_Color = "Цвет крови";
+MRGoreParts_Brightness = "Яркость крови";
+MRGoreParts_Alpha = "Непрозрачность крови";
+MRGoreParts_FullBright = "Светящаяся кровь";
+MRGoreParts_FuzzyBlood = "Полупрозрачная кровь";
+MRGoreParts_FuzzyBloodTip = "Для полупрозрачных врагов";
+MRGoreParts_Sound = "Звук";
+MRGoreParts_SndVol = "Общая громкость крови";
+MRGoreParts_HitSndVol = "Громкость попаданий";
+MRGoreParts_SpraySndVol = "Громкость посмертных кровотечений";
+MRGoreParts_GibSndVol = "Громкость джибов";
+MRGoreParts_DripSndVol = "Громкость капель";
 ////}
 
 MRGoreParts_WoundsMenu = "Настройки ран";
@@ -222,18 +242,6 @@ MRGoreParts_CorpseWounds0 = "Нет";
 MRGoreParts_CorpseWounds1 = "Только раны и всплески";
 MRGoreParts_CorpseWounds2 = "Раны и капающая кровь";
 MRGoreParts_Voxel = "Воксельные враги";
-////}
-
-MRGoreParts_AppearanceMenu = "Внейшний вид крови";
-////{
-MRGoreParts_UseCustomColor = "Кровь одного цвета";
-MRGoreParts_Color = "Цвет крови";
-MRGoreParts_Brightness = "Яркость крови";
-MRGoreParts_Alpha = "Непрозрачность крови";
-MRGoreParts_FullBright = "Светящаяся кровь";
-MRGoreParts_FuzzyBlood = "Полупрозрачная кровь";
-MRGoreParts_FuzzyBloodTip = "Для полупрозрачных врагов";
-MRGoreParts_SndVol = "Громкость крови";
 ////}
 
 MRGP_Recs = "Показать рекоммендованные настройки";
