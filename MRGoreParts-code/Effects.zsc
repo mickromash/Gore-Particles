@@ -614,8 +614,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		
 		//Pitch -= CRandom(5, 40);
 		//Angle += CRandom(-15, 15);
-		Double Forw = CFRandom(.01, .2);
-		Double Strn = CFRandom(.4, .6);
+		Double Forw = .4;//CFRandom(.01, .2);
 		Double Size = CFRandom(3.4, 3.7)*MRGoreParts_Size*Dist;
 		Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
@@ -623,17 +622,21 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 		
 		Double Roll = CRandom(175, 360);
 		
-		float CircleLength = CRandom(120, 360);
-		int CircleStart = CircleLength-180;//CFRandom(0, 360);
-		
-		For(float j=CircleStart;j<CircleStart+CircleLength;j+=Size*.75*Max(1, Dist*.1)/Amount)
+		//int CircleStart = -90;//CFRandom(0, 360);
+		//float CircleLength = 180;//CRandom(120, 360*Min(1, MRGoreParts_Amount));
+		Double CircleLength = Random(120, 360*Min(1, MRGoreParts_Amount));
+		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Size*.75*Max(1, Dist*.1)/Amount)
 		{
 			Double Ang = (j+CFRandom(-1.5, 1.5))*Cos(Roll);
+			Ang = Angle + Ang;
 			Double Pit = (j+CFRandom(-1.5, 1.5))*Sin(Roll);
+			Pit = Pitch + Pit;
 			
-			Vector3 Vel = (Actor.AngleToVector(Ang, Strn)*Cos(-Abs(Pit)), -Sin(Pit)*Strn);
-			Vel += (Actor.AngleToVector(Angle, Forw)*Cos(Abs(Pitch)), -Sin(Pitch)*Forw);
-			Vel.XY += Actor.AngleToVector(Ang, Strn)*Sin(Pit);
+			Vector3 Vel = (Actor.AngleToVector(Ang, Forw)*Cos(Abs(Pit)), (-Sin(Pit)*(1.-abs(j/(CircleLength/2))))*Forw);
+			//Vel += (Actor.AngleToVector(Ang, Strn)*Cos(Abs(Pit)), -Sin(Pit)*Strn);
+			//(Actor.AngleToVector(Ang, Strn)*Cos(-Abs(Pit)), -Sin(Pit)*Strn);
+			//Vel += (Actor.AngleToVector(Angle, Forw)*Cos(Abs(Pitch)), -Sin(Pitch)*Forw);
+			//Vel.XY += Actor.AngleToVector(Ang, Strn)*Sin(Pit);
 			
 			Vel *= MRGoreParts_Speed;
 			Vel *= Scale;
