@@ -399,6 +399,17 @@ Class MR_GoreParticlesHandler: EventHandler
 				RemoveBloods.Push('TB_BloodActor');
 				Break;
 			}
+			Mod = 'NashGore_Blood';//XWeapons
+			if((Class<Actor>)(Mod))
+			{
+				RemoveBloodBase = 'NashGore_Blood';
+				RemoveBloods.Push('Nashgore_FlyingBlood');
+				RemoveBloods.Push('NashGore_FlyingBloodTrail');
+				RemoveBloods.Push('BloodSplasher');
+				RemoveBloods.Push('SmallBloodSplasher');
+				RemoveBloods.Push('TinyBloodSplasher');
+				RemoveBloods.Push('SuperBloodSplasher');
+			}
 			/*Mod = 'PileOfGibs';//Splatter gore
 			if((Class<Actor>)(Mod))
 			{
@@ -1144,6 +1155,22 @@ Class MR_GoreParticlesHandler: EventHandler
 			UpdateEffectsData();
 			Return;
 		}
+		
+		if(e.name ~== "MRGoreParts_Uninstall"){
+			Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			For(int i=0;i<Handler.Effects.Size();i++){
+				if(Handler.Effects[i])Handler.Effects[i].Destroy();
+			}
+			
+			ThinkersClear();
+			Destroy();
+			Return;
+		}
+	}
+	
+	Override Void OnDestroy()
+	{
+		Console.printf(StringTable.Localize("$MRGoreParts_Uninstalled"));
 	}
 				
 	Override Void PlayerEntered(PlayerEvent e)
