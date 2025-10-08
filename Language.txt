@@ -125,6 +125,10 @@ MRGoreParts_Multiplayer = "Multiplayer friendly";
 MRGoreParts_CheckLimit = "Particles limit indicator";
 MRGoreParts_CheckLimitOffset = "Indicator offset";
 
+MRGoreParts_Uninstall = "Uninstall";
+MRGoreParts_UninstallPromt = "Removes the mod so the saved game could be loaded without it";
+MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully unistalled.";
+
 MRGoreParts_AllParticlesAmount = "All particles amount";
 
 MRGoreParts_Tip2 = "If particles amount hit the limit, new particles won't spawn";
@@ -267,6 +271,10 @@ MRGP_UpdateRemoveBlood = "\cv⊛\c-Обновить список крови из
 
 MRGoreParts_CheckLimit = "Индикатор лимита частиц";
 MRGoreParts_CheckLimitOffset = "Сдвиг индикатора";
+
+MRGoreParts_Uninstall = "Отключить мод";
+MRGoreParts_UninstallPromt = "Удаляет данные мода из игры\nблагодаря этому сохранённая игра сможет быть загружена без него";
+MRGoreParts_Uninstalled = "Gore-Particles: \cdМод успешно удалён.";
 
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
 
