@@ -1163,14 +1163,18 @@ Class MR_GoreParticlesHandler: EventHandler
 			}
 			
 			ThinkersClear();
+			
+			Uninstall = true;
 			Destroy();
 			Return;
 		}
 	}
 	
+	Bool Uninstall;
+	
 	Override Void OnDestroy()
 	{
-		Console.printf(StringTable.Localize("$MRGoreParts_Uninstalled"));
+		if(Uninstall)Console.printf(StringTable.Localize("$MRGoreParts_Uninstalled"));
 	}
 				
 	Override Void PlayerEntered(PlayerEvent e)
