@@ -26,7 +26,6 @@ __Mod requires GZDoom 4.14.2 or newer__
 
 * Rework gibbing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
-* Change vanilla monsters blood color on sapwn
 * Blood amount and size based on damage
 * Wounds size based on damage
 * Running clarify line in options menu (like in Nashgore)
