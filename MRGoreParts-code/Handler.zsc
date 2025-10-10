@@ -59,10 +59,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		String TempStr = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
 		
-		While(TempStr.IndexOf("  ")>-1)
-		{
-			TempStr.Replace("  ", " ");
-		}
+		TempStr.Substitute("  ", " ");
 		
 		While(TempStr.Length()>0)
 		{
@@ -76,11 +73,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		AlwaysEffects.Clear();
 
 		TempStr = CVar.FindCVar("MRGoreParts_AlwaysEffectsList").GetString();
-		
-		While(TempStr.IndexOf("  ")>-1)
-		{
-			TempStr.Replace("  ", " ");
-		}
+				
+		TempStr.Substitute("  ", " ");
 		
 		While(TempStr.Length()>0)
 		{
@@ -94,9 +88,9 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(!MRGoreParts_Debug)Return;
 		
 		Console.Printf("\cdRandom effects:");
-		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName());
+		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName().." ("..Effects[i].GetClassName()..")");
 		Console.Printf("\cdAlways effects:");
-		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName());
+		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName().." ("..AlwaysEffects[i].GetClassName()..")");
 	}
 	
 	Void UpdateEffectsData()
@@ -146,7 +140,8 @@ Class MR_GoreParticlesHandler: EventHandler
 		}
 		
 		String Lump = Wads.ReadLump(LumpNum);
-		Lump.Replace("\n", "");
+
+		Lump.Substitute("\n", "");
 		While(Lump.IndexOf("(")>-1)
 		{
 			String Monster = Lump.Left(Lump.IndexOf(" "));
@@ -160,7 +155,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				Vals[i] = Temp.ToInt();
 				Cols = Cols.Mid(Cols.IndexOf(" ")+1);
 			}
-			
+
 			if((Class<Actor>)(Monster))BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
 			
 			Lump = Lump.Mid(Lump.IndexOf(")")+2);
@@ -184,7 +179,7 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		BlackList.Clear();
 		String BList = MRGoreParts_BlackList;
-		BList.Replace(" ", "");
+		BList.Substitute(" ", "");
 		While(BList.Length()>2)
 		{
 			String Monst;
@@ -223,81 +218,95 @@ Class MR_GoreParticlesHandler: EventHandler
 		WoundSound = "MRGP/Wound";
 		NoBloodSound = "MRGP/NoBlood";
 		
-		String Mod;
-		
 		While(True)
 		{
+			String Mod;
+			
 			Mod = 'MRGP_SoundAddon';
-			if((Class<Object>)(Mod))Break;
+			if((Class<Object>)(Mod))Break;//If user loaded my sounds addon, don't use sounds from other mods
 			
-			Mod = 'NashGoreActor';//Nashgore next
-			if((Class<Actor>)(Mod))
+			
+			Array<String> Files;//MRPBldSounds (MRParticles Blood Sounds) lumps. Store aliases of which sounds from the loaded mods to use
+			int LumpNum = 0;
+			While(LumpNum>-1)
 			{
-				HitSound = "nashgore/bloodsplash";
-				DripSound = "nashgore/gibsmall";
-				SpraySound = "nashgore/gibbounce";
-				GibSound = "nashgore/xdeath";
-				Break;
+				int TempLump = Wads.FindLump("MRPBldSounds", LumpNum+1);
+				if(TempLump==-1)Break;
+				else {
+					LumpNum = TempLump;
+					Files.Push(Wads.ReadLump(LumpNum));
+				}
 			}
 			
-			Mod = 'UG_GibBase';//Universal gibs
-			if((class<Actor>)(Mod))
-			{
-				GibSound = SpraySound = "UGSound/Default";
-				Break;
-			}
+			//Console.Printf(Files.Size().." Lumps Found");
 			
-			Mod = 'Bolognese_Blood';
-			if((class<Actor>)(Mod))
-			{
-				DripSound = "blooddrop2";
-				HitSound = "misc/xdeath2";
-				GibSound = "SLOP";
-				Break;
-			}
-			
-			Mod = 'Droplets';
-			if((Class<Actor>)(Mod))
-			{
-				HitSound = "blood/hit";
-				DripSound = "blood/drip";
-				Break;
-			}
-			
-			Mod = 'BrutalHereticImp';//Ketchup V5
-			if((Class<Actor>)(Mod))
-			{
-				DripSound = "blooddrop2";
-				HitSound = "misc/xdeath2";
-				GibSound = "misc/xdeath4";
-				Break;
-			}
-			
-			Mod = 'Doomer';//Brutal Dewm
-			if((Class<Actor>)(Mod))
-			{
-				DripSound = "blooddrop2";
-				HitSound = "misc/xdeath2";
-				GibSound = "misc/xdeath4";
-				Break;
-			}
-			
-			Mod = 'PileOfGibs';//Splatter gore
-			if((Class<Actor>)(Mod))
-			{
-				SpraySound = "Gore/Squish";
-				GibSound = "Gore/GIBSPLAT";
-				Break;
-			}
-			
-			Mod = 'TB_BloodActor';//Trailblazer
-			if((Class<Actor>)(Mod))
-			{
-				DripSound = "BloodyMess/BloodDrop";
-				GibSound = "BloodyMess/XDeath";
+			For(int i=0;i<Files.Size();i++){//Look inside each lump in case author of the mod wish to replace default aliases
+				String File = Files[i];
+				File = File.MakeLower();//For easier search
+				//Skip comments
+				While(File.IndexOf("//")>-1){
+					int index = File.IndexOf("//");
+					File = File.Left(Index)..File.Mid(File.IndexOf("\n", index));
+				}
+				
+				While(File.IndexOf("/*")>-1){
+					int index = File.IndexOf("/*");
+					File = File.Left(index)..File.Mid(File.indexOf("*/")+2, index);
+				}
+				//
+
+				int Cur, Akhtung;
+
+				While(File.IndexOf("mod", Cur+1)>-1){
+					if(Akhtung>100)Break;
+					Akhtung++;
+					
+					Mod = File.Mid(File.IndexOf(" ", Cur)+1);//Name of the actor from loaded mod
+					Mod = Mod.Left(Mod.IndexOf("\n"));
+					Mod.StripRight();
+
+					if((Class<Actor>)(Mod)){
+						String Sounds = File.Mid(File.IndexOf("{", Cur)+1);
+						Sounds = Sounds.Left(Sounds.IndexOf("}"));//Sound aliases
+						
+						if(Sounds.IndexOf("hitsound")>-1){
+							int index = Sounds.IndexOf("hitsound");
+							HitSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							HitSound = HitSound.Left(HitSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("dripsound")>-1){
+							int index = Sounds.IndexOf("dripsound");
+							DripSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							DripSound = DripSound.Left(DripSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("gibsound")>-1){
+							int index = Sounds.IndexOf("gibsound");
+							GibSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							GibSound = GibSound.Left(GibSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("spraysound")>-1){
+							int index = Sounds.IndexOf("spraysound");
+							SpraySound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							SpraySound = SpraySound.Left(SpraySound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("woundsound")>-1){
+							int index = Sounds.IndexOf("woundsound");
+							WoundSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							WoundSound = WoundSound.Left(WoundSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("nobloodsound")>-1){
+							int index = Sounds.IndexOf("nobloodsound");
+							NoBloodSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							NoBloodSound = NoBloodSound.Left(NoBloodSound.IndexOf(")"));
+						}
+						
+					}
+					Cur = File.IndexOf("mod", Cur+1);
+				}
 			}
 			Break;
 		}
+			
 		if(MRGoreParts_Debug){
 			Console.printf("\n\cgSounds:");
 			Console.Printf("\ccHitSound:\cg \""..HitSound.."\"");
@@ -328,88 +337,81 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(Blud!="AxeBlood" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
 		}
 		
-		String Mod;
+		Array<String> Files;//MRPBldRemove (MRParticles Blood to Remove) lumps. Store blood actors names that should be removed
+		int LumpNum = 0;
+		While(LumpNum>-1)
+		{
+			int TempLump = Wads.FindLump("MRPBldRemove", LumpNum+1);
+			if(TempLump==-1)Break;
+			else {
+				LumpNum = TempLump;
+				Files.Push(Wads.ReadLump(LumpNum));
+			}
+		}
+		
 		While(True)
 		{
-			Mod = 'NashGoreActor';//Nashgore next
-			if((Class<Actor>)(Mod))
-			{
-				Break;
-			}
+			String Mod;
 			
-			Mod = 'UG_GibBase';//Universal gibs
-			if((class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'UG_GibImpactBlood';
-				Break;
+			For(int i=0;i<Files.Size();i++){//Look inside each lump
+				String File = Files[i];
+				File = File.MakeLower();//For easier search
+				//Skip comments
+				While(File.IndexOf("//")>-1){
+					int index = File.IndexOf("//");
+					File = File.Left(Index)..File.Mid(File.IndexOf("\n", index));
+				}
+				
+				While(File.IndexOf("/*")>-1){
+					int index = File.IndexOf("/*");
+					File = File.Left(index)..File.Mid(File.indexOf("*/")+2, index);
+				}
+				//
+				
+				Bool BreakAll;
+				int Cur, Akhtung;
+				
+				While(File.IndexOf("mod", Cur+1)>-1){
+					if(Akhtung>100)Break;
+					Akhtung++;
+					
+					Mod = File.Mid(File.IndexOf(" ", Cur)+1);//Name of the actor from loaded mod
+					Mod = Mod.Left(Mod.IndexOf("\n"));
+					Mod.StripRight();
+
+					if((Class<Actor>)(Mod)){
+						BreakAll = true;
+						String Removes = File.Mid(File.IndexOf("{", Cur)+1);
+						Removes = Removes.Left(Removes.IndexOf("}"));//Blood actors names
+
+						Array<String> Removin;
+						int Akhtung1;
+						While(Removes.IndexOf("\n")>-1){
+							if(Akhtung1>100)Break;
+							Akhtung1++;
+							String Remove = Removes.Mid(Removes.IndexOf("\n")+2);
+							Removes = Remove;
+							Remove = Remove.Left(Remove.IndexOf("\n"));
+							Remove.StripLeftRight();
+							if((Class<Actor>)(Remove))Removin.Push(Remove);
+						}
+						
+						if(Removin.Size()>0){
+							RemoveBloodBase = Removin[0];
+							Removin.Delete(0);
+							For(int i1=0;i1<Removin.Size();i1++){
+								RemoveBloods.Push(Removin[i1]);
+							}
+						}
+					}
+					Cur = File.IndexOf("mod", Cur+1);
+				}
+				if(BreakAll)Break;
 			}
+			Break;
 			
-			Mod = 'Bolognese_Blood';
-			if((class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'BD_FlyingBlood';
-				RemoveBloods.Push('SuperGore');
-				RemoveBloods.Push('BD_FlyingBloodTrail');
-				Break;
-			}
 			
-			Mod = 'Droplets';
-			if((Class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'BloodHitPuff';
-				Break;
-			}
 			
-			Mod = 'BrutalHereticImp';//Ketchup V5
-			if((Class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'Brutal_Blood';
-				RemoveBloods.Push('TinyBlood');
-				RemoveBloods.Push('BloodHit');
-				RemoveBloods.Push('Brutal_FlyingBlood');
-				RemoveBloods.Push('Brutal_FlyingBloodFake');
-				Break;
-			}
-			
-			Mod = 'HDOperator';//Hideous destructor
-			if((Class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'BloodSplatSilent';
-				RemoveBloods.Push('HDBloodTrailFloor');
-				Break;
-			}
-			
-			Mod = 'Doomer';//Brutal Dewm
-			if((Class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'Brutal_Blood';
-				RemoveBloods.Push('BloodSplasher');
-				RemoveBloods.Push('BlueBloodSplasher');
-				RemoveBloods.Push('GreenBloodSplasher');
-				RemoveBloods.Push('Brutal_FlyingBlood');
-				Break;
-			}
-			
-			Mod = 'TB_BloodActor';//Trailblazer
-			if((Class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'TB_BaseBloodActor';
-				RemoveBloods.Push('TB_MainBlood');
-				RemoveBloods.Push('TB_TraditionalBlood');
-				RemoveBloods.Push('TB_BloodActor');
-				Break;
-			}
-			Mod = 'NashGore_Blood';//XWeapons
-			if((Class<Actor>)(Mod))
-			{
-				RemoveBloodBase = 'NashGore_Blood';
-				RemoveBloods.Push('Nashgore_FlyingBlood');
-				RemoveBloods.Push('NashGore_FlyingBloodTrail');
-				RemoveBloods.Push('BloodSplasher');
-				RemoveBloods.Push('SmallBloodSplasher');
-				RemoveBloods.Push('TinyBloodSplasher');
-				RemoveBloods.Push('SuperBloodSplasher');
-			}
 			/*Mod = 'PileOfGibs';//Splatter gore
 			if((Class<Actor>)(Mod))
 			{
@@ -423,7 +425,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			Console.Printf("\cgBlood Types:");
 			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
 			Console.Printf("\cgBloods:");
-			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." "..RemoveBloods[i]);
+			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." \""..RemoveBloods[i].."\"");
 			Console.Printf("-----------");
 		}
 	}
@@ -432,6 +434,9 @@ Class MR_GoreParticlesHandler: EventHandler
 	
 	Void ThinkersTick()
 	{
+		For(int i=0;i<Max(0, Streams.Size()-MRGorePats_MaxFlyingBlood);i++){
+			if(Streams[i])Streams[i].Destroy();
+		}
 		For(int i=0;i<Streams.Size();i++){
 			if(Streams[i])Streams[i].Tick();
 		}
@@ -964,7 +969,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		//Console.Printf(e.Thing.GetClassName());
 	}
-	
+		
 	Void SpawnBloodDrop(Actor mo, Color Col)//Mainly for hdest
 	{
 		if(!MRGoreParts_Draw)Return;
