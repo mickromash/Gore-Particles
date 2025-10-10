@@ -1,0 +1,55 @@
+/*
+	List of aliases to sound files from other mods
+*/
+Mod NashGoreActor
+{
+	HitSound (nashgore/bloodsplash)
+	DripSound (nashgore/gibsmall)
+	SpraySound (nashgore/gibbounce)
+	GibSound (nashgore/xdeath)
+}
+			
+Mod UG_GibBase//Universal Gibs
+{
+	GibSound (UGSound/Default)
+	SpraySound (UGSound/Default)
+}
+			
+Mod Bolognese_Blood
+{
+	DripSound (blooddrop2)
+	HitSound (misc/xdeath2)
+	GibSound (SLOP)
+}
+			
+Mod Droplets
+{
+	HitSound (blood/hit)
+	DripSound (blood/drip)
+}
+			
+Mod BrutalHereticImp//Ketchup v5
+{
+	DripSound (blooddrop2)
+	HitSound (misc/xdeath2)
+	GibSound (misc/xdeath4)
+}
+			
+Mod Doomer//Brutal dewm
+{
+	DripSound (blooddrop2)
+	HitSound (misc/xdeath2)
+	GibSound (misc/xdeath4)
+}
+			
+Mod PileOfGibs//Splatter Gore
+{
+	SpraySound (Gore/Squish)
+	GibSound (Gore/GIBSPLAT)
+}
+			
+Mod TB_BloodActor//Trailblazer
+{
+	DripSound (BloodyMess/BloodDrop)
+	GibSound (BloodyMess/XDeath)
+}
