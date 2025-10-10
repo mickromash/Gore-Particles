@@ -19,6 +19,9 @@ MRGoreParts_OnlyModsBloodText = "May cause lags when playing with Brutal Doom";
 MRGoreParts_BloodTypes = "\cv⊛\c-Remove blood types unic to some monsters";
 MRGoreParts_BloodTypesText = "Recommended for HfE";
 
+MRGorePats_ChangeBloodOnSpawn = "Change vanilla monsters blood colors on spawn";
+MRGorePats_ChangeBloodOnSpawnText = "Affects color of vanilla monsters blood decals and crushed remains";
+
 MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_Quake2Text = "Replace vanilla blood actor with simple blood particles";
 MRGoreParts_Quake2Text2 = "Recommended for shootable corpses";
@@ -46,6 +49,7 @@ MRGoreParts_Speed = "Particles speed/lifetime";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_DrawFlyingBlood = "Quake gibs style blood streams";
 MRGoreParts_FlyingBloodChance = "Blood streams spawn chance";
+MRGorePats_MaxFlyingBlood = "Max. blood streams";
 
 MRGoreParts_MistTexture = "Blood mist texture";
 MRGoreParts_MistTexture0 = "Mod (128x128)";
@@ -168,6 +172,9 @@ MRGoreParts_OnlyModsBloodText = "Может вызывать лаги при и�
 MRGoreParts_BloodTypes = "\cv⊛\c-Включать типы крови уникальные для определённых монстров";
 MRGoreParts_BloodTypesText = "Рекомендовано для HfE";
 
+MRGorePats_ChangeBloodOnSpawn = "Менять цвет крови ванильных монстров на спавне";
+MRGorePats_ChangeBloodOnSpawnText = "Влияет на цвет кровавых декалей и раздавленных останков";
+
 MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_Quake2Text = "Заменять ванильный актор крови простыми частицами";
 MRGoreParts_Quake2Text2 = "Рекомендуется включить при игре с расчленяемыми трупами";
@@ -195,6 +202,7 @@ MRGoreParts_Speed = "Скорость/время жизни частиц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_DrawFlyingBlood = "Струи крови (как в Quake)";
 MRGoreParts_FlyingBloodChance = "Шанс появления струи";
+MRGorePats_MaxFlyingBlood = "Макс. струй";
 
 MRGoreParts_MistTexture = "Текстура дымки";
 MRGoreParts_MistTexture0 = "Из мода (128x128)";

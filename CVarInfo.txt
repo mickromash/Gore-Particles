@@ -23,6 +23,7 @@ nosave bool MRGoreParts_LowAlpha = true;//Minimize usage of alpha channel for pa
 nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
 nosave float MRGoreParts_FlyingBloodChance = .15;
+nosave int MRGorePats_MaxFlyingBlood = 40;
 nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
 ///Included effects menu
 nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear

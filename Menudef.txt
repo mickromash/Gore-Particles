@@ -1,7 +1,6 @@
 AddOptionMenu "OptionsMenu"
 {
 	StaticText ""
-	//StaticText "$MRGoreParts_Title", "Red"
 	SubMenu "$MRGoreParts_Settings", "MRGoreParts_Menu"
 	StaticText ""
 }
@@ -80,6 +79,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "OnOff"
 	Slider "$MRGoreParts_FlyingBloodChance", "MRGoreParts_FlyingBloodChance", 0, 1, .05, 2, "MRGoreParts_DrawFlyingBlood"
+	Slider "$MRGorePats_MaxFlyingBlood", "MRGorePats_MaxFlyingBlood", 1, 100, 2
 	Option "$MRGoreParts_MistTexture", "MRGoreParts_MistTexture", "MRGoreParts_MistTextureOption"
 	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
 	StaticText ""
