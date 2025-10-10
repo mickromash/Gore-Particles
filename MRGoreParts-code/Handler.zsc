@@ -131,34 +131,37 @@ Class MR_GoreParticlesHandler: EventHandler
 	Void SetUpColors()
 	{
 		BldCols.Clear();
+		Array<String> Files;
 		int LumpNum = 0;
 		While(LumpNum>-1)
 		{
 			int TempLump = Wads.FindLump("MRPRTCOL", LumpNum+1);
 			if(TempLump==-1)Break;
-			else LumpNum = TempLump;
+			else {LumpNum = TempLump;Files.Push(Wads.ReadLump(LumpNum));}
 		}
 		
-		String Lump = Wads.ReadLump(LumpNum);
+		For(int i=0;i<Files.Size();i++){
+			String Lump = Wads.ReadLump(LumpNum);
 
-		Lump.Substitute("\n", "");
-		While(Lump.IndexOf("(")>-1)
-		{
-			String Monster = Lump.Left(Lump.IndexOf(" "));
-
-			String Cols = Lump.Mid(Lump.IndexOf("("), Lump.IndexOf(")")).." ";
-			int Vals[3];
-			
-			For(int i=0;i<3;i++)
+			Lump.Substitute("\n", "");
+			While(Lump.IndexOf("(")>-1)
 			{
-				String Temp = Cols.Left(Cols.IndexOf(" "));
-				Vals[i] = Temp.ToInt();
-				Cols = Cols.Mid(Cols.IndexOf(" ")+1);
-			}
+				String Monster = Lump.Left(Lump.IndexOf(" "));
 
-			if((Class<Actor>)(Monster))BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
-			
-			Lump = Lump.Mid(Lump.IndexOf(")")+2);
+				String Cols = Lump.Mid(Lump.IndexOf("("), Lump.IndexOf(")")).." ";
+				int Vals[3];
+				
+				For(int i=0;i<3;i++)
+				{
+					String Temp = Cols.Left(Cols.IndexOf(" "));
+					Vals[i] = Temp.ToInt();
+					Cols = Cols.Mid(Cols.IndexOf(" ")+1);
+				}
+
+				if((Class<Actor>)(Monster))BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
+				
+				Lump = Lump.Mid(Lump.IndexOf(")")+2);
+			}
 		}
 		
 		if(MRGoreParts_Debug){
@@ -514,7 +517,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 		ViewBob = NewBob;
 	}
-	
+		
 	Bool MRGPartsCheckDraw(Actor mo = Null)
 	{
 		if(!MRGoreParts_Draw)Return false;
@@ -525,7 +528,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(!mo)Return true;
 		
 		
-		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
+		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
 	
 	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)//Spec. effects for non bleeding actors
@@ -534,7 +537,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		{
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
-			if(Inflictor&&Inflictor.Distance2D(mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
+			if(Inflictor&&MRGParts.MRDistance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
 			
 			if(!Who)Return;
 			
@@ -551,7 +554,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		{
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
-			if(Inflictor&&Inflictor.Distance2D(mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
+			if(Inflictor&& MRGParts.MRDistance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
 			
 			if(!Who)Return;
 			
@@ -756,7 +759,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					Double VOfst = 0;
 					Double DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
 
-					if(e.Inflictor.Distance2D(e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
+					if(MRGParts.MRDistance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
 					
 					int Fuzzy = 0;
 					if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
@@ -784,7 +787,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact)
 						For(int i=CRandom(0, 5)*Amount;i<10*Amount;i++){
 							Float Dist = 1;
-							if(e.DamageSource)Dist *= 1+(e.Inflictor.Distance3D(e.DamageSource)-80)*.0025;
+							if(e.DamageSource)Dist *= 1+(MRGParts.MRDistance3D(e.Inflictor, e.DamageSource)-80)*.0025;
 							Float Size = CFRandom(.8, 1.6)*Dist;
 							Float Pitch = e.Inflictor.Pos.Z/e.Thing.Height+CRandom(10, 20);
 							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Pitch = e.DamageSource.Pitch+CRandom(10, 20);
@@ -1026,7 +1029,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		Let Plr = Players[ConsolePlayer].Camera;
 		Bool Draw = true;
-		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||Plr.Distance2D(mo)<Plr.Radius*2;
+		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2;
 		
 		Float Amount = MRGoreParts_Amount;
 		
