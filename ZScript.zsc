@@ -1,10 +1,53 @@
-Version "4.10"
+Version "4.10"//Getting rid of translationdId errors
 
 Const MRGP_MaxWounds = 15;//Max wounds per entity
 Const MRGP_DistanceMult = 2.;//Effects scaling by distance
-Const MRGP_MinBright = .5;
-Const MRGP_MaxBright = 1.5;
+//Const MRGP_MinBright = .5;
+//Const MRGP_MaxBright = 1.5;
 Const MRGP_GibbingTime = 60.;
+
+Struct MRGParts
+{
+	Static Double MRDistance2D(Actor mo, Actor mo1)
+	{
+		if(!MRGoreParts_LiteDistance)Return mo.Distance2D(mo1);
+		
+		Vector2 Vec1, Vec2;
+		
+		Vec1 = mo.Pos.XY;
+		Vec2 = mo1.Pos.XY;
+		
+		Vector2 Dif = Levellocals.Vec2Diff(Vec1, Vec2);
+		
+		Return Dif.Length();
+	}
+	Static Double MRDistance2DV(Vector2 Vec1, Vector2 Vec2)
+	{
+		Vector2 Dif = Levellocals.Vec2Diff(Vec1, Vec2);
+		
+		Return Dif.Length();
+	}
+	
+	Static Double MRDistance3D(Actor mo, Actor mo1)
+	{
+		if(!MRGoreParts_LiteDistance)Return mo.Distance3D(mo1);
+		
+		Vector3 Vec1, Vec2;
+		
+		Vec1 = mo.Pos;
+		Vec2 = mo1.Pos;
+		
+		Vector3 Dif = Levellocals.Vec3Diff(Vec1, Vec2);
+		
+		Return Dif.Length();
+	}
+	Static Double MRDistance3DV(Vector3 Vec1, Vector3 Vec2)
+	{
+		Vector3 Dif = Levellocals.Vec3Diff(Vec1, Vec2);
+		
+		Return Dif.Length();
+	}
+}
 
 //#include "MRGoreParts-code/HandlerFuncs.zsc"
 #include "MRGoreParts-code/Handler.zsc"

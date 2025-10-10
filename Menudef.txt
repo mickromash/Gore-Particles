@@ -18,6 +18,8 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	Control "$MRGP_Recs", "InterfaceEvent MRGP_OpenRecs"
 	StaticText ""
+	Option "$MRGoreParts_LiteDistance", "MRGoreParts_LiteDistance", "YesNo"
+	StaticText "$MRGoreParts_LiteDistanceText", "Fire"
 	Slider "$MRGoreParts_MaxDying", "MRGoreParts_MaxDying", 0, 30, 1, 0
 	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1, 0
 	Option "$MRGoreParts_FloorSplash", "MRGoreParts_FloorSplash", "OnOff", "MRGoreParts_MaxGibing", 1, 0

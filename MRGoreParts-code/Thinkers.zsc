@@ -11,7 +11,7 @@
 Class MR_GoreParticlesThinker: Object play
 {
 	MR_GoreParticlesHandler Handler;
-	
+		
 	Static Bool MRGPartsCheckDraw(Actor mo=null, float dist=0)
 	{
 		if(!MRGoreParts_Draw)Return false;
@@ -22,9 +22,9 @@ Class MR_GoreParticlesThinker: Object play
 		if(!Plr)Return false;
 		
 		
-		if(dist!=0 && Plr.Distance3D(mo)>Dist)Return false;
+		if(dist!=0 && MRGParts.MRDistance3D(mo, Plr)>Dist)Return false;
 		
-		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat() && Plr.Distance2D(mo)>Plr.Radius*2)Return false;
+		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat() && MRGParts.MRDistance2D(Plr, mo)>Plr.Radius*2)Return false;
 		
 		Return Plr.CheckSight(mo, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}

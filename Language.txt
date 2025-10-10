@@ -105,6 +105,9 @@ MRGoreParts_Voxel = "Voxel enemies";
 
 MRGP_Recs = "Show recommend settings";
 
+MRGoreParts_LiteDistance = "Lighter distance check";
+MRGoreParts_LiteDistanceText = "Increases performance by ignoring portals";
+
 MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
 MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
 MRGoreParts_FloorSplash = "Floor splash on gibbing";
@@ -257,6 +260,9 @@ MRGoreParts_Voxel = "Воксельные враги";
 ////}
 
 MRGP_Recs = "Показать рекоммендованные настройки";
+
+MRGoreParts_LiteDistance = "Простой рассчёт расстояния";
+MRGoreParts_LiteDistanceText = "Облегчает нагрузку, ценой игнорирования порталов";
 
 MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
 MRGoreParts_MaxGibing = "Максимум джибсов";
