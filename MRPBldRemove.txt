@@ -1,0 +1,67 @@
+/*
+	List of blood actors that should be hidden/removed when playing with gore particles
+*/
+Mod NashGoreActor
+{
+
+}
+
+Mod UG_GibBase//Universal Gibs
+{
+	UG_GibImpactBlood
+}
+
+Mod Bolognese_Blood
+{
+	BD_FlyingBlood
+	SuperGore
+	BD_FlyingBloodTrail
+}
+
+Mod Droplets
+{
+	BloodHitPuff
+}
+
+Mod BrutalHereticImp//Ketchup v5
+{
+	Brutal_Blood
+	TinyBlood
+	BloodHit
+	Brutal_FlyingBlood
+	Brutal_FlyingBloodFake
+}
+
+Mod HDOperator//Hideous Destructor
+{
+	BloodSplatSilent
+	HDBloodTrailFloor
+}
+
+Mod Doomer//Brutal dewm
+{
+	Brutal_Blood
+	BloodSplasher
+	BlueBloodSplasher
+	GreenBloodSplasher
+	Brutal_FlyingBlood
+}
+
+Mod TB_BloodActor//Trailblazer
+{
+	TB_BaseBloodActor
+	TB_MainBlood
+	TB_TraditionalBlood
+	TB_BloodActor
+}
+
+Mod NashGore_Blood//XWeapons
+{
+	NashGore_Blood
+	Nashgore_FlyingBlood
+	NashGore_FlyingBloodTrail
+	BloodSplasher
+	SmallBloodSplasher
+	TinyBloodSplasher
+	SuperBloodSplasher
+}
