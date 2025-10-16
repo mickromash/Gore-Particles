@@ -71,8 +71,10 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 				//Console.Printf("InitZ: "..Locs[i].Z.." Z: "..Z);
 				if(!(Owner is 'PlayerPawn') && Draw){//Wound
 					Color Col = Color(int(Col.R*MRGoreParts_Brightness),int(Col.G*MRGoreParts_Brightness),int(Col.B*MRGoreParts_Brightness));
+					Let Forw = Locs[i].X;
+					if(Owner.Health<1 && !MRGoreParts_Voxel)Forw = 1;
 					For(int j=0;j<2;j++)Owner.A_SpawnParticleEx(Color(int(int(Col.R*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.G*1.5)*Min(1, Ages[i]/(35*6))),int(int(Col.B*1.5)*Min(1, Ages[i]/(35*6)))),
-						Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 1, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z,
+						Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 1, Ages[i]/(35*15)*2, Angle, Forw,Locs[i].Y,Z,
 						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, StartAlphaf:MRGoreParts_Alpha, FadeStepf:0);
 				}
 				
@@ -81,36 +83,31 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 				if(35*CRandom(3, 40)<Ages[i] && Rand>0 && MaxBlood>0)
 				{
 					MaxBlood--;
-					if(Draw && Corpse>1)For(float j=0;j<CRandom(1, 5);j++){//Dripping blood
+					if(Draw && Corpse>1)For(float j=CRandom(0, 2);j<3;j++){//Dripping blood
 						Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
 						Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)),
 							Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),
 							Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3, MRGoreParts_Alpha);
 					}
-					if(MRGoreParts_FloorSpots && Draw && Corpse>1)//Spots
+					
+					if(MRGoreParts_WoundsSpots && MRGoreParts_FloorSpots && Draw)//Spot
 					{
 						if(Spot>1){
 							Vector2 Pos = Owner.Pos.XY;
-							if(Owner.Health>0||MRGoreParts_Voxel)
-							{
+							
+							if(Owner.Health>0||MRGoreParts_Voxel){
 								Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
 								Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
 							}
-							else
-							{
+							else {
 								Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
 								Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
 							}
-							Float FloorZ = LevelLocals.PointInSector(Pos).FloorPlane.ZatPoint(Pos);
-
-							if(35*15-Ages[i]>(Locs[i].Z-FloorZ)/4)
-							{
-								Float Bright = MRGoreParts_Brightness*CFRandom(.8,1.8);
-								Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, MRGoreParts_SpotsTime*35, 
-									Ages[i]/(35*15)*2, Angle, Locs[i].X+CFRandom(-1, 1),Locs[i].Y+CFRandom(-1, 1),1-(Owner.Pos.Z-FloorZ),
-									StartAlphaf:MRGoreParts_Alpha, FadeStepf:MRGoreParts_LowAlpha?0:-1, SizeStep:MRGoreParts_LowAlpha?-((Ages[i]/(35*15)*2)/(MRGoreParts_SpotsTime*35)):0);
-								Owner.A_StartSound(Handler.DripSound, CHAN_AUTO, Volume:.2*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation: ATTN_STATIC);
-							}
+							Pos += (CFRandom(-1, 1), CFRandom(-1, 1));
+							Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
+							Let a = MR_GoreParticlesDroplet.MRGSpawnDrop(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), (Pos, Z), RenderStyle:Fuzzy);
+							if(a)a.PostBeginPlay();
+							
 							Spot=0;
 						}
 						else Spot++;
