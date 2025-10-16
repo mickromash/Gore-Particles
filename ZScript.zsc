@@ -51,7 +51,7 @@ Struct MRGParts
 
 //#include "MRGoreParts-code/HandlerFuncs.zsc"
 #include "MRGoreParts-code/Handler.zsc"
-#include "MRGoreParts-code/Effects.zsc"
 #include "MRGoreParts-code/Thinkers.zsc"
+#include "MRGoreParts-code/Effects.zsc"
 #include "MRGoreParts-code/Wounds.zsc"
 #include "MRGoreParts-code/Menu.zsc"

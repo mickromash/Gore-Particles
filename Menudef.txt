@@ -14,6 +14,7 @@ OptionMenu "MRGoreParts_Menu"
 	SubMenu "$MRGoreParts_BloodSpawnMenu", "MRGoreParts_BloodSpawnMenu"
 	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
 	SubMenu "$MRGoreParts_AppearanceMenu", "MRGoreParts_AppearanceMenu"
+	SubMenu "$MRGoreParts_SpotsMenu", "MRGoreParts_SpotsMenu"
 	SubMenu "$MRGoreParts_WoundsMenu", "MRGoreParts_WoundsMenu"
 	StaticText ""
 	Control "$MRGP_Recs", "InterfaceEvent MRGP_OpenRecs"
@@ -24,9 +25,6 @@ OptionMenu "MRGoreParts_Menu"
 	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1, 0
 	Option "$MRGoreParts_FloorSplash", "MRGoreParts_FloorSplash", "OnOff", "MRGoreParts_MaxGibing", 1, 0
 	Slider "$MRGoreParts_Crush", "MRGoreParts_Crush", 0, 30, 1, 0
-	StaticText ""
-	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "MRGoreParts_SpotsOption"
-	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 60, 2, 0
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
 	StaticText ""
@@ -81,7 +79,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "OnOff"
 	Slider "$MRGoreParts_FlyingBloodChance", "MRGoreParts_FlyingBloodChance", 0, 1, .05, 2, "MRGoreParts_DrawFlyingBlood"
-	Slider "$MRGorePats_MaxFlyingBlood", "MRGorePats_MaxFlyingBlood", 1, 100, 2
+	Slider "$MRGoreParts_MaxFlyingBlood", "MRGoreParts_MaxFlyingBlood", 1, 100, 2
 	Option "$MRGoreParts_MistTexture", "MRGoreParts_MistTexture", "MRGoreParts_MistTextureOption"
 	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
 	StaticText ""
@@ -106,6 +104,17 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 	Slider "$MRGoreParts_GibSndVol", "MRGoreParts_GibSndVol", 0, 1, .1
 	Slider "$MRGoreParts_DripSndVol", "MRGoreParts_DripSndVol", 0, 1, .1
 	Slider "$MRGoreParts_NoBloodSndVol", "MRGoreParts_NoBloodSndVol", 0, 1, .1, 1, "MRGoreParts_NoBloodMist"
+}
+
+OptionMenu "MRGoreParts_SpotsMenu"
+{
+	Title "$MRGoreParts_SpotsMenu"
+	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "OnOff"
+	Option "$MRGoreParts_EffectsSpots", "MRGoreParts_EffectsSpots", "OnOff"
+	Option "$MRGoreParts_WoundsSpots", "MRGoreParts_WoundsSpots", "OnOff", "MRGoreParts_FloorSpots"
+	Option "$MRGOreParts_SpotsStyle", "MRGOreParts_SpotsStyle", "Particles", "MRGoreParts_FloorSpots"
+	Slider "$MRGoreParts_MaxSpots", "MRGoreParts_MaxSpots", 1, 2000, 50, 0, "MRGoreParts_FloorSpots"
+	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 10, 300, 10, 0, "MRGoreParts_FloorSpots"
 }
 
 OptionMenu "MRGoreParts_WoundsMenu"

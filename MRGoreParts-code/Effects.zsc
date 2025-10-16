@@ -8,6 +8,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	Color Col;
 	int Age, RenderStyle;
 	Double Gravity, Scale, FOV;
+	Sector CurSector;
 	
 	Static Double AngleToVector2(Vector2 Pos, Vector2 Dir)
 	{
@@ -109,15 +110,38 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, Vel.Length()+5, 0, Line.ML_BLOCKEVERYTHING, true);
 		
 		if(Tracer.HitType!=TRACE_HitNone){
-			if(Draw)HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
+			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
 			Landed = true;
 		}
 		
-		Sector CurSector = LevelLocals.PointInSector(Pos.XY+Vel.XY);
+		CurSector = LevelLocals.PointInSector(Pos.XY+Vel.XY);
 		
 		if(CurSector){
-			if(CurSector.CenterFloor()+2>=Pos.Z+Vel.Z){if(Draw)HitSurface(TRACE_HitFloor, Null, (Pos.XY+Vel.XY, CurSector.CenterFloor()));Landed = true;}
-			else if(CurSector.CenterCeiling()-2<=Pos.Z+Vel.Z){if(Draw)HitSurface(TRACE_HitCeiling, Null, (Pos.XY+Vel.XY, CurSector.CenterCeiling()));Landed = true;}
+			if(CurSector.CenterFloor()+2>=Pos.Z+Vel.Z && CurSector.CenterFloor()-5<Pos.Z+Vel.Z){HitSurface(TRACE_HitFloor, Null, (Pos.XY+Vel.XY, CurSector.CenterFloor()));Landed = true;}
+			else if(CurSector.CenterCeiling()-2<=Pos.Z+Vel.Z && CurSector.CenterCeiling()+5>Pos.Z+Vel.Z){HitSurface(TRACE_HitCeiling, Null, (Pos.XY+Vel.XY, CurSector.CenterCeiling()));Landed = true;}
+			else if(CurSector.CenterFloor()+20>=Pos.Z){//Falling drops
+				int Glow = 0;
+				if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+				Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
+				Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+					
+				Vector3 PPos = (Pos.XY, CurSector.CenterFloor()+1);
+				PPos.XY += (CFRandom(-Scale, Scale), CFRandom(-Scale, Scale));
+				
+				Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size);
+					
+				if(a){
+					a.PostBeginPlay();
+					a.SetRenderStyle(RenderStyle);
+					a.Flags = Glow;
+					a.InArray = true;
+					a.Delay = (Pos.Z-CurSector.CenterFloor())*.5;
+					For(int i=0;i<Max(0, Handler.Spots.Size()-MRGoreParts_MaxSpots+1);i++){
+						if(Handler.Spots[i]){Handler.Spots[i].Remove();Handler.Spots.Delete(i);i--;}
+					}
+					Handler.Spots.Push(a);
+				}
+			}
 		}
 		
 		if(Landed){Destroy();Return;}
@@ -181,7 +205,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 			Case TRACE_HitWall:
 				Double Angle = VectorAngle(HitLine.Delta.X, HitLine.Delta.Y);
 				
-				For(int i=0;i<CRandom(5, 7);i++){//Splash
+				For(int i=CRandom(0, 2);i<7;i++){//Splash
 					
 					Float Pitch = CRandom(0, 40);
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
@@ -194,24 +218,45 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/Life));
 				}
 				
-				if(MRGoreParts_FloorSpots<2)Return;
-				For(int i=0;i<CRandom(4, 7);i++){//Spots
+				if(!MRGoreParts_FloorSpots)Return;
+				Sector BackSector = HitLine.BackSector;
+				if(BackSector==CurSector)BackSector = HitLine.FrontSector;
 				
+				Bool Plane;
+				if(BackSector && HitPos.Z > BackSector.CenterCeiling())Plane = true;
+				
+				
+				
+				For(int i=CRandom(0, 3);i<7;i++){//Spots
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
-					Float Size = CFRandom(.6, 1.1)*Scale*MRGoreParts_Size;
+					Vector3 PPos = HitPos + (Actor.AngleToVector(Angle, CFRandom(-3, 3)), CFRandom(-3, 3)-i);
 					
-					SpawnParticle(TempCol, Glow, RenderStyle, MRGoreParts_SpotsTime*35, Size, 0, HitPos + (Actor.AngleToVector(Angle, CFRandom(-3, 3)), CFRandom(-3, 3)-i),
-						(0,0,-.01), Alpha:MRGoreParts_Alpha, Fade:MRGoreParts_LowAlpha?0:-1, SizeStep:(MRGoreParts_LowAlpha)?-(Size/(MRGoreParts_SpotsTime*35)):0);
+					PPos += Level.Vec2Diff(PPos.XY, Pos.XY).Unit()*1.5;
+					
+					Double Height;
+					if(BackSector){
+						if(Plane)Height = PPos.Z-BackSector.CenterCeiling();
+						else Height = BackSector.CenterFloor()-PPos.Z;
+					}
+					
+					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
+					
+					if(a){
+						a.PostBeginPlay();
+						a.SetRenderStyle(RenderStyle);
+						a.Flags = Glow;
+						a.InArray = true;
+						Handler.UpdateSpots(a);
+					}
 				}
 				Break;
 				
 			Case TRACE_HitFloor:
 				Ofst = 1;
 			Case TRACE_HitCeiling:
-				
-				For(int i=0;i<CRandom(5, 7);i++){//Splash
+				For(int i=CRandom(0, 2);i<7;i++){//Splash
 					
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
@@ -224,29 +269,22 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/Life));
 				}
 				
-				if(MRGoreParts_FloorSpots<2)Return;
-				For(int i=0;i<CRandom(4, 7);i++){//Spots
+				if(!MRGoreParts_FloorSpots)Return;
+				For(int i=CRandom(0, 3);i<7;i++){//Spots
 				
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
-
-					Float Size = CFRandom(.6, 1.1)*Scale*MRGoreParts_Size;
 					
-					SpawnParticle(TempCol, Glow, RenderStyle, MRGoreParts_SpotsTime*35, Size, 0,
-						HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), Alpha:MRGoreParts_Alpha, Fade:(MRGoreParts_LowAlpha)?0:-1,
-						SizeStep:(MRGoreParts_LowAlpha)?-(Size/(MRGoreParts_SpotsTime*35)):0);
-				}
-				if(HitType == TRACE_HitCeiling)For(int i=0;i<CRandom(0, 3)*4;i++)//Dripping from ceiling
-				{
+					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, (Ofst>0?1:2));
 					
-					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
-					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
-					
-					Float Size = CFRandom(.2, .4)*Scale*MRGoreParts_Size;
-					
-					SpawnParticle(TempCol, Glow, RenderStyle, 40, Size, 0,
-						HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), Accel:(0,0,-CFRandom(.1, .4)),
-						Alpha:MRGoreParts_Alpha, SizeStep:-(Size/40.));
+					if(a){
+						a.PostBeginPlay();
+						a.SetRenderStyle(RenderStyle);
+						a.Flags = Glow;
+						a.InArray = true;
+						if(Ofst<1 && i%2==0)a.Drip = true;
+						Handler.UpdateSpots(a);
+					}
 				}
 				Break;
 		}
@@ -286,7 +324,6 @@ class MR_GoreParticlesSightTracer : LineTracer
 		return TRACE_Skip;
 	}
 }
-
 
 enum MRGP_EffectFlag{
 	SGPF_NoDist = 1,//Distance won't affect particles velocity and sizes

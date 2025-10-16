@@ -23,7 +23,7 @@ nosave bool MRGoreParts_LowAlpha = true;//Minimize usage of alpha channel for pa
 nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
 nosave float MRGoreParts_FlyingBloodChance = .15;
-nosave int MRGorePats_MaxFlyingBlood = 40;
+nosave int MRGoreParts_MaxFlyingBlood = 40;
 nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
 ///Included effects menu
 nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
@@ -48,6 +48,15 @@ nosave float MRGoreParts_DripSndVol = 1;
 nosave float MRGoreParts_NoBloodSndVol = 1;
 //
 
+//Spots
+nosave bool MRGoreParts_FloorSpots = true;//Not only floor
+nosave bool MRGoreParts_WoundsSpots = false;//Floor spots leaved by bleeding wounds
+nosave bool MRGoreParts_EffectsSpots = false;
+nosave int MRGoreParts_MaxSpots = 300;
+nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
+nosave int MRGOreParts_SpotsStyle = 1;//Spots particles style 0 - Smooth, 1 - Round, 2 - Square
+//
+
 //Wounds menu
 nosave bool MRGoreParts_Wounds = true;//Bleeding wounds
 nosave int MRGoreParts_CorpseWounds = 1;//0 - No wounds on corpses, 1 - Only wounds, no spots, 2 - All
@@ -55,9 +64,6 @@ nosave bool MRGoreParts_Voxel = false;//If false, wounds on corpses will face pl
 nosave int MRGoreParts_MaxWounded = 5;//Max wounded entities
 nosave int MRGoreParts_MaxWounds = 7;//Max wounds per entity
 //
-
-nosave int MRGoreParts_FloorSpots = 0;//0 - nothing, 1 - only spots leaved by wounds, 2 - All
-nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
 
 server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
 nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding

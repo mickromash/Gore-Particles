@@ -68,49 +68,6 @@ Class MR_GoreParticlesThinker: Object play
 	}
 }
 
-Class MR_GoreParticlesDelayedSpawner: MR_GoreParticlesThinker//You'll never guess what mod it originates from
-{
-	Color Col;
-	Double Alpha, Size, Fade, Resize;
-	Vector3 Ofst, Vely, Accel,  Pos;
-	int Delay, Life, Fuzzy,  Age;
-	Bool PlaySound;
-	
-	Override Void PostBeginPlay()
-	{
-		Super.PostBeginPlay();
-		if(!Handler)Return;
-		if(Handler)Handler.Spawners.Push(Self);
-	}
-	
-	Override VOid OnDestroy()
-	{
-		if(!Handler)Return;
-		Handler.Spawners.Delete(Handler.Spawners.Find(Self));
-		Super.OnDestroy();
-	}
-	
-	Override Void Tick()
-	{
-		if(!TickCheck())Return;
-		
-		Sector CurSector = Level.PointInSector(Pos.XY);
-		if(CurSector)Pos.Z = CurSector.CenterFloor();
-		
-		if((Delay>-1&&Age>=Delay)||Delay<0)
-		{
-			SpawnParticle(Col, 0, Fuzzy, Life, Size, 0, Pos+Ofst, Vely, Accel, Alpha, Fade, Resize);
-			if(PlaySound)S_StartSoundAt(Pos+Ofst, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
-			Destroy();
-			Return;
-		}
-		
-		Age++;
-		
-		Return;
-	}
-}
-
 Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 {
 	Color Bld;
@@ -189,7 +146,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 {
 	Color Bld;
 	Sector CurSector;
-	int StartAmount, RenderStyle, Direction;
+	int StartAmount, RenderStyle, Direction, Glow;
 	Vector2 Pos;//Thinker position
 	Double PosZ, PrevZ, FOV;
 	Bool Opened;//Ceiling is higher than floor
@@ -286,6 +243,9 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		
 		if(RandX.Size()<1){Destroy();Return;}
 		
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		else Glow = 0;
+		
 		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()-8){
 			
 			if(Opened){//When the ceiling reaches the floor, leave some drops on the floor
@@ -302,7 +262,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 					if(CRandom(0, 10)>3)Continue;
 										
 					if(InDist){
-						SpawnParticle(Colors[i], 0, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
+						SpawnParticle(Colors[i], Glow, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
 					}
 					RandX.Delete(i);RandY.Delete(i);Colors.Delete(i);Sizes.Delete(i);
 				}
@@ -316,15 +276,35 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		
 				
 		if(Direction<0 && PosZ>=PrevZ){//Ceiling changed direction
-			For(int i=0;i<CRandom(3, 5);i++)SpawnDrops(true);//Drops leaves ceiling
+			For(int i=CRandom(0, 2);i<5;i++)SpawnDrops(true);//Drops leaves ceiling
 		}
 		
 		else if(Direction>0 && PosZ<=PrevZ){//Ceiling changed direction
-			For(int i=0;i<CRandom(2, 4);i++)SpawnDrops(true);//Drops leaves ceiling
+			For(int i=CRandom(0, 2);i<4;i++)SpawnDrops(true);//Drops leaves ceiling
 		}
 		
-		For(int i=0;i<CRandom(2, 4);i++)SpawnDrops();//Drops leaves ceiling
-		SpawnStatic();//Drops on the ceiling
+		For(int i=CRandom(0, 2);i<4;i++)SpawnDrops();//Drops leaves ceiling
+		
+		Bool InSight=false;
+		Vector2 LD, LU, RD, RU;
+		LD = LU = RD = RU = (RandX[0], RandY[0]);
+		
+		For(int i=0;i<RandX.Size();i++){
+			if(RandX[i]<=LD.X && RandY[i]<=LD.Y)LD = (RandX[i], RandY[i]);
+			if(RandX[i]<=LU.X && RandY[i]>=LU.Y)LU = (RandX[i], RandY[i]);
+			if(RandX[i]>=RD.X && RandY[i]<=RD.Y)RD = (RandX[i], RandY[i]);
+			if(RandX[i]>=RU.X && RandY[i]>=RU.Y)RU = (RandX[i], RandY[i]);
+		}
+
+		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
+		While(True){//Sight check on the furthest spots
+			if(MRGPartsCheckDraw(1000, (LD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+			if(LD!=LU && MRGPartsCheckDraw(1000, (LU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+			if(RD!=LU && RD!=LD && MRGPartsCheckDraw(1000, (RD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+			if(RU!=RD && RU!=LD && RU!=LU && MRGPartsCheckDraw(1000, (RU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+		}
+		
+		if(InSight)SpawnStatic();//Drops on the ceiling
 		
 		if(PosZ<PrevZ)Direction = -1;
 		else if(PosZ>PrevZ)Direction = 1;
@@ -333,15 +313,16 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		PrevZ = PosZ;//Interpolation
 	}
 	
-	Void SpawnDrops(Bool NoRandom=false)
+	Void SpawnDrops(Bool NoRandom=false, int Num=-1)
 	{
 		if(!NoRandom && RandX.Size()<CRandom(0, StartAmount))Return;
 		if(RandX.Size()<1)Return;
 		
-		int Rand = CRandom(0, RandX.Size()-1);
+		int Rand = Num;
+		if(Rand==-1)Rand = CRandom(0, RandX.Size()-1);
 		
 		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
-		SpawnParticle(Colors[Rand], 0, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
+		SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
 		
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
 	}
@@ -355,8 +336,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
 		
 		For(int i=0;i<RandX.Size();i++){
-			if(!MRGPartsCheckDraw(1000, (RandX[i], RandY[i], CurSector.CenterFloor()+Mid*.5)))Continue;
-			SpawnParticle(Colors[i], 0, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
+			SpawnParticle(Colors[i], SPF_REPLACE|Glow, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
 		}
 	}
 	
@@ -366,7 +346,307 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		if(!Opened)Return;
 		
 		For(int i=0;i<RandX.Size();i++){
-			SpawnDrops();
+			SpawnDrops(true, i);
 		}
+	}
+}
+
+Class MR_GoreParticlesSpot: VisualThinker
+{
+	int Surface;//0 - Wall, 1 - Floor, 2 - Ceiling
+	Bool FromCeiling;//In case spot placed on a wall of a sector that is originates from the ciling
+	int Life, Age, Delay, Sliding;
+	Double Height, StartScale, StartAlpha;
+	Sector LinkedSector;
+	Bool NoAlpha, PlaySound, InArray, Drip, Fallin;
+	
+	Override Void Tick()
+	{
+		Super.Tick();
+
+		if(Delay>0 && Age>=Delay && Scale.X==0){
+			Scale = (1, 1)*StartScale;
+			if(PlaySound){
+				Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+				if(Handler)S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
+			}
+		}
+				
+		if(Age+20>=Life){
+			if(Age>=Life){
+				if(InArray){
+					Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+					if(Handler)Handler.Spots.Delete(Handler.Spots.Find(Self));
+				}
+				Destroy();
+				Return;
+			}
+			
+			if(NoAlpha){
+				Double Scal = StartScale*((Life-Age)/20.);
+				
+				Scale = (1, 1)*Scal;
+			}
+			else {
+				Double Alph = StartAlpha*((Life-Age)/20.);
+				
+				Alpha = Alph;
+			}
+		}
+		
+		if(Drip && !Fallin && CRandom(0, 100)==1)Fallin = true;
+		
+		if(Fallin)Vel.Z -= CFRandom(.2, .4);
+		
+		else Switch(Surface){
+			Case 0://Wall
+				if(LinkedSector){
+					if(FromCeiling){
+						Pos.Z = LinkedSector.CenterCeiling()+Height;//Move spot with the wall
+						if(Sliding>0){//Sliding down
+							Height -= CFRandom(.005, .01);
+							if(Height<0)Fallin = true;//If reached the bottom, fall down
+							Sliding--;
+						}
+					}
+					
+					else {
+						Pos.Z = LinkedSector.CenterFloor()-Height;//Move spot with the wall
+						if(Sliding>0){//Sliding down
+							Height += CFRandom(.005, .01);
+							Sliding--;
+						}
+					}
+				}
+				else Pos.Z -= CFRandom(.005, .01);
+				Break;
+			Case 1://Floor
+				if(CurSector)Pos.Z = CurSector.CenterFloor()+2;
+				Break;
+			Case 2://Ceiling
+				if(CurSector)Pos.Z = CurSector.CenterCeiling()-2;
+				Break;
+		}
+		
+		Age++;
+	}
+	
+	Override Void PostBeginPlay()
+	{
+		if(!Texture)Switch(MRGOreParts_SpotsStyle){
+			Case 2:
+				Texture = Texman.CheckForTexture("GParMst1");//Smooth
+				StartScale *= .01;
+				//Offset = (32, 32)*-StartScale;
+				Break;
+			Case 1:
+				Texture = Texman.CheckForTexture("glpart2");//Round
+				StartScale *= .004;
+				//Offset = (64, 64)*-StartScale;
+				Break;
+			Case 0:
+				Texture = Texman.CheckForTexture("GParMst2");//Square
+				//Offset = (.5, .5)*-StartScale;
+				Break;
+		}
+		
+		if(Delay>0)Scale = (0, 0);
+		else Scale = (1, 1)*StartScale;
+		Alpha = StartAlpha;
+		
+		NoAlpha = MRGoreParts_LowAlpha;
+		
+		Fallin = false;
+		
+		Sliding = CRandom(35, 50);
+	}
+	
+	Static MR_GoreParticlesSpot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
+		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null)
+	{
+		Let Spot = MR_GoreParticlesSpot(level.SpawnVisualThinker('MR_GoreParticlesSpot'));
+		if(!Spot)Return Null;
+		
+		Spot.Pos = Pos;
+		Spot.SColor = Col;
+		Spot.Life = Life;
+		Spot.Delay = Delay;
+		Spot.Surface = Surface;
+		if(Surface<1)Spot.Flags |= SPF_NO_XY_BILLBOARD;
+		//if(MRGoreParts_FullBright)Spot.Flags |= SPF_FULLBRIGHT;
+		Spot.Height = Height;
+		Spot.FromCeiling = FromCeiling;
+		Spot.LinkedSector = LinkedSector;
+		Spot.PlaySound = PlaySound;
+		Spot.StartScale = Scale;
+		Spot.StartAlpha = Alpha;
+		
+		Return Spot;
+	}
+	
+	Void Remove()
+	{
+		if(Age>Life-20)Destroy();
+		else Age = Life-20;
+	}
+}
+
+Class MR_GoreParticlesDroplet: VisualThinker
+{
+	Double Diff(Double a, Double b)
+	{
+		if(a>b)Return a-b;
+		
+		Return b-a;
+	}
+	
+	Double Gravity, StartScale;
+	int RenderStyle;
+	
+	Override Void PostBeginPlay()
+	{
+		if(!Texture)Switch(MRGOreParts_SpotsStyle){
+			Case 2:
+				Texture = Texman.CheckForTexture("GParMst1");//Smooth
+				Scale *= .01;
+				//Offset = (32, 32)*-StartScale;
+				Break;
+			Case 1:
+				Texture = Texman.CheckForTexture("glpart2");//Round
+				Scale *= .004;
+				//Offset = (64, 64)*-StartScale;
+				Break;
+			Case 0:
+				Texture = Texman.CheckForTexture("GParMst2");//Square
+				//Offset = (.5, .5)*-StartScale;
+				Break;
+		}
+		
+		//Scale *= StartScale;
+	}
+	
+	Override Void Tick()
+	{
+		Super.Tick();
+		
+		if(Level.IsFrozen())Return;
+		
+		Scale *= .95;
+		if(Scale.X<.0001){Destroy();Return;}
+		
+		Bool Draw = MRGoreParts_Draw;
+		
+		//Double Angle = VectorAngle(Vel.X, Vel.Y);
+		//Double Pitch = -atan2(Vel.Z, Vel.XY.Length());
+		
+		Vector3 dir = Vel;//(Actor.AngleToVector(Angle, cos(Pitch)), -sin(Pitch));
+		
+		Bool Landed = false;
+		
+		let tracer = new('MR_GoreParticlesSightTracer');
+
+		tracer.CheckSurface = true;
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, Vel.Length()+5, 0, Line.ML_BLOCKEVERYTHING, true);
+		
+		if(Tracer.HitType!=TRACE_HitNone){
+			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
+			Landed = true;
+		}
+				
+		if(CurSector){
+			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=Vel.Length()){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;}
+			if(abs(Diff(Pos.Z, CurSector.CenterCeiling())<=Vel.Length())){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;}
+		}
+		
+		if(Landed){Destroy();Return;}
+		
+		Prev = Pos;
+		Pos += Vel;
+		
+		Vel.Z -= Gravity;
+	}
+	
+	Virtual Void HitSurface(int HitType, Line HitLine=Null, Vector3 HitPos=(0,0,0))
+	{
+		if(!MRGoreParts_FloorSpots)Return;
+		int Ofst = -1;
+		int Glow = 0;
+		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(!Handler)Return;
+		S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		Switch(HitType){
+		
+			Case TRACE_HitWall:
+				{
+				Double Angle = VectorAngle(HitLine.Delta.X, HitLine.Delta.Y);
+								
+				
+				Sector BackSector = HitLine.BackSector;
+				if(BackSector==CurSector)BackSector = HitLine.FrontSector;
+				
+				Bool Plane;
+				if(BackSector && HitPos.Z > BackSector.CenterCeiling())Plane = true;
+					Let TempCol = SColor;
+					
+					Let PPos = HitPos;
+					
+					PPos += Level.Vec2Diff(PPos.XY, Pos.XY).Unit()*1.5;
+					
+					Double Height;
+					if(BackSector){
+						if(Plane)Height = PPos.Z-BackSector.CenterCeiling();
+						else Height = BackSector.CenterFloor()-PPos.Z;
+					}
+					
+					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*StartScale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
+					
+					if(a){
+						a.PostBeginPlay();
+						a.SetRenderStyle(RenderStyle);
+						a.Flags = Glow;
+						a.InArray = true;
+						Handler.UpdateSpots(a);
+					}
+				}
+				Break;
+				
+			Case TRACE_HitFloor:
+				Ofst = 1;
+			Case TRACE_HitCeiling:
+				{
+				
+					Let TempCol = SColor;
+					
+					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*StartScale*35, 0, 0, CFRandom(.6, 1.1)*MRGoreParts_Size, 1, (Ofst>0?1:2));
+					
+					if(a){
+						a.PostBeginPlay();
+						a.SetRenderStyle(RenderStyle);
+						a.Flags = Glow;
+						a.InArray = true;
+						//a.Drip = true;
+						Handler.UpdateSpots(a);
+					}
+				}
+				Break;
+		}
+	}
+	
+	Static MR_GoreParticlesDroplet MRGSpawnDrop(Color Col, Vector3 Pos, Vector3 Vel = (0,0,0), Double Gravity = .5, Double Scale = 3, int RenderStyle = STYLE_NORMAL)
+	{
+		Let Drop = MR_GoreParticlesDroplet(level.SpawnVisualThinker('MR_GoreParticlesDroplet'));
+		if(!Drop)Return Null;
+		
+		Drop.Pos = Pos;
+		Drop.Vel = Vel;
+		Drop.Gravity = Gravity;
+		Drop.SColor = Col;
+		if(MRGoreParts_FullBright)Drop.Flags |= SPF_FULLBRIGHT;
+		Drop.StartScale = Scale;
+		Drop.SetRenderStyle(RenderStyle);
+		Drop.RenderStyle = RenderStyle;
+		
+		Return Drop;
 	}
 }
