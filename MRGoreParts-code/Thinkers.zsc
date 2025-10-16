@@ -285,6 +285,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		
 		For(int i=CRandom(0, 2);i<4;i++)SpawnDrops();//Drops leaves ceiling
 		
+		if(RandX.Size()<1){Destroy();Return;}
 		Bool InSight=false;
 		Vector2 LD, LU, RD, RU;
 		LD = LU = RD = RU = (RandX[0], RandY[0]);
