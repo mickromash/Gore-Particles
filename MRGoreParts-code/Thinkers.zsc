@@ -303,6 +303,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 			if(LD!=LU && MRGPartsCheckDraw(1000, (LU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
 			if(RD!=LU && RD!=LD && MRGPartsCheckDraw(1000, (RD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
 			if(RU!=RD && RU!=LD && RU!=LU && MRGPartsCheckDraw(1000, (RU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+			Break;
 		}
 		
 		if(InSight)SpawnStatic();//Drops on the ceiling
