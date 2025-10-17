@@ -626,7 +626,7 @@ Class MR_GoreParticlesDroplet: VisualThinker
 				
 					Let TempCol = SColor;
 					
-					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*StartScale*35, 0, 0, CFRandom(.6, 1.1)*MRGoreParts_Size, 1, (Ofst>0?1:2));
+					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*StartScale*MRGoreParts_Size, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.PostBeginPlay();
