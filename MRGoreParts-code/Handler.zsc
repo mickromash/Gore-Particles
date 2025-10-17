@@ -47,6 +47,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		if(!a)Return;
 		Spots.Push(a);
 	}
+	Array<Object> Thinkers;
 	
 	Array<MR_GoreParticlesFlyingBlood> Streams;
 	Array<MR_GoreParticlesDeathThinker> Dyings;
@@ -507,6 +508,10 @@ Class MR_GoreParticlesHandler: EventHandler
 		
 		For(int i=0;i<Wounds.Size();i++){
 			if(Wounds[i])Wounds[i].Destroy();
+		}
+		
+		For(int i=0;i<Thinkers.Size();i++){
+			if(Thinkers[i])Thinkers[i].Destroy();
 		}
 		
 		/*For(int i=0;i<Spawners.Size();i++){

@@ -87,7 +87,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	
 	Override Void OnDestroy()
 	{
-		if(!Handler)Return;
+		if(!Handler){Super.OnDestroy();Return;}
 		Handler.Dyings.Delete(Handler.Dyings.Find(Self));
 		Super.OnDestroy();
 	}
@@ -234,7 +234,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	
 	Override Void OnDestroy()
 	{
-		if(!Handler)Return;
+		if(!Handler){Super.OnDestroy();Return;}
 		Handler.Crushed.Delete(Handler.Crushed.Find(Self));
 		Super.OnDestroy();
 	}
@@ -474,6 +474,9 @@ Class MR_GoreParticlesSpot: VisualThinker
 		Fallin = false;
 		
 		Sliding = CRandom(35, 50);
+		
+		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(Handler)Handler.Thinkers.Push(Self);
 	}
 	
 	Static MR_GoreParticlesSpot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
@@ -504,6 +507,13 @@ Class MR_GoreParticlesSpot: VisualThinker
 		if(Age>Life-20)Destroy();
 		else Age = Life-20;
 	}
+	
+	Override Void OnDestroy()
+	{
+		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(Handler && Handler.Thinkers.Find(Self)<Handler.Thinkers.Size())Handler.Thinkers.Delete(Handler.Thinkers.Find(Self));
+		Super.OnDestroy();
+	}
 }
 
 Class MR_GoreParticlesDroplet: VisualThinker
@@ -517,6 +527,13 @@ Class MR_GoreParticlesDroplet: VisualThinker
 	
 	Double Gravity, StartScale;
 	int RenderStyle;
+	
+	Override Void OnDestroy()
+	{
+		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(Handler && Handler.Thinkers.Find(Self)<Handler.Thinkers.Size())Handler.Thinkers.Delete(Handler.Thinkers.Find(Self));
+		Super.OnDestroy();
+	}
 	
 	Override Void PostBeginPlay()
 	{
@@ -537,6 +554,8 @@ Class MR_GoreParticlesDroplet: VisualThinker
 				Break;
 		}
 		
+		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		if(Handler)Handler.Thinkers.Push(Self);
 		//Scale *= StartScale;
 	}
 	
