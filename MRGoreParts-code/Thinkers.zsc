@@ -153,6 +153,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	Array<float> RandX, RandY;//Remains drops positions
 	Array<Color> Colors;
 	Array<Float> Sizes;
+	Array<float> Perma;
 	
 	Static Double AngleToVector2(Vector2 Pos, Vector2 Dir)
 	{
@@ -329,9 +330,15 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		int Rand = Num;
 		if(Rand==-1)Rand = CRandom(0, RandX.Size()-1);
 		
-		S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
-		SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
-		
+		if(Perma.Size()>0 && Perma.Find(RandX[Rand])!=Perma.Size()){
+			Let a = MR_GoreParticlesDroplet.MRGSpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), RenderStyle:RenderStyle);
+			if(a)a.PostBeginPlay();
+			Perma.Delete(Perma.Find(RandX[Rand]));
+		}
+		else {
+			S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+			SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
+		}
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
 	}
 	
@@ -544,10 +551,7 @@ Class MR_GoreParticlesDroplet: VisualThinker
 		
 		Bool Draw = MRGoreParts_Draw;
 		
-		//Double Angle = VectorAngle(Vel.X, Vel.Y);
-		//Double Pitch = -atan2(Vel.Z, Vel.XY.Length());
-		
-		Vector3 dir = Vel;//(Actor.AngleToVector(Angle, cos(Pitch)), -sin(Pitch));
+		Vector3 dir = Vel;
 		
 		Bool Landed = false;
 		
