@@ -286,24 +286,30 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		For(int i=CRandom(0, 2);i<4;i++)SpawnDrops();//Drops leaves ceiling
 		
 		if(RandX.Size()<1){Destroy();Return;}
-		Bool InSight=false;
-		Vector2 LD, LU, RD, RU;
-		LD = LU = RD = RU = (RandX[0], RandY[0]);
 		
-		For(int i=0;i<RandX.Size();i++){
-			if(RandX[i]<=LD.X && RandY[i]<=LD.Y)LD = (RandX[i], RandY[i]);
-			if(RandX[i]<=LU.X && RandY[i]>=LU.Y)LU = (RandX[i], RandY[i]);
-			if(RandX[i]>=RD.X && RandY[i]<=RD.Y)RD = (RandX[i], RandY[i]);
-			if(RandX[i]>=RU.X && RandY[i]>=RU.Y)RU = (RandX[i], RandY[i]);
-		}
-
+		Bool InSight=false;
+		
 		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
-		While(True){//Sight check on the furthest spots
-			if(MRGPartsCheckDraw(1000, (LD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
-			if(LD!=LU && MRGPartsCheckDraw(1000, (LU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
-			if(RD!=LU && RD!=LD && MRGPartsCheckDraw(1000, (RD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
-			if(RU!=RD && RU!=LD && RU!=LU && MRGPartsCheckDraw(1000, (RU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
-			Break;
+		if(MRGPartsCheckDraw(1000, (Pos, CurSector.CenterFloor()+Mid*.5)))InSight=true;
+		else {
+		
+			Vector2 LD, LU, RD, RU;
+			LD = LU = RD = RU = (RandX[0], RandY[0]);
+			
+			For(int i=0;i<RandX.Size();i++){
+				if(RandX[i]<=LD.X && RandY[i]<=LD.Y)LD = (RandX[i], RandY[i]);
+				if(RandX[i]<=LU.X && RandY[i]>=LU.Y)LU = (RandX[i], RandY[i]);
+				if(RandX[i]>=RD.X && RandY[i]<=RD.Y)RD = (RandX[i], RandY[i]);
+				if(RandX[i]>=RU.X && RandY[i]>=RU.Y)RU = (RandX[i], RandY[i]);
+			}
+
+			While(True){//Sight check on the furthest spots
+				if(MRGPartsCheckDraw(1000, (LD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+				if(LD!=LU && MRGPartsCheckDraw(1000, (LU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+				if(RD!=LU && RD!=LD && MRGPartsCheckDraw(1000, (RD, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+				if(RU!=RD && RU!=LD && RU!=LU && MRGPartsCheckDraw(1000, (RU, CurSector.CenterFloor()+Mid*.5))){InSight=true;Break;}
+				Break;
+			}
 		}
 		
 		if(InSight)SpawnStatic();//Drops on the ceiling
