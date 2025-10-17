@@ -72,7 +72,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		String TempStr = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
 		
 		TempStr.Substitute("  ", " ");
-		
+		int Akhtung;
 		While(TempStr.Length()>0)
 		{
 			String Num;
@@ -80,6 +80,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			else {Num = TempStr;TempStr = "";}
 			
 			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())Effects.Push(Handler.Effects[Num.ToInt()]);
+			Akhtung++;
+			if(Akhtung>700)Break;
 		}
 		
 		AlwaysEffects.Clear();
@@ -88,6 +90,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				
 		TempStr.Substitute("  ", " ");
 		
+		Akhtung = 0;
 		While(TempStr.Length()>0)
 		{
 			String Num;
@@ -95,6 +98,8 @@ Class MR_GoreParticlesHandler: EventHandler
 			else {Num = TempStr;TempStr = "";}
 			
 			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())AlwaysEffects.Push(Handler.Effects[Num.ToInt()]);
+			Akhtung++;
+			if(Akhtung>700)Break;
 		}
 		
 		if(!MRGoreParts_Debug)Return;
@@ -156,6 +161,7 @@ Class MR_GoreParticlesHandler: EventHandler
 			String Lump = Wads.ReadLump(LumpNum);
 
 			Lump.Substitute("\n", "");
+			int Akhtung;
 			While(Lump.IndexOf("(")>-1)
 			{
 				String Monster = Lump.Left(Lump.IndexOf(" "));
@@ -163,16 +169,19 @@ Class MR_GoreParticlesHandler: EventHandler
 				String Cols = Lump.Mid(Lump.IndexOf("("), Lump.IndexOf(")")).." ";
 				int Vals[3];
 				
-				For(int i=0;i<3;i++)
+				For(int i1=0;i1<3;i1++)
 				{
 					String Temp = Cols.Left(Cols.IndexOf(" "));
-					Vals[i] = Temp.ToInt();
+					Vals[i1] = Temp.ToInt();
 					Cols = Cols.Mid(Cols.IndexOf(" ")+1);
 				}
 
 				if((Class<Actor>)(Monster))BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
 				
 				Lump = Lump.Mid(Lump.IndexOf(")")+2);
+				
+				Akhtung++;
+				if(Akhtung>700)Break;
 			}
 		}
 		
@@ -195,6 +204,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		BlackList.Clear();
 		String BList = MRGoreParts_BlackList;
 		BList.Substitute(" ", "");
+		int Akhtung;
 		While(BList.Length()>2)
 		{
 			String Monst;
@@ -212,6 +222,9 @@ Class MR_GoreParticlesHandler: EventHandler
 			
 			Class<Actor> MonstCls = Monst;
 			if(MonstCls)BlackList.Push(MonstCls);
+			
+			Akhtung++;
+			if(Akhtung>700)Break;
 		}
 		
 		if(MRGoreParts_Debug){
@@ -619,7 +632,7 @@ Class MR_GoreParticlesHandler: EventHandler
 					Home.Y *= abs(Sin(Actor.DeltaAngle(Thing.Angle, Thing.AngleTo(Inflictor))));
 
 					Home.Z = -Dif.Z+5;
-					Home.Z = Home.Z/Thing.Height;
+					Home.Z = Min(1, Home.Z/Thing.Height);
 					
 					if(Home.X>0)Home.X = Min(Home.X, Thing.Radius);
 					else Home.X = Max(Home.X, -Thing.Radius);
@@ -650,7 +663,7 @@ Class MR_GoreParticlesHandler: EventHandler
 				Home.Y *= abs(Sin(Actor.DeltaAngle(Thing.Angle, Thing.AngleTo(Inflictor))));
 
 				Home.Z = -Dif.Z+5;
-				Home.Z = Home.Z/Thing.Height;
+				Home.Z = Min(1, Home.Z/Thing.Height);
 				
 				if(Home.X>0)Home.X = Min(Home.X, Thing.Radius);
 				else Home.X = Max(Home.X, -Thing.Radius);
@@ -958,7 +971,7 @@ Class MR_GoreParticlesHandler: EventHandler
 		MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
 		
 		
-		For(int i=0;i<CRandom(40, 50)*MRGoreParts_Amount;i++){//Floor splash
+		For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<50*MRGoreParts_Amount;i++){//Floor splash
 			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
 			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
@@ -999,15 +1012,15 @@ Class MR_GoreParticlesHandler: EventHandler
 	{
 		if(!MRGoreParts_Draw)Return;
 		
-		Float TempGrav = -.3;
+		Float TempGrav = .3;
 		
-		For(int i=0;i<CRandom(2, 5);i++)
+		For(int i=CRandom(0, 3);i<5;i++)
 			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
 		
 		int Delay = 1;
 		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
 		{
-			TempGrav += abs(-.3);
+			TempGrav += abs(.3);
 			Delay++;
 		}
 		
@@ -1055,14 +1068,14 @@ Class MR_GoreParticlesHandler: EventHandler
 			if(mo.Height<mo.Radius)Size = mo.Radius;
 			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
 		
-			For(int i=0;i<Amount*CRandom(8, 12);i++)
+			For(int i=CRandom(0, 4)*Amount;i<Amount*12;i++)
 			{
 				if(Effects.Size()>0)
 					Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
 						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
 			}
 			
-			if(MRGoreParts_FloorSplash)For(int i=0;i<CRandom(30, 40)*MRGoreParts_Amount;i++){//Floor splash
+			if(MRGoreParts_FloorSplash)For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<40*MRGoreParts_Amount;i++){//Floor splash
 				Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
 				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
