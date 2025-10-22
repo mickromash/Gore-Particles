@@ -8,9 +8,9 @@
 */
 
 
-Class MR_GoreParticlesThinker: Object play
+Class MRGP_Thinker: Object play
 {
-	MR_GoreParticlesHandler Handler;
+	MRGP_Handler Handler;
 		
 	Static Bool MRGPartsCheckDraw(Actor mo=null, float dist=0)
 	{
@@ -40,7 +40,7 @@ Class MR_GoreParticlesThinker: Object play
 	
 	Virtual Void PostBeginPlay()
 	{
-		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 	}
 	
@@ -68,7 +68,7 @@ Class MR_GoreParticlesThinker: Object play
 	}
 }
 
-Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
+Class MRGP_DeathThinker: MRGP_Thinker
 {
 	Color Bld;
 	Bool Sos, Artery, Draw;
@@ -130,7 +130,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 			{
 				Float Strn = CRandom(3, 5);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
-				MR_GoreParticlesFlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
+				MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
 				S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 			}
 			if(Age<CRandom(-40, 60))
@@ -142,7 +142,7 @@ Class MR_GoreParticlesDeathThinker: MR_GoreParticlesThinker
 	}
 }
 
-Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
+Class MRGP_CrushedThinker: MRGP_Thinker
 {
 	Color Bld;
 	Sector CurSector;
@@ -180,14 +180,14 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		Vector3 direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), cos(PitchToVector3(Pos, Dir))), -sin(PitchToVector3(Pos, Dir)));
 		Vector3 Dist = Level.Vec3Diff(Pos, Dir);
 		
-		let tracer = new('MR_GoreParticlesSightTracer');
+		let tracer = new('MRGP_SightTracer');
 		if(!tracer)return false;
 		tracer.Trace(Pos, CurSector, direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
 		
 		
 		if(Tracer.HitPlayer)Return true;
 		
-		Tracer = new('MR_GoreParticlesSightTracer');
+		Tracer = new('MRGP_SightTracer');
 		
 		direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), 
 			cos(PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir))), -sin(PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir)));
@@ -331,8 +331,13 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 		if(Rand==-1)Rand = CRandom(0, RandX.Size()-1);
 		
 		if(Perma.Size()>0 && Perma.Find(RandX[Rand])!=Perma.Size()){
-			Let a = MR_GoreParticlesDroplet.MRGSpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), RenderStyle:RenderStyle);
-			if(a)a.PostBeginPlay();
+			if(CRandom(0, 10)>3){//Permanent drop leaves ceiling
+				Let a = MRGP_Droplet.MRGSpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), Scale: Sizes[Rand]*.5, RenderStyle:RenderStyle);
+				if(a)a.PostBeginPlay();
+			}
+			else {//Permanent drop stays on ceiling
+				Let a = MRGP_Spot.MRGSpawnSpot(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()), MRGoreParts_SpotsTime*35, 0, 0, Sizes[Rand], 1, 2);
+			}
 			Perma.Delete(Perma.Find(RandX[Rand]));
 		}
 		else {
@@ -366,7 +371,7 @@ Class MR_GoreParticlesCrushedThinker: MR_GoreParticlesThinker
 	}
 }
 
-Class MR_GoreParticlesSpot: VisualThinker
+Class MRGP_Spot: VisualThinker
 {
 	int Surface;//0 - Wall, 1 - Floor, 2 - Ceiling
 	Bool FromCeiling;//In case spot placed on a wall of a sector that is originates from the ciling
@@ -382,7 +387,7 @@ Class MR_GoreParticlesSpot: VisualThinker
 		if(Delay>0 && Age>=Delay && Scale.X==0){
 			Scale = (1, 1)*StartScale;
 			if(PlaySound){
-				Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+				Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 				if(Handler)S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
 			}
 		}
@@ -390,7 +395,7 @@ Class MR_GoreParticlesSpot: VisualThinker
 		if(Age+20>=Life){
 			if(Age>=Life){
 				if(InArray){
-					Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+					Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 					if(Handler)Handler.Spots.Delete(Handler.Spots.Find(Self));
 				}
 				Destroy();
@@ -475,14 +480,14 @@ Class MR_GoreParticlesSpot: VisualThinker
 		
 		Sliding = CRandom(35, 50);
 		
-		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler)Handler.Thinkers.Push(Self);
 	}
 	
-	Static MR_GoreParticlesSpot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
+	Static MRGP_Spot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
 		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null)
 	{
-		Let Spot = MR_GoreParticlesSpot(level.SpawnVisualThinker('MR_GoreParticlesSpot'));
+		Let Spot = MRGP_Spot(level.SpawnVisualThinker('MRGP_Spot'));
 		if(!Spot)Return Null;
 		
 		Spot.Pos = Pos;
@@ -510,13 +515,13 @@ Class MR_GoreParticlesSpot: VisualThinker
 	
 	Override Void OnDestroy()
 	{
-		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler && Handler.Thinkers.Find(Self)<Handler.Thinkers.Size())Handler.Thinkers.Delete(Handler.Thinkers.Find(Self));
 		Super.OnDestroy();
 	}
 }
 
-Class MR_GoreParticlesDroplet: VisualThinker
+Class MRGP_Droplet: VisualThinker
 {
 	Double Diff(Double a, Double b)
 	{
@@ -525,12 +530,13 @@ Class MR_GoreParticlesDroplet: VisualThinker
 		Return b-a;
 	}
 	
-	Double Gravity, StartScale;
+	Double StartScale;
 	int RenderStyle;
+	Vector3 Accel;
 	
 	Override Void OnDestroy()
 	{
-		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler && Handler.Thinkers.Find(Self)<Handler.Thinkers.Size())Handler.Thinkers.Delete(Handler.Thinkers.Find(Self));
 		Super.OnDestroy();
 	}
@@ -554,9 +560,9 @@ Class MR_GoreParticlesDroplet: VisualThinker
 				Break;
 		}
 		
-		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler)Handler.Thinkers.Push(Self);
-		//Scale *= StartScale;
+		Scale *= StartScale;
 	}
 	
 	Override Void Tick()
@@ -567,17 +573,15 @@ Class MR_GoreParticlesDroplet: VisualThinker
 		
 		Scale *= .95;
 		if(Scale.X<.0001){Destroy();Return;}
-		
-		Bool Draw = MRGoreParts_Draw;
-		
+				
 		Vector3 dir = Vel;
 		
 		Bool Landed = false;
 		
-		let tracer = new('MR_GoreParticlesSightTracer');
+		let tracer = new('MRGP_SightTracer');
 
 		tracer.CheckSurface = true;
-		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, Vel.Length()+5, 0, Line.ML_BLOCKEVERYTHING, true);
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, Vel.Length()+1, 0, Line.ML_BLOCKEVERYTHING, true);
 		
 		if(Tracer.HitType!=TRACE_HitNone){
 			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
@@ -585,16 +589,15 @@ Class MR_GoreParticlesDroplet: VisualThinker
 		}
 				
 		if(CurSector){
-			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=Vel.Length()){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;}
-			if(abs(Diff(Pos.Z, CurSector.CenterCeiling())<=Vel.Length())){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;}
+			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=abs(Vel.Z)){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;}
+			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;}
 		}
 		
 		if(Landed){Destroy();Return;}
 		
-		Prev = Pos;
 		Pos += Vel;
 		
-		Vel.Z -= Gravity;
+		Vel += Accel;
 	}
 	
 	Virtual Void HitSurface(int HitType, Line HitLine=Null, Vector3 HitPos=(0,0,0))
@@ -602,9 +605,12 @@ Class MR_GoreParticlesDroplet: VisualThinker
 		if(!MRGoreParts_FloorSpots)Return;
 		int Ofst = -1;
 		int Glow = 0;
-		Let Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler)Return;
-		S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+
+		Double Vol = Max(0, Min(1, Vel.Length()/9));
+		S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:Vol*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+		
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 		Switch(HitType){
 		
@@ -630,7 +636,7 @@ Class MR_GoreParticlesDroplet: VisualThinker
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 					
-					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*StartScale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.PostBeginPlay();
@@ -649,7 +655,7 @@ Class MR_GoreParticlesDroplet: VisualThinker
 				
 					Let TempCol = SColor;
 					
-					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*StartScale*MRGoreParts_Size, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.PostBeginPlay();
@@ -664,16 +670,16 @@ Class MR_GoreParticlesDroplet: VisualThinker
 		}
 	}
 	
-	Static MR_GoreParticlesDroplet MRGSpawnDrop(Color Col, Vector3 Pos, Vector3 Vel = (0,0,0), Double Gravity = .5, Double Scale = 3, int RenderStyle = STYLE_NORMAL)
+	Static MRGP_Droplet MRGSpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL)
 	{
-		Let Drop = MR_GoreParticlesDroplet(level.SpawnVisualThinker('MR_GoreParticlesDroplet'));
+		Let Drop = MRGP_Droplet(level.SpawnVisualThinker('MRGP_Droplet'));
 		if(!Drop)Return Null;
 		
 		Drop.Pos = Pos;
 		Drop.Vel = Vel;
-		Drop.Gravity = Gravity;
+		Drop.Accel = Accel;
 		Drop.SColor = Col;
-		if(MRGoreParts_FullBright)Drop.Flags |= SPF_FULLBRIGHT;
+		if(Flags&GPBCF_Glow)Drop.Flags |= SPF_FULLBRIGHT;
 		Drop.StartScale = Scale;
 		Drop.SetRenderStyle(RenderStyle);
 		Drop.RenderStyle = RenderStyle;
