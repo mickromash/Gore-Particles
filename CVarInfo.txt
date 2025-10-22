@@ -40,11 +40,11 @@ nosave float MRGoreParts_Brightness = 1;
 nosave float MRGoreParts_Alpha = 1;
 nosave bool MRGoreParts_FullBright = false;//Glowing particles
 nosave bool MRGoreParts_FuzzyBlood = true;//Transparent blood for transparent entities
-nosave float MRGoreParts_SndVol = 1;
+nosave float MRGoreParts_SndVol = .8;
 nosave float MRGoreParts_HitSndVol = 1;
-nosave float MRGoreParts_SpraySndVol = 1;
+nosave float MRGoreParts_SpraySndVol = .9;
 nosave float MRGoreParts_GibSndVol = 1;
-nosave float MRGoreParts_DripSndVol = 1;
+nosave float MRGoreParts_DripSndVol = .6;
 nosave float MRGoreParts_NoBloodSndVol = 1;
 //
 
@@ -54,7 +54,7 @@ nosave bool MRGoreParts_WoundsSpots = false;//Floor spots leaved by bleeding wou
 nosave bool MRGoreParts_EffectsSpots = false;
 nosave int MRGoreParts_MaxSpots = 300;
 nosave int MRGoreParts_SpotsTime = 5;//Surface blood life time
-nosave int MRGOreParts_SpotsStyle = 1;//Spots particles style 0 - Smooth, 1 - Round, 2 - Square
+nosave int MRGoreParts_SpotsStyle = 1;//Spots particles style 0 - Smooth, 1 - Round, 2 - Square
 //
 
 //Wounds menu
