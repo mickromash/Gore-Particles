@@ -143,7 +143,7 @@ MRGoreParts_CheckLimit = "Particles limit indicator";
 MRGoreParts_CheckLimitOffset = "Indicator offset";
 
 MRGoreParts_Uninstall = "Uninstall";
-MRGoreParts_UninstallPromt = "Removes the mod so the saved game could be loaded without it";
+MRGoreParts_UninstallPromt = "Remove the mod so the saved game could be loaded without it?";
 MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully unistalled.";
 
 MRGoreParts_AllParticlesAmount = "All particles amount";
@@ -307,7 +307,7 @@ MRGoreParts_CheckLimit = "Индикатор лимита частиц";
 MRGoreParts_CheckLimitOffset = "Сдвиг индикатора";
 
 MRGoreParts_Uninstall = "Отключить мод";
-MRGoreParts_UninstallPromt = "Удаляет данные мода из игры\nблагодаря этому сохранённая игра сможет быть загружена без него";
+MRGoreParts_UninstallPromt = "Удалить данные мода из игры?\nблагодаря этому сохранённая игра сможет быть загружена без него";
 MRGoreParts_Uninstalled = "Gore-Particles: \cdМод успешно удалён.";
 
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
