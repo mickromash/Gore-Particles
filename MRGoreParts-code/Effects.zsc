@@ -2,7 +2,7 @@
 	Blood effects actors(kinda) and classes
 */
 
-Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood stream (basically client side actor)
+Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client side actor)
 {
 	Vector3 Pos, Prev, Vel;
 	Color Col;
@@ -35,7 +35,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		Vector3 direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), cos(PitchToVector3(Pos, Dir))), -sin(PitchToVector3(Pos, Dir)));
 		Vector3 Dist = Level.Vec3Diff(Pos, Dir);
 		
-		let tracer = new('MR_GoreParticlesSightTracer');
+		let tracer = new('MRGP_SightTracer');
 		if(!tracer)return false;
 		tracer.Trace(Pos, Level.PointInSector(Pos.XY), direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
 		
@@ -56,9 +56,9 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		Return CheckSight();
 	}
 	
-	Static MR_GoreParticlesFlyingBlood Create(Vector3 Pos, Color Col, int Flags, Float Gravity=.4, Float Scale=3, Vector3 Vel=(0,0,0))
+	Static MRGP_FlyingBlood Create(Vector3 Pos, Color Col, int Flags, Float Gravity=.4, Float Scale=3, Vector3 Vel=(0,0,0))
 	{
-		Let a = New('MR_GoreParticlesFlyingBlood');
+		Let a = New('MRGP_FlyingBlood');
 		a.Init();
 		if(a.bDestroyed)Return Null;
 		a.Pos = Pos;
@@ -73,7 +73,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	Virtual Void Init()
 	{
 		if(!MRGoreParts_DrawFlyingBlood){Destroy();Return;}
-		Handler = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+		Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 		Handler.Streams.Push(Self);
 		Gravity = .4;
@@ -104,7 +104,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 		
 		Bool Landed = false;
 		
-		let tracer = new('MR_GoreParticlesSightTracer');
+		let tracer = new('MRGP_SightTracer');
 
 		tracer.CheckSurface = true;
 		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, Vel.Length()+5, 0, Line.ML_BLOCKEVERYTHING, true);
@@ -128,7 +128,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 				Vector3 PPos = (Pos.XY, CurSector.CenterFloor()+1);
 				PPos.XY += (CFRandom(-Scale, Scale), CFRandom(-Scale, Scale));
 				
-				Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size);
+				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size);
 					
 				if(a){
 					a.PostBeginPlay();
@@ -241,7 +241,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 					
-					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.PostBeginPlay();
@@ -275,7 +275,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
-					Let a = MR_GoreParticlesSpot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.PostBeginPlay();
@@ -291,7 +291,7 @@ Class MR_GoreParticlesFlyingBlood: MR_GoreParticlesThinker//Quake gibs blood str
 	}
 }
 
-class MR_GoreParticlesSightTracer : LineTracer
+class MRGP_SightTracer : LineTracer
 {
 	Bool HitPlayer, CheckSurface;
 	int HitType;
@@ -330,10 +330,11 @@ enum MRGP_EffectFlag{
 	SGPF_FixAmount = 2,//Ignore particles amount CVar
 	SGPF_NoVel = 4,
 	SGPF_Fuzzy = 8,
-	SGPF_TEST = 16,
+	SGPF_Test = 16,
+	SGPF_Glow = 32,
 };
 
-Class MR_GoreParticlesEffect play abstract
+Class MRGP_Effect play abstract
 {
 	Virtual int DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
 	{Return 0;}
@@ -353,7 +354,7 @@ Class MR_GoreParticlesEffect play abstract
 	Static Void SpawnEffect(Class<Object> Effect, Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Double MoVel = 0)
 	{
 		if(!mo)Return;
-		Let Spawner = MR_GoreParticlesEffect(New(Effect));
+		Let Spawner = MRGP_Effect(New(Effect));
 		
 		if(Spawner){
 			Spawner.DoParticleEffect(mo, Flags, Angle, Pitch, Col, Amount, Scale, Alpha, Offset, LifeM, MoVel);
@@ -380,7 +381,7 @@ Class MR_GoreParticlesEffect play abstract
 	}
 }
 
-Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
+Class MRGP_Effect_SimpleSplash: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
@@ -448,17 +449,17 @@ Class MR_GoreParticlesEffect_SimpleSplash: MR_GoreParticlesEffect
 	}
 }
 
-Class MR_GoreParticlesEffect_Sprays: MR_GoreParticlesEffect
+Class MRGP_Effect_Sprays: MRGP_Effect
 {}
 
-Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
+Class MRGP_Effect_Mist: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
 		if(!MRGoreParts_Draw)Return 0;
-		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
+		//if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
 		if(Amount<=0)Return 0;
 		
 		int Particles;
@@ -479,7 +480,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 		int Fuzzy = STYLE_NONE;
 		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
-		int Amnt = CRandom(1, 4)/Max(1, Dist*.1)*2*Amount;
+		int Amnt = CRandom(1, 3)/Max(1, Dist*.1)*2*Amount;
 		if(Flags&SGPF_FixAmount)Amnt = Amount;
 		
 		TextureId Texture;
@@ -536,7 +537,7 @@ Class MR_GoreParticlesEffect_Mist: MR_GoreParticlesEffect
 	Override Bool UsesAlpha(){Return true;}
 }
 
-Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
+Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
@@ -619,7 +620,7 @@ Class MR_GoreParticlesEffect_BeautifulSpray: MR_GoreParticlesEffect
 	}
 }
 
-Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
+Class MRGP_Effect_CurveLine: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
@@ -700,7 +701,7 @@ Class MR_GoreParticlesEffect_CurveLine: MR_GoreParticlesEffect
 	}
 }
 
-Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
+Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
@@ -783,7 +784,7 @@ Class MR_GoreParticlesEffect_BeautifulSprayGrowing: MR_GoreParticlesEffect
 	Override Bool UsesAlpha(){Return true;}
 }
 
-Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
+Class MRGP_Effect_Sparks: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Double MoVel)
 	{
@@ -794,7 +795,7 @@ Class MR_GoreParticlesEffect_Sparks: MR_GoreParticlesEffect
 		if(mo.Waterlevel>2)
 		{
 			int Rand = CRandom(170, 200);
-			MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_Mist', mo, Flags, Angle, Pitch, Color(Rand,Rand,Rand), Amount, Scale, Alpha, Offset, LifeM, MoVel);
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, Flags, Angle, Pitch, Color(Rand,Rand,Rand), Amount, Scale, Alpha, Offset, LifeM, MoVel);
 			Return 0;
 		}
 		
