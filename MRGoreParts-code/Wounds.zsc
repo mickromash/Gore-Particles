@@ -2,7 +2,7 @@
 	Bleeding wounds
 */
 
-Class MR_GoreParticlesWound: MR_GoreParticlesThinker
+Class MRGP_Wound: MRGP_Thinker
 {
 	Vector3 Locs[MRGP_MaxWounds];
 	Float Ages[MRGP_MaxWounds], Fov;
@@ -83,34 +83,36 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 			if(35*CRandom(3, 40)<Ages[i] && Rand>0 && MaxBlood>0)
 			{
 				MaxBlood--;
-				if(Draw && Corpse>1)For(float j=CRandom(0, 2);j<3;j++){//Dripping blood
-					Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
-					Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)),
-						Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),
-						Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3, MRGoreParts_Alpha);
-				}
-				
-				if(MRGoreParts_WoundsSpots && MRGoreParts_FloorSpots && Draw)//Spot
-				{
-					if(Spot>1){
-						Vector2 Pos = Owner.Pos.XY;
-						
-						if(Owner.Health>0||MRGoreParts_Voxel){
-							Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
-							Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
-						}
-						else {
-							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
-							Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
-						}
-						Pos += (CFRandom(-1, 1), CFRandom(-1, 1));
+				if(Draw && Corpse>1){
+					For(float j=CRandom(0, 2);j<3;j++){//Dripping blood
 						Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
-						Let a = MR_GoreParticlesDroplet.MRGSpawnDrop(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), (Pos, Z), RenderStyle:Fuzzy);
-						if(a)a.PostBeginPlay();
-						
-						Spot=0;
+						Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)),
+							Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),
+							Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3, MRGoreParts_Alpha);
 					}
-					else Spot++;
+				
+					if(MRGoreParts_WoundsSpots && MRGoreParts_FloorSpots)//Spot
+					{
+						if(Spot>1){
+							Vector2 Pos = Owner.Pos.XY;
+							
+							if(Owner.Health>0||MRGoreParts_Voxel){
+								Pos += Actor.AngleToVector(Owner.Angle, Locs[i].X);
+								Pos += Actor.AngleToVector(Owner.Angle-90, Locs[i].Y);
+							}
+							else {
+								Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
+								Pos += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)-90, Locs[i].Y);
+							}
+							Pos += (CFRandom(-1, 1), CFRandom(-1, 1));
+							Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
+							Let a = MRGP_Droplet.MRGSpawnDrop(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), (Pos, Z), RenderStyle:Fuzzy);
+							if(a)a.PostBeginPlay();
+							
+							Spot=0;
+						}
+						else Spot++;
+					}
 				}
 				if(Ages[i]>35*3 && Draw)//CRandom(0, 10)>7 && Ages[i]>35*3)
 				{//Splash
@@ -128,7 +130,7 @@ Class MR_GoreParticlesWound: MR_GoreParticlesThinker
 					}
 					int Fuzz = Fuzzy;
 					if(Fuzz>0)Fuzz = SGPF_Fuzzy;
-					MR_GoreParticlesEffect.SpawnEffect('MR_GoreParticlesEffect_SimpleSplash', Owner, Fuzz, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Z-5));
+					MRGP_Effect.SpawnEffect('MRGP_Effect_SimpleSplash', Owner, Fuzz, Angle, Owner.Health>0?0:-90, Col, .5, .5, 1, (Pos.X, Pos.Y, Z-5));
 				}
 			}
 		}
