@@ -1,1 +1,1 @@
-GameInfo{AddEventHandlers = "MR_GoreParticlesHandler", "MR_GoreParticlesStaticHandler"}
+GameInfo{AddEventHandlers = "MRGP_Handler", "MRGP_StaticHandler"}

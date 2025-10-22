@@ -81,7 +81,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Slider "$MRGoreParts_FlyingBloodChance", "MRGoreParts_FlyingBloodChance", 0, 1, .05, 2, "MRGoreParts_DrawFlyingBlood"
 	Slider "$MRGoreParts_MaxFlyingBlood", "MRGoreParts_MaxFlyingBlood", 1, 100, 2
 	Option "$MRGoreParts_MistTexture", "MRGoreParts_MistTexture", "MRGoreParts_MistTextureOption"
-	SubMenu "$MRGoreParts_EffectsListMenu", "MR_GoreParticlesEffectsMenu"
+	SubMenu "$MRGoreParts_EffectsListMenu", "MRGP_EffectsMenu"
 	StaticText ""
 }
 

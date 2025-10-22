@@ -47,6 +47,29 @@ Struct MRGParts
 		
 		Return Dif.Length();
 	}
+	
+	Static Void MRSpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
+	{
+		FSpawnParticleParams p;
+		p.Accel = Accel;
+		p.Vel = Vel;
+		
+		p.Pos = Pos;
+		
+		p.Color1 = Col;
+		p.LifeTime = Life;
+		p.size = Size;
+		p.sizeStep = SizeStep;
+		p.startalpha = Alpha;
+		p.fadestep = Fade;
+		
+		int Glow = 0;
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		p.Flags = Glow|Flags;
+		p.Style = Style;
+		
+		Level.SpawnParticle(p);
+	}
 }
 
 //#include "MRGoreParts-code/HandlerFuncs.zsc"

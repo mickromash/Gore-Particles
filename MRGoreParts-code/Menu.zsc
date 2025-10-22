@@ -9,7 +9,7 @@ Const MRGP_Menu_EffectsString2 = 2;
 Const MRGP_Menu_AlwaysEffectsString = 1;
 Const MRGP_Menu_Size = 2;
 
-class MR_GoreParticlesEffectsMenu:GenericMenu
+class MRGP_EffectsMenu:GenericMenu
 {
 	Array<string> EffectsNames;
 	Array<string> IncludedEffectsNames;
@@ -253,7 +253,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 		if(Init)
 		{
 			EffectsNames.Clear();
-			Let Handler = MR_GoreParticlesStaticHandler(StaticEventHandler.Find("MR_GoreParticlesStaticHandler"));
+			Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
 			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Return;}
 			
 			For(int i=0;i<Handler.Effects.Size();i++)
@@ -272,7 +272,7 @@ class MR_GoreParticlesEffectsMenu:GenericMenu
 			}
 			if(EffectsNames.Size()>0){Return;}
 			
-			Let Handle = MR_GoreParticlesHandler(EventHandler.Find("MR_GoreParticlesHandler"));
+			Let Handle = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		
 			For(int i=0;i<Handle.Effects.Size();i++)
 			{
