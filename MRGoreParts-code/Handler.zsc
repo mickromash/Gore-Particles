@@ -42,8 +42,8 @@ Class MRGP_Handler: EventHandler
 		Return b-a;
 	}
 	
-	Void UpdateSpots(MRGP_Spot a){
-		
+	Void UpdateSpots(MRGP_Spot a)
+	{
 		For(int i=0;i<Max(0, Spots.Size()-MRGoreParts_MaxSpots+1);i++)
 		{
 			if(Spots[i]){Spots[i].Remove();Spots.Delete(i);i--;}
@@ -51,6 +51,7 @@ Class MRGP_Handler: EventHandler
 		if(!a)Return;
 		Spots.Push(a);
 	}
+	
 	Array<Object> Thinkers;
 	
 	Array<MRGP_FlyingBlood> Streams;
@@ -544,7 +545,7 @@ Class MRGP_Handler: EventHandler
 	Override Void WorldTick()
 	{
 		ThinkersTick();
-		
+
 		/////////////////////////////
 				
 		if(!MRGoreParts_CheckLimit)Return;
