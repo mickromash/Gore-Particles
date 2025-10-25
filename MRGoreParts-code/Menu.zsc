@@ -53,7 +53,12 @@ class MRGP_EffectsMenu:GenericMenu
 			break;
 			
 		case MKEY_Clear: //backspace
-			if(!Editing)Break;
+			if(!Editing){
+				WorkingString[CursY] = "";
+				CursX = 0;
+				UpdateList();
+				Break;
+			}
 			if(CursX>0){
 				WorkingString[CursY]=WorkingString[CursY].left(CursX-1)..WorkingString[CursY].mid(CursX);
 				CursX--;
