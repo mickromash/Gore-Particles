@@ -35,9 +35,7 @@ Class MRGP_Wound: MRGP_Thinker
 	{
 		if(!Owner){Destroy();Return;}
 		if(!TickCheck())Return;
-		TextureID Sprt = Owner.CurState.GetSpriteTexture(0);//Abs(Round(Actor.DeltaAngle(Owner.AngleTo(Players[ConsolePlayer].Camera), Owner.Angle)*2.07/24)));
-		//Console.Printf(""..(Actor.DeltaAngle(Owner.AngleTo(Players[ConsolePlayer].Camera), Owner.Angle)*1.07/24));
-		//if(!Sprt.IsValid())Sprt = Owner.CurState.GetSpriteTexture(0);
+		TextureID Sprt = Owner.CurState.GetSpriteTexture(0);
 		
 		if(!Sprt.IsValid())Return;
 		
