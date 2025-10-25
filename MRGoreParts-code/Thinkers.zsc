@@ -333,10 +333,9 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		if(Perma.Size()>0 && Perma.Find(RandX[Rand])!=Perma.Size()){
 			if(CRandom(0, 10)>3){//Permanent drop leaves ceiling
 				Let a = MRGP_Droplet.MRGSpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), Scale: Sizes[Rand]*.5, RenderStyle:RenderStyle);
-				if(a)a.PostBeginPlay();
 			}
 			else {//Permanent drop stays on ceiling
-				Let a = MRGP_Spot.MRGSpawnSpot(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()), MRGoreParts_SpotsTime*35, 0, 0, Sizes[Rand], 1, 2);
+				Let a = MRGP_Spot.MRGSpawnSpot(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()), MRGoreParts_SpotsTime*35, 0, 0, Sizes[Rand], 1, 2, RenderStyle:RenderStyle);
 			}
 			Perma.Delete(Perma.Find(RandX[Rand]));
 		}
@@ -378,7 +377,7 @@ Class MRGP_Spot: VisualThinker
 	int Life, Age, Delay, Sliding;
 	Double Height, StartScale, StartAlpha;
 	Sector LinkedSector;
-	Bool NoAlpha, PlaySound, InArray, Drip, Fallin;
+	Bool NoAlpha, PlaySound, InArray, Drip, Fallin, OnLiquid;
 	
 	Override Void Tick()
 	{
@@ -402,7 +401,7 @@ Class MRGP_Spot: VisualThinker
 				Return;
 			}
 			
-			if(NoAlpha){
+			if(NoAlpha&&!OnLiquid){
 				Double Scal = StartScale*((Life-Age)/20.);
 				
 				Scale = (1, 1)*Scal;
@@ -480,12 +479,52 @@ Class MRGP_Spot: VisualThinker
 		
 		Sliding = CRandom(35, 50);
 		
+		if(CurSector && Surface>0){
+			if(CheckLiquid())Return;
+		}
+		
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler)Handler.Thinkers.Push(Self);
 	}
 	
+	Bool CheckLiquid()
+	{
+		Let Pic = CurSector.GetTexture(Surface-1);
+
+		if(!Pic.IsValid())Return false;
+		
+		String PicName = Texman.GetName(Pic);
+		PicName.MakeUpper();
+		
+		//Stolen from UGibs
+		Static Const String Waters [] = {"SEWER", "WATER", "WATR", "WTR", "SLIME0", "SLM", "SLUGDE", "SLUD", "LAVA", "LAV", "SLM", "TAR", "NUKE",
+			"NUKAGE", "GOOP", "MAGMA", "FLATHUH", "FLTFLWW", "FLTWAWA", "X_0", "OICYWA", "BLOOD", "BLOD", "BLD"};
+		
+		Bool IsLiquid = false;
+		
+		For(int i=0;i<Waters.Size();i++){
+			if(PicName.IndexOf(Waters[i])>-1){
+				IsLiquid = true;Break;
+			}
+		}
+		
+		if(!IsLiquid)Return false;
+		
+		if(CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
+			MRGParts.MRSpawnParticle(SColor, MRSPF_SMOKE, 0, 35, StartScale*3, 0, Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
+			S_StartSoundAt(Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
+			Destroy();
+			Return true;
+		}
+		
+		OnLiquid = true;
+		Remove();
+		
+		Return false;
+	}
+	
 	Static MRGP_Spot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
-		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null)
+		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null, int RenderStyle = STYLE_NORMAL)
 	{
 		Let Spot = MRGP_Spot(level.SpawnVisualThinker('MRGP_Spot'));
 		if(!Spot)Return Null;
@@ -503,6 +542,7 @@ Class MRGP_Spot: VisualThinker
 		Spot.PlaySound = PlaySound;
 		Spot.StartScale = Scale;
 		Spot.StartAlpha = Alpha;
+		Spot.SetRenderStyle(RenderStyle);
 		
 		Return Spot;
 	}
@@ -639,7 +679,7 @@ Class MRGP_Droplet: VisualThinker
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
-						a.PostBeginPlay();
+						a.CurSector = CurSector;
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
@@ -658,7 +698,7 @@ Class MRGP_Droplet: VisualThinker
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, (Ofst>0?1:2));
 					
 					if(a){
-						a.PostBeginPlay();
+						a.CurSector = CurSector;
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
