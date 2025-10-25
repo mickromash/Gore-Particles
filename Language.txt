@@ -59,7 +59,7 @@ MRGoreParts_MistTexture3 = "Same as particles";
 
 MRGoreParts_EffectsListMenu = "Configure included effects";
 MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
-MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Reset Changes   \cv[ENTER]\c-: Save Changes   \cv[R]\c-: Reset to Default";
+MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Reset Changes   \cv[ENTER]\c-: Save Changes   \cv[R]\c-: Reset to Default   \cv[BackSpace]\c-: Erase the list";
 MRGoreParts_AllEffectsList = "\czAll effects ids";
 MRGoreParts_IncludedEffectsList = "\cbIncluded effects";
 MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- or \cvMouse wheel\c-: scroll the list\nEffects marked with \cf\"*\"\c- utilize alpha channel";
@@ -156,13 +156,13 @@ MR_GoreParticlesUi_RecS = "\cgParticle Gore\cd Recommended settings:";
 MR_GoreParticlesUi_RecSDone = "All setting done right.";
 MR_GoreParticlesUi_RecSSound = "\cucheck readme for sound pack link.";
 
-MR_GoreParticlesEffect_SimpleSplash = "Round blood splash";
-MR_GoreParticlesEffect_Sprays = "Blood sprays";
-MR_GoreParticlesEffect_Mist = "Blood mist";
-MR_GoreParticlesEffect_BeautifulSpray = "\"Beautiful\" blood spray";
-MR_GoreParticlesEffect_CurveLine = "Curve blood spray";
-MR_GoreParticlesEffect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
-MR_GoreParticlesEffect_Sparks = "Sparks";
+MRGP_Effect_SimpleSplash = "Round blood splash";
+MRGP_Effect_Sprays = "Blood sprays";
+MRGP_Effect_Mist = "Blood mist";
+MRGP_Effect_BeautifulSpray = "\"Beautiful\" blood spray";
+MRGP_Effect_CurveLine = "Curve blood spray";
+MRGP_Effect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
+MRGP_Effect_Sparks = "Sparks";
 
 [ru]
 
@@ -226,7 +226,7 @@ MRGoreParts_MistTexture3 = "Такая же как у частиц";
 
 MRGoreParts_EffectsListMenu = "Настроить включённые эффекты";
 MRGoreParts_EffectsListGuide = "\cfВводите id эффектов разделяя пробелами";
-MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Отменить изменения   \cv[ENTER]\c-: Сохранить изменения   \cv[R]\c-: Список по умолчанию";
+MRGoreParts_EffectsListMenuControls = " \cv[ESC]\c-: Отменить изменения   \cv[ENTER]\c-: Сохранить изменения   \cv[R]\c-: Список по умолчанию   \cv[BackSpace]\c-: Стереть список";
 MRGoreParts_AllEffectsList = "\czid эффектов";
 MRGoreParts_IncludedEffectsList = "\cbВключённые эффекты";
 MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- или \cvКолёсико мыши\c-: листать список\nЭффекты помеченные \cf\"*\"\c- используют афльфа канал";
@@ -320,10 +320,10 @@ MR_GoreParticlesUi_RecS = "\cdРекомендованные настройки 
 MR_GoreParticlesUi_RecSDone = "Всё настроено правильно.";
 MR_GoreParticlesUi_RecSSound = "\cuпроверьте readme для ссылки на пак звуков.";
 
-MR_GoreParticlesEffect_SimpleSplash = "Взрывообразный всплеск крови";
-MR_GoreParticlesEffect_Sprays = "Кровавые лучи";
-MR_GoreParticlesEffect_Mist = "Кровавая дымка";
-MR_GoreParticlesEffect_BeautifulSpray = "Распадающаяся струя крови";
-MR_GoreParticlesEffect_CurveLine = "Кривая линия крови";
-MR_GoreParticlesEffect_BeautifulSprayGrowing = "Распадающаяся струя крови (расширяющаяся)";
-MR_GoreParticlesEffect_Sparks = "Искры";
+MRGP_Effect_SimpleSplash = "Взрывообразный всплеск крови";
+MRGP_Effect_Sprays = "Кровавые лучи";
+MRGP_Effect_Mist = "Кровавая дымка";
+MRGP_Effect_BeautifulSpray = "Распадающаяся струя крови";
+MRGP_Effect_CurveLine = "Кривая линия крови";
+MRGP_Effect_BeautifulSprayGrowing = "Распадающаяся струя крови (расширяющаяся)";
+MRGP_Effect_Sparks = "Искры";
