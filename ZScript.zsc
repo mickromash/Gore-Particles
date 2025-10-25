@@ -6,6 +6,10 @@ Const MRGP_DistanceMult = 2.;//Effects scaling by distance
 //Const MRGP_MaxBright = 1.5;
 Const MRGP_GibbingTime = 60.;
 
+enum MRGPartsSpawnFlags{
+	MRSPF_SMOKE = 1,
+}
+
 Struct MRGParts
 {
 	Static Double MRDistance2D(Actor mo, Actor mo1)
@@ -68,6 +72,14 @@ Struct MRGParts
 		p.Flags = Glow|Flags;
 		p.Style = Style;
 		
+		if(Flags&MRSPF_SMOKE){
+			Switch(MRGoreParts_MistTexture)
+			{
+				Case 0:p.Texture = Texman.CheckForTexture("GParMst");Break;
+				Default: p.Texture = Texman.CheckForTexture("GParMst"..MRGoreParts_MistTexture);Break;
+				Case 3:p.Texture = Texman.CheckForTexture("glpart");Break;
+			}
+		}
 		Level.SpawnParticle(p);
 	}
 }
