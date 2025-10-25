@@ -870,7 +870,6 @@ Class MRGP_Handler: EventHandler
 									
 							if(!Drop){//Spot
 								Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.inflictor.pos + (Ofst.XY*2, 5), Glow|Fuzzy, RenderStyle:Fuzzy);
-								if(a)a.PostBeginPlay();
 							}
 							Drop = true;
 						}

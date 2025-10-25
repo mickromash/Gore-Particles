@@ -105,7 +105,6 @@ Class MRGP_Wound: MRGP_Thinker
 							Pos += (CFRandom(-1, 1), CFRandom(-1, 1));
 							Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
 							Let a = MRGP_Droplet.MRGSpawnDrop(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)), (Pos, Z), RenderStyle:Fuzzy);
-							if(a)a.PostBeginPlay();
 							
 							Spot=0;
 						}
