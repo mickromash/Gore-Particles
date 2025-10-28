@@ -963,6 +963,30 @@ Class MRGP_Handler: EventHandler
 			if(Crusher)Break;
 		}
 		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
+		
+		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol*MRGoreParts_GibSndVol);
+		
+		if(Crushed.Size()>=MRGoreParts_Crush){
+			if(Crushed[0])Crushed[0].DropAll();
+		}
+				
+		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
+		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
+		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
+		
+		
+		For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<50*MRGoreParts_Amount;i++){//Floor splash
+			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
+			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
+			Size *= .05;
+			Size *= CFRandom(.5, 1.5);
+			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, CRandom(0, 360),
+				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, MRGoreParts_Alpha, 0, -(Size/130.));
+		}
+		
 		if(!Crusher){
 			SpawnXDeath(e.Thing);
 			Return;
@@ -974,9 +998,6 @@ Class MRGP_Handler: EventHandler
 		
 		Nerd.Pos = e.Thing.Pos.XY;
 		Nerd.Bld = Col;
-		
-		int Fuzzy = 0;
-		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
 		
 		Nerd.RenderStyle = Fuzzy;
 		Nerd.CurSector = Crusher;
@@ -1006,27 +1027,6 @@ Class MRGP_Handler: EventHandler
 		}
 		
 		Nerd.PostBeginPlay();
-		
-		e.Thing.A_StartSound(GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol*MRGoreParts_GibSndVol);
-		
-		if(Crushed.Size()>=MRGoreParts_Crush){
-			if(Crushed[0])Crushed[0].DropAll();
-		}
-				
-		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
-		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
-		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
-		
-		
-		For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<50*MRGoreParts_Amount;i++){//Floor splash
-			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
-			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
-			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
-			Size *= .05;
-			Size *= CFRandom(.5, 1.5);
-			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, CRandom(0, 360),
-				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, MRGoreParts_Alpha, 0, -(Size/130.));
-		}
 	}
 	
 	
