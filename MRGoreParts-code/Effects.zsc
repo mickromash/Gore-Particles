@@ -117,8 +117,8 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		CurSector = LevelLocals.PointInSector(Pos.XY+Vel.XY);
 		
 		if(CurSector){
-			if(CurSector.CenterFloor()+2>=Pos.Z+Vel.Z && CurSector.CenterFloor()-5<Pos.Z+Vel.Z){HitSurface(TRACE_HitFloor, Null, (Pos.XY+Vel.XY, CurSector.CenterFloor()));Landed = true;}
-			else if(CurSector.CenterCeiling()-2<=Pos.Z+Vel.Z && CurSector.CenterCeiling()+5>Pos.Z+Vel.Z){HitSurface(TRACE_HitCeiling, Null, (Pos.XY+Vel.XY, CurSector.CenterCeiling()));Landed = true;}
+			if(CurSector.CenterFloor()>=Pos.Z){HitSurface(TRACE_HitFloor, Null, (Pos.XY, CurSector.CenterFloor()));Landed = true;}
+			else if(CurSector.CenterCeiling()<=Pos.Z){HitSurface(TRACE_HitCeiling, Null, (Pos.XY, CurSector.CenterCeiling()));Landed = true;}
 			else if(CurSector.CenterFloor()+20>=Pos.Z){//Falling drops
 				int Glow = 0;
 				if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
@@ -131,7 +131,6 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size);
 					
 				if(a){
-					a.CurSector = CurSector;
 					a.SetRenderStyle(RenderStyle);
 					a.Flags = Glow;
 					a.InArray = true;
@@ -244,7 +243,6 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
-						a.CurSector = CurSector;
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
@@ -278,7 +276,6 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, (Ofst>0?1:2));
 					
 					if(a){
-						a.CurSector = CurSector;
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
