@@ -1072,8 +1072,6 @@ Class MRGP_Handler: EventHandler
 		}
 		
 		Let a = MRGP_Spot.MRGSpawnSpot(Col, (mo.pos.x+CFRandom(-1, 1), mo.pos.y+CFRandom(-1, 1), mo.floorz+1), 150, Delay, 1, CFRandom(2, 4), CFRandom(.8, .9));
-				
-		if(a)a.PostBeginPlay();
 	}
 	
 	Void SpawnXDeath(Actor mo, Actor inflictor = Null)

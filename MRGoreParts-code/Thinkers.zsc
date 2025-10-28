@@ -543,6 +543,28 @@ Class MRGP_Spot: VisualThinker
 		Spot.StartScale = Scale;
 		Spot.StartAlpha = Alpha;
 		Spot.SetRenderStyle(RenderStyle);
+		Spot.CurSector = LevelLocals.PointInSector(Pos.XY);
+		
+		if(Spot.CurSector){//Check if spot is placed on the skybox
+			Switch(Surface){
+					TextureId Pic;
+				Case 0:
+					if(LinkedSector){
+						Pic = LinkedSector.GetTexture(FromCeiling);
+					}
+					else Break;
+				Case 1:
+				Case 2:
+					if(!Pic)Pic = Spot.CurSector.GetTexture(Surface-1);
+					String PicName = Texman.GetName(Pic);
+					if(PicName ~== "F_SKY1"||
+						PicName ~== "F_SKY"||
+						PicName ~== "F_SKY001"){
+							Spot.Destroy();
+							Return Null;
+					}
+			}
+		}
 		
 		Return Spot;
 	}
@@ -679,7 +701,6 @@ Class MRGP_Droplet: VisualThinker
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
-						a.CurSector = CurSector;
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
@@ -698,7 +719,6 @@ Class MRGP_Droplet: VisualThinker
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, (Ofst>0?1:2));
 					
 					if(a){
-						a.CurSector = CurSector;
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
