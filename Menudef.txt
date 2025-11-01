@@ -1,6 +1,6 @@
 AddOptionMenu "OptionsMenu"
 {
-	StaticText ""
+	StaticText "Gore particles"
 	SubMenu "$MRGoreParts_Settings", "MRGoreParts_Menu"
 	StaticText ""
 }
