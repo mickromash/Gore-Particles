@@ -12,6 +12,49 @@ enum MRGPartsSpawnFlags{
 
 Struct MRGParts
 {
+	Static Double Diff(Double a, Double b)
+	{
+		if(a>b)Return a-b;
+		Return b-a;
+	}
+	
+	Static Vector2 Vec2Mult(Vector2 Vec1, Vector2 Vec2)
+	{
+		Return (Vec1.X*Vec2.Y, Vec1.Y*Vec2.Y);
+	}
+	Static Vector2 Vec2Div(Vector2 Vec1, Vector2 Vec2)
+	{
+		Return (Vec1.X/Vec2.Y, Vec1.Y/Vec2.Y);
+	}
+	
+	Static Vector3 Vec3Mult(Vector3 Vec1, Vector3 Vec2)
+	{
+		Return (Vec1.X*Vec2.Y, Vec1.Y*Vec2.Y, Vec1.Z*Vec2.Z);
+	}
+	Static Vector3 Vec3Div(Vector3 Vec1, Vector3 Vec2)
+	{
+		Return (Vec1.X/Vec2.Y, Vec1.Y/Vec2.Y, Vec1.Z/Vec2.Z);
+	}
+	
+	Static Double VectorPitch(Vector3 Vec)
+	{
+		Return -atan2(Vec.Z, Vec.XY.Length());
+	}
+	
+	Static Double AngleToVector2(Vector2 Pos, Vector2 Dir)
+	{
+		Vector2 Dif = Levellocals.Vec2Diff(Pos, Dir);
+		
+		Return VectorAngle(Dif.X, Dif.Y);
+	}
+	
+	Static Double PitchToVector3(Vector3 Pos, Vector3 Dir)
+	{
+		Vector3 Dif = Levellocals.Vec3Diff(Pos, Dir);
+		
+		Return -atan2(Dif.Z, Dif.XY.Length());
+	}
+	
 	Static Double MRDistance2D(Actor mo, Actor mo1)
 	{
 		if(!MRGoreParts_LiteDistance)Return mo.Distance2D(mo1);
