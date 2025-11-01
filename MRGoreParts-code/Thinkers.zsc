@@ -155,20 +155,6 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 	Array<Float> Sizes;
 	Array<float> Perma;
 	
-	Static Double AngleToVector2(Vector2 Pos, Vector2 Dir)
-	{
-		Vector2 Dif = Levellocals.Vec2Diff(Pos, Dir);
-		
-		Return VectorAngle(Dif.X, Dif.Y);
-	}
-	
-	Static Double PitchToVector3(Vector3 Pos, Vector3 Dir)
-	{
-		Vector3 Dif = Levellocals.Vec3Diff(Pos, Dir);
-		
-		Return -atan2(Dif.Z, Dif.XY.Length());
-	}
-	
 	Bool CheckSight(Vector3 Pos)
 	{
 		Let Plr = Players[ConsolePlayer].Camera;
@@ -177,7 +163,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		
 		Vector3 Dir = (Plr.Pos.XY, Plr.Player.ViewZ);
 		
-		Vector3 direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), cos(PitchToVector3(Pos, Dir))), -sin(PitchToVector3(Pos, Dir)));
+		Vector3 direct = (Actor.AngleToVector(MRGParts.AngleToVector2(Pos.XY, Dir.XY), cos(MRGParts.PitchToVector3(Pos, Dir))), -sin(MRGParts.PitchToVector3(Pos, Dir)));
 		Vector3 Dist = Level.Vec3Diff(Pos, Dir);
 		
 		let tracer = new('MRGP_SightTracer');
@@ -189,8 +175,8 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		
 		Tracer = new('MRGP_SightTracer');
 		
-		direct = (Actor.AngleToVector(AngleToVector2(Pos.XY, Dir.XY), 
-			cos(PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir))), -sin(PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir)));
+		direct = (Actor.AngleToVector(MRGParts.AngleToVector2(Pos.XY, Dir.XY), 
+			cos(MRGParts.PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir))), -sin(MRGParts.PitchToVector3((Pos.XY, CurSector.CenterCeiling()-1), Dir)));
 		Dist = Level.Vec3Diff((Pos.XY, CurSector.CenterCeiling()-1), Dir);
 		
 		tracer.Trace((Pos.XY, CurSector.CenterCeiling()-1), CurSector, direct, Dist.Length(), 0, Line.ML_BLOCKEVERYTHING);
@@ -210,7 +196,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		
 		if(dist!=0 && Dif.Length()>Dist)Return false;
 		
-		if(abs(Actor.DeltaAngle(AngleToVector2(Plr.Pos.XY, Pos.XY), Plr.Angle))>FOV && Abs(Actor.DeltaAngle(PitchToVector3(Plr.Pos, Pos), Plr.Pitch))>70)Return false;
+		if(abs(Actor.DeltaAngle(MRGParts.AngleToVector2(Plr.Pos.XY, Pos.XY), Plr.Angle))>FOV && Abs(Actor.DeltaAngle(MRGParts.PitchToVector3(Plr.Pos, Pos), Plr.Pitch))>70)Return false;
 		
 		Return CheckSight(Pos);
 	}
@@ -335,7 +321,8 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 				Let a = MRGP_Droplet.MRGSpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), Scale: Sizes[Rand]*.5, RenderStyle:RenderStyle);
 			}
 			else {//Permanent drop stays on ceiling
-				Let a = MRGP_Spot.MRGSpawnSpot(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()), MRGoreParts_SpotsTime*35, 0, 0, Sizes[Rand], 1, 2, RenderStyle:RenderStyle);
+				Color TempCol = Color(int(Colors[Rand].R*.9), int(Colors[Rand].G*.9), int(Colors[Rand].B*.9));
+				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()), MRGoreParts_SpotsTime*35, 0, 0, Sizes[Rand], 1, 2, RenderStyle:RenderStyle);
 			}
 			Perma.Delete(Perma.Find(RandX[Rand]));
 		}
@@ -415,7 +402,15 @@ Class MRGP_Spot: VisualThinker
 		
 		if(Drip && !Fallin && CRandom(0, 100)==1)Fallin = true;
 		
-		if(Fallin)Vel.Z -= CFRandom(.2, .4);
+		if(Fallin){
+			Vel.Z -= CFRandom(.2, .4);
+			if(CurSector && Pos.Z<=CurSector.CenterFloor()){
+				Pos.Z = CurSector.CenterFloor()+2;
+				Vel.Z = 0;
+				Surface = 1;
+				Fallin = false;
+			}
+		}
 		
 		else Switch(Surface){
 			Case 0://Wall
@@ -477,7 +472,7 @@ Class MRGP_Spot: VisualThinker
 		
 		Fallin = false;
 		
-		Sliding = CRandom(35, 50);
+		Sliding = CRandom(1, 10)*35;
 		
 		if(CurSector && Surface>0){
 			if(CheckLiquid())Return;
@@ -605,7 +600,7 @@ Class MRGP_Droplet: VisualThinker
 	
 	Override Void PostBeginPlay()
 	{
-		if(!Texture)Switch(MRGOreParts_SpotsStyle){
+		if(!Texture)Switch(gl_particles_style){
 			Case 2:
 				Texture = Texman.CheckForTexture("GParMst1");//Smooth
 				Scale *= .01;
@@ -616,7 +611,7 @@ Class MRGP_Droplet: VisualThinker
 				Scale *= .004;
 				//Offset = (64, 64)*-StartScale;
 				Break;
-			Case 0:
+			Default:
 				Texture = Texman.CheckForTexture("GParMst2");//Square
 				//Offset = (.5, .5)*-StartScale;
 				Break;
@@ -639,11 +634,12 @@ Class MRGP_Droplet: VisualThinker
 		Vector3 dir = Vel;
 		
 		Bool Landed = false;
+		int HitSurface;
 		
 		let tracer = new('MRGP_SightTracer');
 
 		tracer.CheckSurface = true;
-		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, Vel.Length()+1, 0, Line.ML_BLOCKEVERYTHING, true);
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 5, 0, Line.ML_BLOCKEVERYTHING, true);
 		
 		if(Tracer.HitType!=TRACE_HitNone){
 			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
@@ -651,11 +647,11 @@ Class MRGP_Droplet: VisualThinker
 		}
 				
 		if(CurSector){
-			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=abs(Vel.Z)){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;}
-			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;}
+			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=abs(Vel.Z)){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;HitSurface = 1;}
+			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;HitSurface = 2;}
 		}
 		
-		if(Landed){Destroy();Return;}
+		if(Landed){Splash(Tracer.HitLine, HitSurface);Destroy();Return;}
 		
 		Pos += Vel;
 		
@@ -686,7 +682,8 @@ Class MRGP_Droplet: VisualThinker
 				
 				Bool Plane;
 				if(BackSector && HitPos.Z > BackSector.CenterCeiling())Plane = true;
-					Let TempCol = SColor;
+					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
+					
 					
 					Let PPos = HitPos;
 					
@@ -713,8 +710,7 @@ Class MRGP_Droplet: VisualThinker
 				Ofst = 1;
 			Case TRACE_HitCeiling:
 				{
-				
-					Let TempCol = SColor;
+					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, (Ofst>0?1:2));
 					
@@ -727,6 +723,71 @@ Class MRGP_Droplet: VisualThinker
 					}
 				}
 				Break;
+		}
+	}
+	
+	Void Splash(Line HitWall = Null, int Surface = 0)
+	{
+		int Glow = 0;
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		
+		Vector3 Dir = (Actor.AngleToVector(VectorAngle(Vel.X, Vel.Y), cos(MRGParts.VectorPitch(Vel))), -sin(MRGParts.VectorPitch(Vel)));
+		Double Strngt = Min(4, Vel.Length()/5);
+		
+		Double Pitch[2];
+		Switch(Surface)
+		{
+			Case 1://Floor
+				Pitch[0] = 0;
+				Pitch[1] = 90;
+				Break;
+			Case 2://Ceiling
+				Pitch[0] = -90;
+				Pitch[1] = 0;
+		}
+		
+		Double WallAng[2];
+		WallAng[0] = 0;WallAng[1] = 360;
+		Double Ang = VectorAngle(Vel.X, Vel.Y);
+				
+		if(HitWall){
+			WallAng[0] = VectorAngle(HitWall.Delta.X, HitWall.Delta.Y);
+			WallAng[1] = WallAng[0]+180;
+			if(WallAng[1]>360)WallAng[1] = WallAng[1]%360;
+			
+			if(Clamp(Ang, WallAng[0], WallAng[1])!=Ang){
+				Double Temp = WallAng[0];
+				WallAng[0] = WallAng[1];
+				WallAng[1] = Temp;
+			}
+			
+			Switch(Surface)
+			{
+				Default://Wall
+					Pitch[0] = -45;
+					Pitch[1] = 45;
+					Break;
+				Case 1://Floor
+					Pitch[0] = 0;
+					Pitch[1] = 90;
+					Break;
+				Case 2://Ceiling
+					Pitch[0] = -90;
+					Pitch[1] = 0;
+			}
+		}
+		
+		
+		For(int i=0;i<4;i++){
+			Double Pit = CRandom(Pitch[0], Pitch[1]);
+			Vector3 TempDir = (Actor.AngleToVector(CRandom(WallAng[0], WallAng[1]), Strngt)*Cos(Pit), Strngt*Sin(Pit));
+			
+			Float Bright = CFRandom(1, 1.5);
+			Color Col = Color(int(SColor.R*Bright), int(SColor.G*Bright), int(SColor.B*Bright));
+			Float Life = CRandom(7, 10);
+			Float Scal = StartScale*CFRandom(.2, .4);
+			MRGParts.MRSpawnParticle(Col, Glow, RenderStyle, Life, Scal, 0, Pos,
+				TempDir*CFRandom(.8, 1.1), (0,0,-.4), SizeStep:-(Scal/Life));
 		}
 	}
 	

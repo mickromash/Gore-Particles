@@ -122,7 +122,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 			else if(CurSector.CenterFloor()+20>=Pos.Z){//Falling drops
 				int Glow = 0;
 				if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-				Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
+				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
 				Vector3 PPos = (Pos.XY, CurSector.CenterFloor()+1);
@@ -227,7 +227,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 				
 				
 				For(int i=CRandom(0, 3);i<7;i++){//Spots
-					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
 					Vector3 PPos = HitPos + (Actor.AngleToVector(Angle, CFRandom(-3, 3)), CFRandom(-3, 3)-i);
@@ -270,7 +270,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 				if(!MRGoreParts_FloorSpots)Return;
 				For(int i=CRandom(0, 3);i<7;i++){//Spots
 				
-					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
+					Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
 					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, (Ofst>0?1:2));
@@ -515,8 +515,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 			
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			
-			Float Life = Min(50, 11/Strn.Length())/MRGoreParts_Speed*LifeM;
-			
+			Float Life = (Min(50, 11/Strn.Length())*LifeM)/MRGoreParts_Speed;
 			if(Water)Life = Min(90, Life*2);
 			
 			Double Size = Scale*MRGoreParts_Size*(abs(HorzStrn.Length()*20))*Dist;
@@ -529,7 +528,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 				Offset.X,Offset.Y,5+Offset.Z,
 				Vel.X,Vel.Y,Vel.Z,
 				Accel.X,Accel.Y,Accel.Z,
-				PAlpha, PAlpha/Life, Size*MRGoreParts_Speed*.1*(Water?.5:1)
+				PAlpha, -(Life/PAlpha), Size*MRGoreParts_Speed*.1*(Water?.5:1)
 			);
 			
 			Particles++;
