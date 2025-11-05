@@ -49,7 +49,7 @@ nosave float MRGoreParts_NoBloodSndVol = 1;
 //
 
 //Spots
-nosave bool MRGoreParts_FloorSpots = true;//Not only floor
+nosave bool MRGoreParts_FloorSpots = true;//Not only floor actually
 nosave bool MRGoreParts_WoundsSpots = false;//Floor spots leaved by bleeding wounds
 nosave bool MRGoreParts_EffectsSpots = false;
 nosave int MRGoreParts_MaxSpots = 300;

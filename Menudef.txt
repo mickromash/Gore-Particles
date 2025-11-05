@@ -114,7 +114,7 @@ OptionMenu "MRGoreParts_SpotsMenu"
 	Option "$MRGoreParts_WoundsSpots", "MRGoreParts_WoundsSpots", "OnOff", "MRGoreParts_FloorSpots"
 	Option "$MRGOreParts_SpotsStyle", "MRGOreParts_SpotsStyle", "Particles", "MRGoreParts_FloorSpots"
 	Slider "$MRGoreParts_MaxSpots", "MRGoreParts_MaxSpots", 1, 2000, 50, 0, "MRGoreParts_FloorSpots"
-	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 10, 300, 10, 0, "MRGoreParts_FloorSpots"
+	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 300, 10, 0, "MRGoreParts_FloorSpots"
 }
 
 OptionMenu "MRGoreParts_WoundsMenu"

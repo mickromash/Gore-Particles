@@ -133,3 +133,7 @@ Struct MRGParts
 #include "MRGoreParts-code/Effects.zsc"
 #include "MRGoreParts-code/Wounds.zsc"
 #include "MRGoreParts-code/Menu.zsc"
+
+Const MRGPCommLine = "//";
+Const MRGPCommStart = "/*";
+Const MRGPCommEnd = "*/";

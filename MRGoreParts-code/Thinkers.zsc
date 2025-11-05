@@ -521,6 +521,8 @@ Class MRGP_Spot: VisualThinker
 	Static MRGP_Spot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
 		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null, int RenderStyle = STYLE_NORMAL)
 	{
+		if(!MRGoreParts_FloorSpots)Return Null;
+		
 		Let Spot = MRGP_Spot(level.SpawnVisualThinker('MRGP_Spot'));
 		if(!Spot)Return Null;
 		

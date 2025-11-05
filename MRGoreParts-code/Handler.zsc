@@ -296,14 +296,17 @@ Class MRGP_Handler: EventHandler
 				String File = Files[i];
 				File = File.MakeLower();//For easier search
 				//Skip comments
-				While(File.IndexOf("//")>-1){
-					int index = File.IndexOf("//");
-					File = File.Left(Index)..File.Mid(File.IndexOf("\n", index));
+				While(File.IndexOf(MRGPCommLine)>-1){
+					int Start = File.IndexOf(MRGPCommLine);
+					String Temp = File.Mid(Start);
+					int End = Temp.IndexOf("\n")+Start;
+					File = File.Left(Start)..File.Mid(End);
 				}
 				
-				While(File.IndexOf("/*")>-1){
-					int index = File.IndexOf("/*");
-					File = File.Left(index)..File.Mid(File.indexOf("*/")+2, index);
+				While(File.IndexOf(MRGPCommStart)>-1){
+					int Start = File.IndexOf(MRGPCommStart);
+					int End = File.IndexOf(MRGPCommEnd);
+					File = File.Left(Start)..File.Mid(End+2);
 				}
 				//
 
@@ -409,16 +412,18 @@ Class MRGP_Handler: EventHandler
 				String File = Files[i];
 				File = File.MakeLower();//For easier search
 				//Skip comments
-				While(File.IndexOf("//")>-1){
-					int index = File.IndexOf("//");
-					File = File.Left(Index)..File.Mid(File.IndexOf("\n", index));
+				While(File.IndexOf(MRGPCommLine)>-1){
+					int Start = File.IndexOf(MRGPCommLine);
+					String Temp = File.Mid(Start);
+					int End = Temp.IndexOf("\n")+Start;
+					File = File.Left(Start)..File.Mid(End);
 				}
 				
-				While(File.IndexOf("/*")>-1){
-					int index = File.IndexOf("/*");
-					File = File.Left(index)..File.Mid(File.indexOf("*/")+2, index);
+				While(File.IndexOf(MRGPCommStart)>-1){
+					int Start = File.IndexOf(MRGPCommStart);
+					int End = File.IndexOf(MRGPCommEnd);
+					File = File.Left(Start)..File.Mid(End+2);
 				}
-				//
 				
 				Bool BreakAll;
 				int Cur, Akhtung;
@@ -460,16 +465,6 @@ Class MRGP_Handler: EventHandler
 				}
 				if(BreakAll)Break;
 			}
-			Break;
-			
-			
-			
-			/*Mod = 'PileOfGibs';//Splatter gore
-			if((Class<Actor>)(Mod))
-			{
-				Break;
-			}*/
-			
 			Break;
 		}
 		if(MRGoreParts_Debug){
