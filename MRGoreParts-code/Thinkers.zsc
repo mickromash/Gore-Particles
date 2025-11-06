@@ -72,7 +72,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 {
 	Color Bld;
 	Bool Sos, Artery, Draw;
-	Float Mid;
+	Float Mid, RandAngle;
 	Actor Owner;
 	int Age, Fuzzy;
 		
@@ -83,6 +83,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		Mid = Owner.Height*.5;
 		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_SpraySndVol);
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
+		RandAngle = CRandom(5, 30);
 	}
 	
 	Override Void OnDestroy()
@@ -109,35 +110,34 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		
 		TextureID Sprt = Owner.CurState.GetSpriteTexture(0);
 		
-		if(Sprt.IsValid())
-		{
+		if(!Sprt.IsValid())Return;
 			
-			Float y = Texman.CheckRealHeight(Sprt)*.9;
-			y *= Owner.Scale.Y;
+		Float y = Texman.CheckRealHeight(Sprt)*.9;
+		y *= Owner.Scale.Y;
 
-			Float Posy = Y;
-			Double Pitch = -90;
-			if(Mid<Y)
-			{
-				Pitch = -(Mid/y)*45;
-				//Mid = Pitch;
-			}
-			
-			Double Angle = Owner.Angle;
-			if(!MRGoreParts_Voxel && Players[ConsolePlayer].Camera)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
-			
-			if(MRGoreParts_DrawFlyingBlood && CRandom(-500+Artery*200, 70)*(MRGoreParts_FlyingBloodChance*1.5)>Age)
-			{
-				Float Strn = CRandom(3, 5);
-				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
-				MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-				S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
-			}
-			if(Age<CRandom(-40, 60))
-			{
-				if(Handler.Effects.Size()>0)
-					Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy, Angle+CRandom(-30, 30), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
-			}
+		Float Posy = Y;
+		Double Pitch = -90;
+		if(Mid<Y)
+		{
+			Pitch = -(Mid/y)*45;
+			//Mid = Pitch;
+		}
+		
+		Double Angle = Owner.Angle;
+		if(!MRGoreParts_Voxel && Players[ConsolePlayer].Camera)Angle = Owner.AngleTo(Players[ConsolePlayer].Camera);
+		
+		if(MRGoreParts_DrawFlyingBlood && CRandom(-500+Artery*200, 70)*(MRGoreParts_FlyingBloodChance*1.5)>Age)
+		{
+			Float Strn = CRandom(3, 5);
+			Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-RandAngle, RandAngle), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
+			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
+			S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
+		}
+		if(Age<CRandom(-40, 60))
+		{
+			if(Handler.Effects.Size()>0)
+				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
+			RandAngle *= .7;
 		}
 	}
 }
