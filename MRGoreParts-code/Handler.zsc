@@ -843,28 +843,28 @@ Class MRGP_Handler: EventHandler
 					}
 					//Dripping blood
 					if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact){
-					Bool Drop = false;
+						Bool Drop = false;
+						Vector3 Home = LevelLocals.Vec3Diff(e.Thing.Pos, e.Inflictor.Pos);
+
+						Home.X *= Abs(Cos(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+						Home.Y *= Abs(Sin(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+						Home.Z += 5;
+						Home.XY *= CFRandom(.5, 1);
+						Home.XY += (CFRandom(-1, 1), CFRandom(-1, 1));
+									
 						For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
 							Float Dist = 1;
 							if(e.DamageSource)Dist *= 1+(MRGParts.MRDistance3D(e.Inflictor, e.DamageSource)-80)*.0025;
 							Float Size = CFRandom(.8, 1.6)*Dist;
-							Float Pitch = e.Inflictor.Pos.Z/e.Thing.Height+CRandom(10, 20);
 							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Pitch = e.DamageSource.Pitch+CRandom(10, 20);
-							Float Ang = CRandom(175, 185);
-							Float Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
-							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
-							Vector3 Ofst = (Actor.AngleToVector(Angle, 1)*abs(Cos(Pitch)), Sin(Pitch))*Dist;
-									
-							Ang = CRandom(140, 220)*Dist;
-							Angle = e.Inflictor.AngleTo(e.Thing)+Ang;
-							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Angle = e.Inflictor.AngleTo(e.DamageSource)+180+Ang;
+
 							Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
 							Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 							if(!Drop){//Spot
-								Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.inflictor.pos + (Ofst.XY*2, 5), Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
+								Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
 								Drop = true;
 							}
-							e.Inflictor.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow, CRandom(29, 40), Size*1.3, 0, Ofst.X*2,Ofst.Y*2,5,
+							e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
 									0,0,CFRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
 						}
 					}
