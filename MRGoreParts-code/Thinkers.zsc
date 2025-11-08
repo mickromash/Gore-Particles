@@ -74,7 +74,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 	Bool Sos, Artery, Draw;
 	Float Mid, RandAngle;
 	Actor Owner;
-	int Age, Fuzzy;
+	int Age, Fuzzy, Glow;
 		
 	Override Void PostBeginPlay()
 	{
@@ -130,13 +130,39 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		{
 			Float Strn = CRandom(3, 5);
 			Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-RandAngle, RandAngle), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
-			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
+			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
 			S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 		}
 		if(Age<CRandom(-40, 60))
 		{
 			if(Handler.Effects.Size()>0)
-				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
+				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
+			
+			//Dripping blood
+			Bool Drop = false;
+			Vector3 Home = Owner.Pos;
+			Home.XY += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
+			Home.Z += Y*.9+5;
+			
+			Vector3 Vel;
+			Vel.XY = Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)+CFRandom(-40, 40), CFRandom(2, 4));
+			Vel.Z = CFRandom(.5, 2);
+			
+			Float Amount = MRGoreParts_Amount;
+			
+			For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
+				Float Size = CFRandom(.8, 1.6);
+
+				Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
+				Color ColTmp = Color(int(Bld.R*Bright), int(Bld.G*Bright), int(Bld.B*Bright));
+				if(!Drop){//Spot
+					Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
+					Drop = true;
+				}
+				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0), CRandom(29, 40), Size*1.3, 0, 1,0,Y*.9+5,
+						Vel.X,Vel.Y,Vel.Z, 0,0,-1, 1, 0, -Size/40);
+			}
+			
 			RandAngle *= .7;
 		}
 	}
@@ -229,10 +255,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		if(!TickCheck())Return;
 		
 		if(RandX.Size()<1){Destroy();Return;}
-		
-		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-		else Glow = 0;
-		
+				
 		if(CurSector.CenterFloor()>=CurSector.CenterCeiling()-8){
 			
 			if(Opened){//When the ceiling reaches the floor, leave some drops on the floor
