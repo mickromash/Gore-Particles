@@ -719,6 +719,156 @@ Class MRGP_Handler: EventHandler
 			}
 		}
 	}
+	
+	Void SpawnBloodDrop(Actor mo, Color Col)//Mainly for hdest
+	{
+		if(!MRGoreParts_Draw)Return;
+		
+		Float TempGrav = .3;
+		
+		For(int i=CRandom(0, 3);i<5;i++)
+			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
+		
+		int Delay = 1;
+		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
+		{
+			TempGrav += abs(.3);
+			Delay++;
+		}
+		
+		Let a = MRGP_Spot.MRGSpawnSpot(Col, (mo.pos.x+CFRandom(-1, 1), mo.pos.y+CFRandom(-1, 1), mo.floorz+1), 150, Delay, 1, CFRandom(2, 4), CFRandom(.8, .9));
+	}
+	
+	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
+	{
+		if(!MRGoreParts_Draw)Return;
+		
+		mo.A_StartSound(GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_GibSndVol);
+		
+		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
+		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (mo.GetRenderStyle() == STYLE_OptFuzzy||mo.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
+		
+		int Flags;
+		if(BldFlags.CheckKey(mo.GetClassName()))Flags = BldFlags.Get(mo.GetClassName());
+		int Glow = 0;
+		if(Flags&GPBCF_Glow||SPF_FullBright)Glow = SGPF_Glow;
+		
+		Color Col = mo.BloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		else
+		{
+			if(mo.BloodColor==0 && mo.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			if(BldCols.CheckKey(mo.GetClassName()))Col = BldCols.Get(mo.GetClassName());
+		}
+		
+		Let Plr = Players[ConsolePlayer].Camera;
+		Bool Draw = true;
+		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2;
+		
+		Float Amount = MRGoreParts_Amount;
+		
+		GibsTime.Push(0);
+		
+		Float Angle = CRandom(0, 360);
+		
+		if(Inflictor)Angle = mo.AngleTo(Inflictor)+CRandom(-60, 60);
+		
+		if(Draw){
+			Double Size = mo.Height;
+			if(mo.Height<mo.Radius)Size = mo.Radius;
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy|Glow, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
+		
+			For(int i=CRandom(0, 4)*Amount;i<Amount*12;i++)
+			{
+				if(Effects.Size()>0)
+					Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy|Glow, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
+						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
+			}
+			
+			if(MRGoreParts_FloorSplash)For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<40*MRGoreParts_Amount;i++){//Floor splash
+				Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
+				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
+				Size *= .04;
+				Size *= CFRandom(.5, 1.5);
+				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy|(Glow?SPF_FULLBRIGHT:0), SPF_RELATIVE, 100, Size, CRandom(0, 360),
+					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, MRGoreParts_Alpha, 0, -(Size/100.));
+				}
+		}
+				
+		if(MRGoreParts_DrawFlyingBlood){
+			int SAmount;
+			For(int i=CRandom(0, 3);i<12*MRGoreParts_FlyingBloodChance;i++)
+			{
+				if(SAmount>5*Amount)Break;
+				Float Strn = CRandom(5, 7);
+				Float Pitch = -CRandom(40, 90);
+				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
+				MRGP_FlyingBlood.Create(mo.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
+				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
+				SAmount++;
+			}
+		}
+		
+	}
+	
+	Void DoOtherBlood(Actor mo)//Remove or hide other mods gore
+	{
+		Color Col = Gameinfo.DefaultBloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		
+		String HDBld = 'HDBloodTrailFloor';
+		if((Class<Actor>)(HDBld))
+		{
+			if(mo is HDBld)
+			{
+				Double Alph = CFRandom(.8, 1);
+				mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
+					0,0,0, 0,0,0, Alph, Alph/100.);
+				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
+				Return;
+			}
+			
+			HDBld = 'BloodSplat';
+			String HDBld2 = 'HDMasterBlood';
+			if(mo is HDBld2||mo is HDBld)
+			{
+				String Sheild = 'HDMagicShield';
+				if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
+				
+				if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
+				SpawnBloodDrop(mo, Col);
+				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
+				Return;
+			}
+		}
+		
+		if(MRGoreParts_Draw && MRGoreParts_Quake2 && Players[ConsolePlayer].Camera){
+			
+			int Glow = 0;
+			if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+			For(Int i=CRandom(0, 3);i<9*MRGoreParts_Amount;i++)
+			{
+				Float Bright = MRGoreParts_Brightness*CFrandom(.8, 1.5);
+				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel|Glow, 25, CFRandom(1.5, 2.5)*MRGoreParts_Size, mo.AngleTo(Players[ConsolePlayer].Camera),
+					Xoff:CFRandom(-1.5, 1.5),CFRandom(-1.5, 1.5),CFRandom(4, 7), .1*MRGoreParts_Speed,0,.5*MRGoreParts_Speed, 0,0, -.05*MRGoreParts_Size*MRGoreParts_Speed);
+			}
+		}
+		
+		if(MRGoreParts_OnlyModsBlood){mo.Destroy();Return;}
+		
+		mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
+	}
 		
 	////
 	//// EVENTS
@@ -728,147 +878,145 @@ Class MRGP_Handler: EventHandler
 	{
 		if(!MRGoreParts_Draw)Return;
 		
-		if(e.Thing.bIsMonster||e.Thing is 'PlayerPawn'||e.Thing.bCorpse)
+		if(!e.Thing.bIsMonster && !(e.Thing is 'PlayerPawn') && !e.Thing.bCorpse)Return;
+		
+		if((e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters) || (MRGoreParts_BlacklistOn && BlackList.Find(e.Thing.GetClass())!=BlackList.Size()))
 		{
-			if((e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters) || (MRGoreParts_BlacklistOn && BlackList.Find(e.Thing.GetClass())!=BlackList.Size()))
+			SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);//Special effects for non bleeding actors
+			Return;
+		}
+		
+		if(MRGoreParts_BlacklistOn)
+			For(int i=0;i<BlackList.Size();i++){
+				if(e.Thing is BlackList[i]){SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);Return;}
+			}
+		
+		/*if(MRGoreParts_Debug){
+			String Damage = "";
+			if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
+			if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
+			if(e.DamageFlags&DMG_INFLICTOR_IS_PUFF)Damage = Damage.."IsPuff|";
+			Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
+			if(e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
+			if(e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
+		}*/
+		
+		String HDest = 'HDOperator';
+		if((Class<Actor>)(HDest))
+		{
+			String Armour = "HDArmourWorn";
+			if(e.DamageType == 'bashing' && e.Thing.CountInv(Armour))
 			{
-				SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);//Special effects for non bleeding actors
+				SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle, e.DamageSource, true);
 				Return;
 			}
+			if(e.DamageType != 'piercing' && e.DamageType != 'bleedout')Return;
+		}
+		
+		Float Amount = MRGoreParts_Amount;
 			
-			if(MRGoreParts_BlacklistOn)
-				For(int i=0;i<BlackList.Size();i++){
-					if(e.Thing is BlackList[i]){SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);Return;}
-				}
-			
-			/*if(MRGoreParts_Debug){
-				String Damage = "";
-				if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
-				if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
-				if(e.DamageFlags&DMG_INFLICTOR_IS_PUFF)Damage = Damage.."IsPuff|";
-				Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
-				if(e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
-				if(e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
-			}*/
-			
-			String HDest = 'HDOperator';
-			if((Class<Actor>)(HDest))
-			{
-				String Armour = "HDArmourWorn";
-				if(e.DamageType == 'bashing' && e.Thing.CountInv(Armour))
-				{
-					SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle, e.DamageSource, true);
-					Return;
-				}
-				if(e.DamageType != 'piercing' && e.DamageType != 'bleedout')Return;
-			}
-			
-			Float Amount = MRGoreParts_Amount;
+		Color Col = e.Thing.BloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		else
+		{
+			if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
+		}
+		
+		int Flags;
+		if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
+		
+		int Glow = 0;
+		if(Flags&GPBCF_Glow||MRGoreParts_FullBright)Glow = SGPF_Glow;
+		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
+		
+		
 				
-			Color Col = e.Thing.BloodColor;
-			if(MRGoreParts_UseCustomColor)
-			{
-				Col = MRGoreParts_Color;
-			}
-			else
-			{
-				if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
-				if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
-			}
+		
+		if(e.DamageType == 'bleedout')
+		{
+			Vector3 Pos = (Actor.AngleToVector(e.Thing.Angle + CFRandom(-90, 90), e.Thing.Radius*.7), CRandom(e.Thing.Height*.25, e.Thing.Height*.7));
 			
-			int Flags;
-			if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
-			
-			int Glow = 0;
-			if(Flags&GPBCF_Glow)Glow = SGPF_Glow;
-			
-			int Fuzzy = 0;
-			if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
-			
-			
-					
-			
-			if(e.DamageType == 'bleedout')
-			{
-				Vector3 Pos = (Actor.AngleToVector(e.Thing.Angle + CFRandom(-90, 90), e.Thing.Radius*.7), CRandom(e.Thing.Height*.25, e.Thing.Height*.7));
-				
-				For(int i=CRandom(0, 2);i<4;i++)
-					e.Thing.A_SpawnParticle(Col, Glow?SPF_FULLBRIGHT:0, 20, CFRandom(2, 3), 0, Pos.X,Pos.Y,Pos.Z+.1*i,
-						0,0,0, 0,0,-.3);
-				MRGP_Effect.SpawnEffect('MRGP_Effect_SimpleSplash', e.Thing, Glow, e.DamageAngle, 0, Col, 1, .6, 1, Pos);
-			}
-			
-			if(e.Inflictor)
-			{
-				//Console.Printf("\cdHealth: \c-"..e.Thing.Health.." \cgDamage: \c-"..e.Damage);
-				//Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
-				
-				if(MRGoreParts_Wounds && !PlayerPawn(e.Thing) && (Wounded.Find(e.Thing)!=Wounded.Size() || Wounded.Size()<MRGoreParts_MaxWounded) && e.DamageType != 'bleedout' && CRandom(0, 10)>4)
-				{
-					SpawnWound(e.Thing, e.Inflictor, e.DamageSource, Col);
+			For(int i=CRandom(0, 2);i<4;i++)
+				e.Thing.A_SpawnParticle(Col, Glow?SPF_FULLBRIGHT:0, 20, CFRandom(2, 3), 0, Pos.X,Pos.Y,Pos.Z+.1*i,
+					0,0,0, 0,0,-.3);
+			MRGP_Effect.SpawnEffect('MRGP_Effect_SimpleSplash', e.Thing, Glow, e.DamageAngle, 0, Col, 1, .6, 1, Pos);
+		}
+		
+		if(!e.Inflictor)Return;
+
+		//Console.Printf("\cdHealth: \c-"..e.Thing.Health.." \cgDamage: \c-"..e.Damage);
+		//Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
+		
+		if(MRGoreParts_Wounds && !PlayerPawn(e.Thing) && (Wounded.Find(e.Thing)!=Wounded.Size() || Wounded.Size()<MRGoreParts_MaxWounded) && e.DamageType != 'bleedout' && CRandom(0, 10)>4)
+		{
+			SpawnWound(e.Thing, e.Inflictor, e.DamageSource, Col);
+		}
+		
+		if(e.Inflictor == e.Thing)Return;
+		
+		if(!e.DamageSource)Return;
+		
+		//Spawn effects
+		Double Pitch = 0;
+		if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
+		else if(e.DamageSource)Pitch = e.Inflictor.PitchTo(e.DamageSource, 0, e.DamageSource.Height*.9);
+		
+		Let Spot = e.Inflictor;
+		Double VOfst = 0;
+		Double DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
+
+		if(MRGParts.MRDistance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
+		
+		
+		if(Effects.Size()>0)
+			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
+		For(int i=0;i<AlwaysEffects.Size();i++)
+		{
+			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
+		}
+		
+		if(CRandom(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
+		e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_HitSndVol*MRGoreParts_SndVol);
+
+
+		if(MRGoreParts_DrawFlyingBlood && CFRandom(0, 1)<MRGoreParts_FlyingBloodChance)
+		{
+			Float Strn = CRandom(4, 6);
+			Float Pitch = -CRandom(0, 60);
+			Vector3 Vel = (Actor.AngleToVector(e.Inflictor.AngleTo(e.DamageSource)+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
+			MRGP_FlyingBlood.Create(e.Inflictor.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
+			S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
+		}
+		//Dripping blood
+		if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact){
+			Bool Drop = false;
+			Vector3 Home = LevelLocals.Vec3Diff(e.Thing.Pos, e.Inflictor.Pos);
+
+			Home.X *= Abs(Cos(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+			Home.Y *= Abs(Sin(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
+			Home.Z += 5;
+			Home.XY *= CFRandom(.5, 1);
+			Home.XY += (CFRandom(-1, 1), CFRandom(-1, 1));
+						
+			For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
+				Float Dist = 1;
+				if(e.DamageSource)Dist *= 1+(MRGParts.MRDistance3D(e.Inflictor, e.DamageSource)-80)*.0025;
+				Float Size = CFRandom(.8, 1.6)*Dist;
+
+				Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
+				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+				if(!Drop){//Spot
+					Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
+					Drop = true;
 				}
-				
-				if(e.Inflictor != e.Thing)//Spawn effects
-				{
-					if(!e.DamageSource)Return;
-					Double Pitch = 0;
-					if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
-					else if(e.DamageSource)Pitch = e.Inflictor.PitchTo(e.DamageSource, 0, e.DamageSource.Height*.9);
-					
-					Let Spot = e.Inflictor;
-					Double VOfst = 0;
-					Double DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
-
-					if(MRGParts.MRDistance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
-					
-					
-					if(Effects.Size()>0)
-						Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
-					For(int i=0;i<AlwaysEffects.Size();i++)
-					{
-						AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
-					}
-					
-					if(CRandom(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
-					e.Inflictor.A_StartSound(HitSound, CHAN_AUTO, Volume:MRGoreParts_HitSndVol*MRGoreParts_SndVol);
-
-
-					if(MRGoreParts_DrawFlyingBlood && CFRandom(0, 1)<MRGoreParts_FlyingBloodChance)
-					{
-						Float Strn = CRandom(4, 6);
-						Float Pitch = -CRandom(0, 60);
-						Vector3 Vel = (Actor.AngleToVector(e.Inflictor.AngleTo(e.DamageSource)+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
-						MRGP_FlyingBlood.Create(e.Inflictor.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
-						S_StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
-					}
-					//Dripping blood
-					if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact){
-						Bool Drop = false;
-						Vector3 Home = LevelLocals.Vec3Diff(e.Thing.Pos, e.Inflictor.Pos);
-
-						Home.X *= Abs(Cos(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
-						Home.Y *= Abs(Sin(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
-						Home.Z += 5;
-						Home.XY *= CFRandom(.5, 1);
-						Home.XY += (CFRandom(-1, 1), CFRandom(-1, 1));
-									
-						For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
-							Float Dist = 1;
-							if(e.DamageSource)Dist *= 1+(MRGParts.MRDistance3D(e.Inflictor, e.DamageSource)-80)*.0025;
-							Float Size = CFRandom(.8, 1.6)*Dist;
-							if(e.Inflictor is 'BulletPuff' && e.DamageSource)Pitch = e.DamageSource.Pitch+CRandom(10, 20);
-
-							Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
-							Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-							if(!Drop){//Spot
-								Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
-								Drop = true;
-							}
-							e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
-									0,0,CFRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
-						}
-					}
-				}
+				e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
+						0,0,CFRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
 			}
 		}
 	}
@@ -906,6 +1054,11 @@ Class MRGP_Handler: EventHandler
 			a.PostBeginPlay();
 			a.Bld = Col;
 			a.Artery = Max(0, CRandom(-5, 2));
+			
+			int Flags;
+			if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
+			
+			if(Flags&GPBCF_Glow||MRGoreParts_FullBright)a.Glow = SGPF_Glow;
 			
 			if(Dyings.Size()>=MRGoreParts_MaxDying)
 			{
@@ -993,6 +1146,10 @@ Class MRGP_Handler: EventHandler
 		
 		Nerd.Pos = e.Thing.Pos.XY;
 		Nerd.Bld = Col;
+		int Flags;
+		if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
+		
+		if(Flags&GPBCF_Glow||MRGoreParts_FullBright)Nerd.Glow = SGPF_Glow;
 		
 		Nerd.RenderStyle = Fuzzy;
 		Nerd.CurSector = Crusher;
@@ -1049,152 +1206,6 @@ Class MRGP_Handler: EventHandler
 		
 		//Console.Printf(e.Thing.GetClassName());
 	}
-		
-	Void SpawnBloodDrop(Actor mo, Color Col)//Mainly for hdest
-	{
-		if(!MRGoreParts_Draw)Return;
-		
-		Float TempGrav = .3;
-		
-		For(int i=CRandom(0, 3);i<5;i++)
-			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
-		
-		int Delay = 1;
-		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
-		{
-			TempGrav += abs(.3);
-			Delay++;
-		}
-		
-		Let a = MRGP_Spot.MRGSpawnSpot(Col, (mo.pos.x+CFRandom(-1, 1), mo.pos.y+CFRandom(-1, 1), mo.floorz+1), 150, Delay, 1, CFRandom(2, 4), CFRandom(.8, .9));
-	}
-	
-	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
-	{
-		if(!MRGoreParts_Draw)Return;
-		
-		mo.A_StartSound(GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_GibSndVol);
-		
-		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
-		
-		int Fuzzy = 0;
-		if(MRGoreParts_FuzzyBlood && (mo.GetRenderStyle() == STYLE_OptFuzzy||mo.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
-		
-		Color Col = mo.BloodColor;
-		if(MRGoreParts_UseCustomColor)
-		{
-			Col = MRGoreParts_Color;
-		}
-		else
-		{
-			if(mo.BloodColor==0 && mo.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
-			if(BldCols.CheckKey(mo.GetClassName()))Col = BldCols.Get(mo.GetClassName());
-		}
-		
-		Let Plr = Players[ConsolePlayer].Camera;
-		Bool Draw = true;
-		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2;
-		
-		Float Amount = MRGoreParts_Amount;
-		
-		GibsTime.Push(0);
-		
-		Float Angle = CRandom(0, 360);
-		
-		if(Inflictor)Angle = mo.AngleTo(Inflictor)+CRandom(-60, 60);
-		
-		if(Draw){
-			Double Size = mo.Height;
-			if(mo.Height<mo.Radius)Size = mo.Radius;
-			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
-		
-			For(int i=CRandom(0, 4)*Amount;i<Amount*12;i++)
-			{
-				if(Effects.Size()>0)
-					Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
-						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
-			}
-			
-			if(MRGoreParts_FloorSplash)For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<40*MRGoreParts_Amount;i++){//Floor splash
-				Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
-				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
-				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
-				Size *= .04;
-				Size *= CFRandom(.5, 1.5);
-				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 100, Size, CRandom(0, 360),
-					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, MRGoreParts_Alpha, 0, -(Size/100.));
-				}
-		}
-				
-		if(MRGoreParts_DrawFlyingBlood){
-			int SAmount;
-			For(int i=CRandom(0, 3);i<12*MRGoreParts_FlyingBloodChance;i++)
-			{
-				if(SAmount>5*Amount)Break;
-				Float Strn = CRandom(5, 7);
-				Float Pitch = -CRandom(40, 90);
-				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
-				MRGP_FlyingBlood.Create(mo.Pos, Col, Fuzzy, Scale:4*CFRandom(1, 2), Vel:Vel);
-				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
-				SAmount++;
-			}
-		}
-		
-	}
-	
-	Void DoOtherBlood(Actor mo)//Remove or hide other mods gore
-	{
-		Color Col = Gameinfo.DefaultBloodColor;
-		if(MRGoreParts_UseCustomColor)
-		{
-			Col = MRGoreParts_Color;
-		}
-		
-		String HDBld = 'HDBloodTrailFloor';
-		if((Class<Actor>)(HDBld))
-		{
-			if(mo is HDBld)
-			{
-				Double Alph = CFRandom(.8, 1);
-				mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
-					0,0,0, 0,0,0, Alph, Alph/100.);
-				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
-				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
-				Return;
-			}
-			
-			HDBld = 'BloodSplat';
-			String HDBld2 = 'HDMasterBlood';
-			if(mo is HDBld2||mo is HDBld)
-			{
-				String Sheild = 'HDMagicShield';
-				if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
-				
-				if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
-				SpawnBloodDrop(mo, Col);
-				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
-				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
-				Return;
-			}
-		}
-		
-		if(MRGoreParts_Draw && MRGoreParts_Quake2 && Players[ConsolePlayer].Camera){
-			
-			int Glow = 0;
-			if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-			For(Int i=CRandom(0, 3);i<9*MRGoreParts_Amount;i++)
-			{
-				Float Bright = MRGoreParts_Brightness*CFrandom(.8, 1.5);
-				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel|Glow, 25, CFRandom(1.5, 2.5)*MRGoreParts_Size, mo.AngleTo(Players[ConsolePlayer].Camera),
-					Xoff:CFRandom(-1.5, 1.5),CFRandom(-1.5, 1.5),CFRandom(4, 7), .1*MRGoreParts_Speed,0,.5*MRGoreParts_Speed, 0,0, -.05*MRGoreParts_Size*MRGoreParts_Speed);
-			}
-		}
-		
-		if(MRGoreParts_OnlyModsBlood){mo.Destroy();Return;}
-		
-		mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
-	}
-	
 
 	
 	Override Void NetworkProcess(ConsoleEvent e)
