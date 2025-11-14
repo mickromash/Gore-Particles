@@ -139,6 +139,9 @@ Class MRGP_DeathThinker: MRGP_Thinker
 				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
 			
 			//Dripping blood
+			if(!MRGoreParts_DeathSpots)Return;
+			if(CRandom(0, 10)>4)Return;
+			
 			Bool Drop = false;
 			Vector3 Home = Owner.Pos;
 			Home.XY += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
