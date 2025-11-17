@@ -1,0 +1,41 @@
+[eng en enu default]
+
+MRGoreParts_DrawTip = "Turns on/off all mod's functions.";
+MRGoreParts_MaxDyingTip = "Maximum amount of monsters with dying splashes at once. When the limit is reached, the longest dying monster will stop spawn splashes.";
+MRGoreParts_MaxGibingTip = "Maximum gibbing effects. When the limit is reached, new gibbing effects won't appear.";
+MRGoreParts_FloorSplashTip = "Wave of blood on the floor appearing on gibbing.";
+MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reached, the longest remains will fall from the ceiling.";
+MRGoreParts_CheckLimitTip = "A green particle will appear on the screen. When the particles will hit the amount limit, it will dissapear, or will start flickering. It works from time to time tho.";
+GLLIGHTMNU_LIGHTPARTICLESTip = "Dynamic lighting affecting particles. Turning this option off, may increase performance a lot, especially on mobile devices.";
+
+//Spawn menu
+MRGoreParts_OnlyModsBloodTip = "Blood effects (actors) from other mods will be removed on spawn.\n\cgTurn off this option before playing with people that don't use this mod.";
+MRGoreParts_HideOtherBloodTip = "Blood effects (actors) from other mods will be hidden on spawn. Some blood actors, mainly spots may still appear.";
+MRGoreParts_BloodTypesTip = "Blood effects (actors) specific for some monsters will be included in remove/hide list. Turn this option on if playing with HFE mod.";
+
+MRGoreParts_Quake2Tip = "Spawn small Quake 1-style particles splash on any damage appearance. Useful for shootable corpses from other mods.";
+
+MRGoreParts_NoBloodMonstersTip = "Spawn blood effects for monsters that are not supposed to bleed. Blacklisted monsters won't bleed anyway.";
+MRGoreParts_BlacklistTip = "Type class (actor) names of the monsters you don't want to bleed.\n\cgDefault:\c-\nLostSoul, Revenant.";
+MRGoreParts_NoBloodMistTip = "Spawn dust effect when the non-bleeding monster is hit.";
+
+[ru]
+
+MRGoreParts_DrawTip = "Включить/выключить все функции мода.";
+MRGoreParts_MaxDyingTip = "Максимальное кол-во монстров брыжащих кровью при смерти. Когда лимит достигнут, наиболее старый монстр перестанет кровоточить.";
+MRGoreParts_MaxGibingTip = "Максимальное кол-во эффектов от разноса монстра. Когда лимит достигнут, при разносе нового монстра эффекты не появятся.";
+MRGoreParts_FloorSplashTip = "Кровавая волна идущая по полу при разносе монстра.";
+MRGoreParts_CrushTip = "Максимальное кол-во останков от раздавленных монстров. Когда лимит достигунт, наиболее старые останку упадут с потолка.";
+MRGoreParts_CheckLimitTip = "На экране появится зелённая точка. Если она пропадёт, значит лимит частиц был достигнут. Впрочем, работает она не идеально.";
+GLLIGHTMNU_LIGHTPARTICLESTip = "Влияние динамического освещения на частицы. Отключение данной опции может значительно повысить производительность, особенно на мобильных устройствах.";
+
+//Spawn menu
+MRGoreParts_OnlyModsBloodTip = "Кровавые эффекты (акторы) из других модов будут удаляться при появлении.\n\cgОтключите эту опцию если собираетесь играть с людьми не использующими этот мод.";
+MRGoreParts_HideOtherBloodTip = "Кровавые эффекты (акторы) из других модов будут скрываться при появлении. Некоторые акторы, в основном кровавые лужи, всё ещё могут появляться.";
+MRGoreParts_BloodTypesTip = "Кровавые эффекты (акторы) уникальные для некоторых монстров будут удаляться/скрываться при появлении. Включите данную опцию при игре с HFE.";
+
+MRGoreParts_Quake2Tip = "При любом нанесении урона будут появляться небольшие всплески как в Quake 1. Данная опция полезна для расчленяемых трупов из разных модов (например Nashgore Next или Universal Gibs).";
+
+MRGoreParts_NoBloodMonstersTip = "Включить кровь для монстров которые не должны кровоточить. Монстры из чёрного списка не включены.";
+MRGoreParts_BlacklistTip = "Впишите названия акторов монстров которые не должны кровоточить.\n\cgПо умолчанию:\c-\nLostSoul, Revenant.";
+MRGoreParts_NoBloodMistTip = "При нанесении урона некровоточащим монстрам, будет появляться облако пыли.";

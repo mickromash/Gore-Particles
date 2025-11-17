@@ -7,9 +7,14 @@ AddOptionMenu "OptionsMenu"
 
 OptionMenu "MRGoreParts_Menu"
 {
+	class TF_TooltipOptionMenu
+	TooltipGeometry 0, .5, .25, 0.5, 1, 1.2
+	TooltipAppearance "ConFont", "white", "tfttbg"
+	
 	Title "$MRGoreParts_Settings"
 	StaticText ""
 	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
+	Tooltip "$MRGoreParts_DrawTip"
 	StaticText ""
 	SubMenu "$MRGoreParts_BloodSpawnMenu", "MRGoreParts_BloodSpawnMenu"
 	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
@@ -21,48 +26,65 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	Option "$MRGoreParts_LiteDistance", "MRGoreParts_LiteDistance", "YesNo"
 	StaticText "$MRGoreParts_LiteDistanceText", "Fire"
+	Tooltip ""
 	Slider "$MRGoreParts_MaxDying", "MRGoreParts_MaxDying", 0, 30, 1, 0
+	Tooltip "$MRGoreParts_MaxDyingTip"
 	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1, 0
+	Tooltip "$MRGoreParts_MaxGibingTip"
 	Option "$MRGoreParts_FloorSplash", "MRGoreParts_FloorSplash", "OnOff", "MRGoreParts_MaxGibing", 1, 0
+	Tooltip "$MRGoreParts_FloorSplashTip"
 	Slider "$MRGoreParts_Crush", "MRGoreParts_Crush", 0, 30, 1, 0
+	Tooltip "$MRGoreParts_CrushTip"
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
 	StaticText ""
+	Tooltip ""
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
 	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
+	Tooltip "$MRGoreParts_CheckLimitTip"
 	StaticText ""
 	SafeCommand "$MRGoreParts_Uninstall", "NetEvent MRGoreParts_Uninstall", "$MRGoreParts_UninstallPromt"
 	StaticText ""
 	StaticText "--------------- GZDoom ---------------"
 	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 100, 10000, 300, 0
-	StaticText "$MRGoreParts_Tip2", "Fire"
-	StaticText "$MRGoreParts_Tip3", "Fire"
+	StaticText "$MRGoreParts_Text2", "Fire"
 	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
+	Tooltip ""
 	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
+	Tooltip "$GLLIGHTMNU_LIGHTPARTICLESTip"
 }
 
 
 OptionMenu "MRGoreParts_BloodSpawnMenu"
 {
+	class TF_TooltipOptionMenu
+	TooltipGeometry 0, .5, .25, 0.5, 1, 1.2
+	TooltipAppearance "ConFont", "white", "tfttbg"
+	
 	Title "$MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
+	Tooltip "$MRGoreParts_OnlyModsBloodTip"
 	Option "$MRGoreParts_HideOtherBlood", "MRGoreParts_HideOtherBlood", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 1
-	StaticText "$MRGoreParts_OnlyModsBloodText", "Fire"
+	Tooltip "$MRGoreParts_HideOtherBloodTip"
 	Option "$MRGoreParts_BloodTypes", "MRGoreParts_BloodTypes", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 0
-	StaticText "$MRGoreParts_BloodTypesText", "Fire"
+	Tooltip "$MRGoreParts_BloodTypesTip"
 	StaticText ""
 	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
-	StaticText "$MRGoreParts_Quake2Text", "Fire"
-	StaticText "$MRGoreParts_Quake2Text2", "Fire"
+	Tooltip "$MRGoreParts_Quake2Tip"
 	StaticText ""
 	StaticText ""
 	StaticText "$MRGoreParts_MenuNoBloodTitle", "Gold"
+	ToolTip ""
 	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
+	Tooltip "$MRGoreParts_NoBloodMonstersTip"
 	TextField "$MRGoreParts_Blacklist", "MRGoreParts_Blacklist"
+	Tooltip "$MRGoreParts_BlacklistTip"
 	Option "$MRGoreParts_BlacklistOn", "MRGoreParts_BlacklistOn", "OnOff"
 	Command "$MRGP_UpdateBlacklist", "NetEvent MRGP_UpdateBlacklist"
+	Tooltip ""
 	Option "$MRGoreParts_NoBloodMist", "MRGoreParts_NoBloodMist", "OnOff"
 	ColorPicker "$MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMist"
+	Tooltip "$MRGoreParts_NoBloodMistTip"
 	Slider "$MRGoreParts_NoBloodSndVol", "MRGoreParts_NoBloodSndVol", 0, 1, .1, 1, "MRGoreParts_NoBloodMist"
 	StaticText ""
 }
@@ -77,7 +99,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Slider "$MRGoreParts_Gravity", "MRGoreParts_Gravity", 0, 3, .2, 2
 	StaticText ""
 	Option "$MRGoreParts_LowAlpha", "MRGoreParts_LowAlpha", "YesNo"
-	StaticText "$MRGoreParts_LowAlphaTip", "Fire"
+	StaticText "$MRGoreParts_LowAlphaText", "Fire"
 	StaticText ""
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "OnOff"
@@ -98,7 +120,7 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 	Option "$MRGoreParts_FullBright", "MRGoreParts_FullBright", "YesNo"
 	StaticText ""
 	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
-	StaticText "$MRGoreParts_FuzzyBloodTip", "Fire"
+	StaticText "$MRGoreParts_FuzzyBloodText", "Fire"
 	StaticText ""
 	StaticText "$MRGoreParts_Sound", "Gold"
 	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .05, 2

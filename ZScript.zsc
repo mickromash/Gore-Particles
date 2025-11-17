@@ -134,6 +134,9 @@ Struct MRGParts
 #include "MRGoreParts-code/Wounds.zsc"
 #include "MRGoreParts-code/Menu.zsc"
 
+#include "ca.ancilla-(DontOverrideMePls)/TooltipOptionMenu.zsc"
+#include "ca.ancilla-(DontOverrideMePls)/Tooltips.zsc"
+
 Const MRGPCommLine = "//";
 Const MRGPCommStart = "/*";
 Const MRGPCommEnd = "*/";

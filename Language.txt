@@ -43,7 +43,7 @@ MRGoreParts_Size = "Particles sizes";
 MRGoreParts_Distance = "Effects scale by distance";
 
 MRGoreParts_LowAlpha = "Minimize alpha channel usage";
-MRGoreParts_LowAlphaTip = "Improves performance by minimizing particles Transparency";
+MRGoreParts_LowAlphaText = "Improves performance by minimizing particles Transparency";
 
 MRGoreParts_Speed = "Particles speed/lifetime";
 MRGoreParts_Gravity = "Particles gravity";
@@ -81,7 +81,7 @@ MRGoreParts_Brightness = "Blood brightness";
 MRGoreParts_Alpha = "Blood opacity";
 MRGoreParts_FullBright = "Glowing blood";
 MRGoreParts_FuzzyBlood = "Fuzzy blood";
-MRGoreParts_FuzzyBloodTip = "For transparent monsters";
+MRGoreParts_FuzzyBloodText = "For transparent monsters";
 MRGoreParts_Sound = "Sound";
 MRGoreParts_SndVol = "Master gore volume";
 MRGoreParts_HitSndVol = "Hit sound volume";
@@ -150,8 +150,7 @@ MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully unistalled.";
 
 MRGoreParts_AllParticlesAmount = "All particles amount";
 
-MRGoreParts_Tip2 = "If particles amount hit the limit, new particles won't spawn";
-MRGoreParts_Tip3 = "so fully turning blood spots option on is not recomended";
+MRGoreParts_Text = "If particles amount hit the limit, new particles won't spawn";
 //}
 
 MR_GoreParticlesUi_RecS = "\cgParticle Gore\cd Recommended settings:";
@@ -212,7 +211,7 @@ MRGoreParts_Size = "Размеры частиц";
 MRGoreParts_Distance = "Увеличение эффектов на расстоянии";
 
 MRGoreParts_LowAlpha = "Минимизировать использование альфа канала";
-MRGoreParts_LowAlphaTip = "Улучшает производительность минимизируя прозрачность частиц";
+MRGoreParts_LowAlphaText = "Улучшает производительность минимизируя прозрачность частиц";
 
 MRGoreParts_Speed = "Скорость/время жизни частиц";
 MRGoreParts_Gravity = "Вес частц";
@@ -251,7 +250,7 @@ MRGoreParts_Brightness = "Яркость крови";
 MRGoreParts_Alpha = "Непрозрачность крови";
 MRGoreParts_FullBright = "Светящаяся кровь";
 MRGoreParts_FuzzyBlood = "Полупрозрачная кровь";
-MRGoreParts_FuzzyBloodTip = "Для полупрозрачных врагов";
+MRGoreParts_FuzzyBloodText = "Для полупрозрачных врагов";
 MRGoreParts_Sound = "Звук";
 MRGoreParts_SndVol = "Общая громкость крови";
 MRGoreParts_HitSndVol = "Громкость попаданий";
@@ -317,8 +316,7 @@ MRGoreParts_Uninstalled = "Gore-Particles: \cdМод успешно удалён
 
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
 
-MRGoreParts_Tip2 = "Если количество частиц превысит лимит, новые частицы перестанут появляться";
-MRGoreParts_Tip3 = "поэтому не рекомендуется включать всю кровь на поверхностях";
+MRGoreParts_Text2 = "Если количество частиц превысит лимит, новые частицы перестанут появляться";
 //}
 
 MR_GoreParticlesUi_RecS = "\cdРекомендованные настройки \cgКровавых частиц:";
