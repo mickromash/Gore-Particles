@@ -52,12 +52,10 @@ Mod TB_BloodActor//Trailblazer
 	TB_BaseBloodActor
 	TB_MainBlood
 	TB_TraditionalBlood
-	TB_BloodActor
 }
 
-Mod NashGore_Blood//XWeapons
+Mod NashGore_Blood//XWeapons, Led's mod
 {
-	NashGore_Blood
 	Nashgore_FlyingBlood
 	NashGore_FlyingBloodTrail
 	BloodSplasher

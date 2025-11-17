@@ -327,8 +327,9 @@ Class MRGP_Handler: EventHandler
 				//
 
 				int Cur, Akhtung;
+				Cur = File.IndexOf("mod ");
 
-				While(File.IndexOf("mod", Cur+1)>-1){
+				While(File.IndexOf("mod ", Cur)>-1){
 					if(Akhtung>100)Break;
 					Akhtung++;
 					
@@ -372,7 +373,7 @@ Class MRGP_Handler: EventHandler
 						}
 						
 					}
-					Cur = File.IndexOf("mod", Cur+1);
+					Cur = File.IndexOf("mod ", Cur+1);
 				}
 			}
 			Break;
@@ -440,20 +441,21 @@ Class MRGP_Handler: EventHandler
 					int End = File.IndexOf(MRGPCommEnd);
 					File = File.Left(Start)..File.Mid(End+2);
 				}
-				
-				Bool BreakAll;
+								
+				//Bool BreakAll;
 				int Cur, Akhtung;
+				Cur = File.IndexOf("mod ");
 				
-				While(File.IndexOf("mod", Cur+1)>-1){
+				While(File.IndexOf("mod ", Cur)>-1){
 					if(Akhtung>100)Break;
 					Akhtung++;
-					
+										
 					Mod = File.Mid(File.IndexOf(" ", Cur)+1);//Name of the actor from loaded mod
 					Mod = Mod.Left(Mod.IndexOf("\n"));
 					Mod.StripRight();
 
 					if((Class<Actor>)(Mod)){
-						BreakAll = true;
+						//BreakAll = true;
 						String Removes = File.Mid(File.IndexOf("{", Cur)+1);
 						Removes = Removes.Left(Removes.IndexOf("}"));//Blood actors names
 
@@ -466,7 +468,7 @@ Class MRGP_Handler: EventHandler
 							Removes = Remove;
 							Remove = Remove.Left(Remove.IndexOf("\n"));
 							Remove.StripLeftRight();
-							if((Class<Actor>)(Remove))Removin.Push(Remove);
+							if((Class<Actor>)(Remove) && Removin.Find(Remove)==Removin.Size())Removin.Push(Remove);
 						}
 						
 						if(Removin.Size()>0){
@@ -477,18 +479,19 @@ Class MRGP_Handler: EventHandler
 							}
 						}
 					}
-					Cur = File.IndexOf("mod", Cur+1);
+					Cur = File.IndexOf("mod ", Cur+1);
 				}
-				if(BreakAll)Break;
+				//if(BreakAll)Break;
 			}
 			Break;
 		}
 		if(MRGoreParts_Debug){
+			Console.Printf("\nRemove Blood:");
 			Console.Printf("\cgBase Blood: "..RemoveBloodBase);
-			Console.Printf("\cgBlood Types:");
-			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
 			Console.Printf("\cgBloods:");
 			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." \""..RemoveBloods[i].."\"");
+			Console.Printf("\cgBlood Types:");
+			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
 			Console.Printf("-----------");
 		}
 	}
