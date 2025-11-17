@@ -17,14 +17,30 @@ Class MRGP_StaticHandler: StaticEventHandler
 	{
 		Effects.Clear();
 		
+		Array<MRGP_Effect> EffectsTemp;
+		
 		For(int i=0;i<AllClasses.Size();i++)//Caching particle effects data
 		{
 			if(AllClasses[i] is 'MRGP_Effect' && !AllClasses[i].IsAbstract())
 			{
 				Let Clas = MRGP_Effect(New(AllClasses[i].GetClassName()));
-				Effects.Push(Clas);
+				EffectsTemp.Push(Clas);
 			}
 		}
+		
+		For(int i=0;i<EffectsTemp.Size();i++)
+		{
+			Let Clas = EffectsTemp[i];
+			
+			if(Clas.GetID()==-1)Continue;
+			
+			Effects.Insert(Clas.GetID(), Clas);
+			
+			EffectsTemp.Delete(i);
+			i--;
+		}
+		
+		Effects.Append(EffectsTemp);
 		
 		if(!MRGoreParts_Debug)Return;
 		
@@ -739,7 +755,7 @@ Class MRGP_Handler: EventHandler
 		Let a = MRGP_Spot.MRGSpawnSpot(Col, (mo.pos.x+CFRandom(-1, 1), mo.pos.y+CFRandom(-1, 1), mo.floorz+1), 150, Delay, 1, CFRandom(2, 4), CFRandom(.8, .9));
 	}
 	
-	Void SpawnXDeath(Actor mo, Actor inflictor = Null)
+	Void SpawnXDeath(Actor mo, Actor inflictor = Null, int damage = 0)
 	{
 		if(!MRGoreParts_Draw)Return;
 		
@@ -772,6 +788,12 @@ Class MRGP_Handler: EventHandler
 		
 		Float Amount = MRGoreParts_Amount;
 		
+		Vector3 Force;
+		if(inflictor){
+			Force.XY += Actor.AngleToVector(mo.AngleTo(inflictor), Damage/10);
+			Force.Z += Sin(mo.PitchTo(inflictor, GetDefaultByType(mo.GetClass()).Height*.5))*Damage/10;
+		}
+		
 		GibsTime.Push(0);
 		
 		Float Angle = CRandom(0, 360);
@@ -781,13 +803,13 @@ Class MRGP_Handler: EventHandler
 		if(Draw){
 			Double Size = mo.Height;
 			if(mo.Height<mo.Radius)Size = mo.Radius;
-			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy|Glow, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, 1/(mo.Mass*.1));
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy|Glow, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, Force, 1/(mo.Mass*.1));
 		
 			For(int i=CRandom(0, 4)*Amount;i<Amount*12;i++)
 			{
 				if(Effects.Size()>0)
 					Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy|Glow, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
-						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, 1/(mo.Mass*.1));
+						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, Force, 1/(mo.Mass*.1));
 			}
 			
 			if(MRGoreParts_FloorSplash)For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<40*MRGoreParts_Amount;i++){//Floor splash
@@ -809,12 +831,33 @@ Class MRGP_Handler: EventHandler
 				Float Strn = CRandom(5, 7);
 				Float Pitch = -CRandom(40, 90);
 				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
-				MRGP_FlyingBlood.Create(mo.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
+				MRGP_FlyingBlood.Create(mo.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel+Force);
 				mo.A_StartSound(SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 				SAmount++;
 			}
 		}
 		
+		if(MRGoreParts_FloorSpots){
+			For(int i=CRandom(0, 6)*MRGoreParts_Amount;i<20*MRGoreParts_Amount;i++)
+			{
+				Float Angle = CRandom(0, 360);
+				Vector3 Pos = mo.Pos;
+				Pos.XY += Actor.AngleToVector(Angle, CFRandom(0, mo.Radius*.3));
+				Pos.Z += GetDefaultByType(mo.GetClass()).Height*CFRandom(.2, 1);
+				
+				Vector3 Vel;
+				if(inflictor){
+					Vel.XY = Actor.AngleToVector(mo.AngleTo(inflictor), Damage/10);
+					Vel.Z += Sin(mo.PitchTo(inflictor, (Pos.Z-mo.Pos.Z), inflictor.Height*.5))*Damage/10;
+				}
+				Vel.XY += Actor.AngleToVector(Angle, CRandom(4, 7));
+				Vel.Z += CFRandom(-2, 3)*2;
+				
+				Float Bright = MRGoreParts_Brightness*CFRandom(.9, 1.5);
+				Color ColTemp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+				Let a = MRGP_Droplet.MRGSpawnDrop(ColTemp, Pos, Glow, Vel, (0,0,-.5), CFRandom(3, 6), Fuzzy?STYLE_Shadow:STYLE_Normal);
+			}
+		}
 	}
 	
 	Void DoOtherBlood(Actor mo)//Remove or hide other mods gore
@@ -1009,7 +1052,7 @@ Class MRGP_Handler: EventHandler
 				if(e.DamageSource)Dist *= 1+(MRGParts.MRDistance3D(e.Inflictor, e.DamageSource)-80)*.0025;
 				Float Size = CFRandom(.8, 1.6)*Dist;
 
-				Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
+				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 				if(!Drop){//Spot
 					Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
@@ -1045,7 +1088,7 @@ Class MRGP_Handler: EventHandler
 
 		if(e.Thing.FindState("XDeath") && e.Thing.Health<-GetDefaultByType(e.Thing.GetClass()).Health)
 		{
-			SpawnXDeath(e.Thing, e.Inflictor);
+			SpawnXDeath(e.Thing, e.Inflictor, e.Damage);
 		}
 		else if(MRGoreParts_MaxDying>0)
 		{
@@ -1122,7 +1165,7 @@ Class MRGP_Handler: EventHandler
 				
 		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
 		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
-		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, 1/(e.Thing.Mass*.1));
+		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, MoVel: 1/(e.Thing.Mass*.1));
 		
 		
 		For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<50*MRGoreParts_Amount;i++){//Floor splash
