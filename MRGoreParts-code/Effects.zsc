@@ -329,6 +329,7 @@ enum MRGP_EffectFlag{
 	SGPF_Fuzzy = 8,
 	SGPF_Test = 16,
 	SGPF_Glow = 32,
+	SPGF_Spots = 64,
 };
 
 Class MRGP_Effect play abstract
