@@ -73,9 +73,12 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 3, .1
 	Slider "$MRGoreParts_Size", "MRGoreParts_Size", .1, 5, .1
 	Slider "$MRGoreParts_Distance", "MRGoreParts_Distance", 0, 10, .2
+	Slider "$MRGoreParts_Speed", "MRGoreParts_Speed", .1, 3, .1
+	Slider "$MRGoreParts_Gravity", "MRGoreParts_Gravity", 0, 3, .2, 2
+	StaticText ""
 	Option "$MRGoreParts_LowAlpha", "MRGoreParts_LowAlpha", "YesNo"
 	StaticText "$MRGoreParts_LowAlphaTip", "Fire"
-	Slider "$MRGoreParts_Speed", "MRGoreParts_Speed", .1, 3, .1
+	StaticText ""
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
 	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "OnOff"
 	Slider "$MRGoreParts_FlyingBloodChance", "MRGoreParts_FlyingBloodChance", 0, 1, .05, 2, "MRGoreParts_DrawFlyingBlood"

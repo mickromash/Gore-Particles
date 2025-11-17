@@ -46,6 +46,7 @@ MRGoreParts_LowAlpha = "Minimize alpha channel usage";
 MRGoreParts_LowAlphaTip = "Improves performance by minimizing particles Transparency";
 
 MRGoreParts_Speed = "Particles speed/lifetime";
+MRGoreParts_Gravity = "Particles gravity";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_DrawFlyingBlood = "Quake gibs style blood streams";
 MRGoreParts_FlyingBloodChance = "Blood streams spawn chance";
@@ -162,6 +163,7 @@ MRGP_Effect_Sprays = "Blood sprays";
 MRGP_Effect_Mist = "Blood mist";
 MRGP_Effect_BeautifulSpray = "\"Beautiful\" blood spray";
 MRGP_Effect_CurveLine = "Curve blood spray";
+MRGP_Effect_CurveLineTorn = "Curve torn blood spray";
 MRGP_Effect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
 MRGP_Effect_Sparks = "Sparks";
 
@@ -213,6 +215,7 @@ MRGoreParts_LowAlpha = "Минимизировать использование 
 MRGoreParts_LowAlphaTip = "Улучшает производительность минимизируя прозрачность частиц";
 
 MRGoreParts_Speed = "Скорость/время жизни частиц";
+MRGoreParts_Gravity = "Вес частц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_DrawFlyingBlood = "Струи крови (как в Quake)";
 MRGoreParts_FlyingBloodChance = "Шанс появления струи";
@@ -327,5 +330,6 @@ MRGP_Effect_Sprays = "Кровавые лучи";
 MRGP_Effect_Mist = "Кровавая дымка";
 MRGP_Effect_BeautifulSpray = "Распадающаяся струя крови";
 MRGP_Effect_CurveLine = "Кривая линия крови";
+MRGP_Effect_CurveLineTorn = "Кривая прерывистая линия крови";
 MRGP_Effect_BeautifulSprayGrowing = "Распадающаяся струя крови (расширяющаяся)";
 MRGP_Effect_Sparks = "Искры";

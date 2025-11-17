@@ -19,6 +19,7 @@ nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash
 nosave float MRGoreParts_Size = 1;//Size of particles
 nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
 nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
+nosave float MRGoreParts_Gravity = 1;//Scales particles gravity
 nosave bool MRGoreParts_LowAlpha = true;//Minimize usage of alpha channel for particles
 nosave bool MRGoreParts_DripOnImpact = true;//Dripping blood on damage
 nosave bool MRGoreParts_DrawFlyingBlood = true;//Quake-like blood streams
@@ -26,7 +27,7 @@ nosave float MRGoreParts_FlyingBloodChance = .15;
 nosave int MRGoreParts_MaxFlyingBlood = 40;
 nosave int MRGoreParts_MistTexture = 0;//Blood mist texture 0 - custom, 1-3 - custom (lowres), 4 - particles
 ///Included effects menu
-nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 4";//When blood spawned, one of these effects will appear
+nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 6";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
 nosave string MRGoreParts_NoBloodEffectsList = "2 6";//Effects spawn for non bleeding actors
