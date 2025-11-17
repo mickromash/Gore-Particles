@@ -136,7 +136,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		if(Age<CRandom(-40, 60))
 		{
 			if(Handler.Effects.Size()>0)
-				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9));
+				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5));
 			
 			//Dripping blood
 			if(!MRGoreParts_DeathSpots)Return;
