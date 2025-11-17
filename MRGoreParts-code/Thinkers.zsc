@@ -156,7 +156,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
 				Float Size = CFRandom(.8, 1.6);
 
-				Float Bright = MRGoreParts_Brightness*CFrandom(.9, 2);
+				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color ColTmp = Color(int(Bld.R*Bright), int(Bld.G*Bright), int(Bld.B*Bright));
 				if(!Drop){//Spot
 					Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
