@@ -2,14 +2,14 @@
 // Released under the MIT license; see COPYING.md for details.
 //
 // To use this, declare your option menu in MENUDEF as normal, but add:
-//   class TF_TooltipOptionMenu
+//   class MRGP_TooltipOptionMenu
 // You can then use the "Tooltip", "TooltipGeometry", and "TooltipAppearance"
 // menu pseudo-items to add and configure tooltips.
 // For details, see the included README.
 
-class TF_TooltipOptionMenu : OptionMenu {
-  mixin TF_TooltipMenu;
-
+class MRGP_TooltipOptionMenu : OptionMenu {
+  mixin MRGP_TooltipMenu;
+  
   void InitDynamic(Menu parent, OptionMenuDescriptor desc) {
     desc.mItems.Clear();
     self.tooltip_settings = GetDefaults();
@@ -17,13 +17,14 @@ class TF_TooltipOptionMenu : OptionMenu {
   }
 
   override void Init(Menu parent, OptionMenuDescriptor desc) {
+
     super.Init(parent, desc);
     self.tooltip_settings = GetDefaults();
     if (desc.mItems.size() == 0) return;
-
+	
     // If there's already a TooltipHolder in tail position, we've already been
     // initialized and just need to retrieve our saved tooltips from it.
-    let tail = OptionMenuItemTooltipHolder(desc.mItems[desc.mItems.size()-1]);
+    let tail = OptionMenuItemMRGPToolTipHolder(desc.mItems[desc.mItems.size()-1]);
     if (tail) {
       tooltips.copy(tail.tooltips);
       return;
@@ -48,8 +49,8 @@ class TF_TooltipOptionMenu : OptionMenu {
     // items.
     bool tooltip_mode = true;
     for (int i = 0; i < items.size(); ++i) {
-      if (items[i] is "OptionMenuItemTooltip") {
-        let tt = OptionMenuItemTooltip(items[i]);
+      if (items[i] is "OptionMenuItemMRGPToolTip") {
+        let tt = OptionMenuItemMRGPToolTip(items[i]);
         if (tt.tooltip == "" && !tooltip_mode) {
           // Explicit marker that the above items should have no tooltips.
           startblock = desc.mItems.size();
@@ -57,10 +58,10 @@ class TF_TooltipOptionMenu : OptionMenu {
           AddTooltip(startblock, desc.mItems.size()-1, tt.tooltip);
           tooltip_mode = true;
         }
-      } else if (items[i] is "OptionMenuItemTooltipGeometry") {
-        OptionMenuItemTooltipGeometry(items[i]).CopyTo(tooltip_settings);
-      } else if (items[i] is "OptionMenuItemTooltipAppearance") {
-        OptionMenuItemTooltipAppearance(items[i]).CopyTo(tooltip_settings);
+      } else if (items[i] is "OptionMenuItemMRGPToolTipGeometry") {
+        OptionMenuItemMRGPToolTipGeometry(items[i]).CopyTo(tooltip_settings);
+      } else if (items[i] is "OptionMenuItemMRGPToolTipAppearance") {
+        OptionMenuItemMRGPToolTipAppearance(items[i]).CopyTo(tooltip_settings);
       } else {
         if (tooltip_mode) {
           // Just finished a run of tooltips.
@@ -73,7 +74,7 @@ class TF_TooltipOptionMenu : OptionMenu {
 
     // Store our tooltips inside the menu descriptor so we can recover them when
     // the menu is redisplayed.
-    desc.mItems.push(OptionMenuItemTooltipHolder(new("OptionMenuItemTooltipHolder").Init(tooltips)));
+    desc.mItems.push(OptionMenuItemMRGPToolTipHolder(new("OptionMenuItemMRGPToolTipHolder").Init(tooltips)));
 
     // Restore the originally selected item at its new index.
     if (selected) {
@@ -84,18 +85,18 @@ class TF_TooltipOptionMenu : OptionMenu {
   }
 }
 
-class OptionMenuItemTooltipHolder : OptionMenuItem {
-  mixin TF_TooltipHolder;
+class OptionMenuItemMRGPToolTipHolder : OptionMenuItem {
+  mixin MRGP_TooltipHolder;
 }
 
-class OptionMenuItemTooltip : OptionMenuItem {
-  mixin TF_TooltipItem;
+class OptionMenuItemMRGPToolTip : OptionMenuItem {
+  mixin MRGP_TooltipItem;
 }
 
-class OptionMenuItemTooltipGeometry : OptionMenuItem {
-  mixin TF_TooltipGeometry;
+class OptionMenuItemMRGPToolTipGeometry : OptionMenuItem {
+  mixin MRGP_TooltipGeometry;
 }
 
-class OptionMenuItemTooltipAppearance : OptionMenuItem {
-  mixin TF_TooltipAppearance;
+class OptionMenuItemMRGPToolTipAppearance : OptionMenuItem {
+  mixin MRGP_TooltipAppearance;
 }

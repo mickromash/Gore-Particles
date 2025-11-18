@@ -1,6 +1,6 @@
 // Common code shared between the TooltipListMenu and TooltipOptionMenu.
 
-class TF_Tooltip : Object ui {
+class MRGP_Tooltip : Object ui {
   double x, y, w, xpad, ypad, scale; // Geometry
   int first, last; // First and last menuitems this applies to
   Font font;
@@ -8,7 +8,7 @@ class TF_Tooltip : Object ui {
   TextureID texture;
   string text;
 
-  void CopyFrom(TF_Tooltip settings) {
+  void CopyFrom(MRGP_Tooltip settings) {
     self.x = settings.x;
     self.y = settings.y;
     self.w = settings.w;
@@ -44,7 +44,8 @@ class TF_Tooltip : Object ui {
     // Nominal width is the maximum width of the tooltip based on configuration
     // in the MENUDEF.
     let nominal_width = virtual_width * self.w;
-    let lines = self.font.BreakLines(self.text, nominal_width);
+	let localtooltip = Stringtable.localize(self.text);
+    let lines = self.font.BreakLines(localtooltip, nominal_width);
 
     // Calculate the real width of the tooltip. This may be less than the
     // nominal width if it's a short one-liner. This is still in virtual screen
@@ -63,7 +64,7 @@ class TF_Tooltip : Object ui {
     // including padding, in virtual screen coordinates.
     uint x = GetX(virtual_width, actual_width);
     uint y = GetY(virtual_height, actual_height);
-
+	
     // Draw the background texture, if defined. DTA_Virtual* commands it to scale
     // the virtual screen size to match the real screen; DTA_KeepRatio tells it
     // to assume the ratio of the virtual screen matches the real screen. (The
@@ -73,12 +74,12 @@ class TF_Tooltip : Object ui {
         DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
         DTA_KeepRatio, true,
         DTA_LeftOffset, 0, DTA_TopOffset, 0,
-        DTA_DestWidth, actual_width, DTA_DestHeight, actual_height);
+        DTA_DestWidth, actual_width+10, DTA_DestHeight, actual_height);
 
     for (int i = 0; i < lines.count(); ++i) {
       screen.DrawText(
         self.font, self.colour,
-        x + self.xpad*em,
+        x + 5 + self.xpad*em,
         y + i*lh + self.ypad*lh,
         lines.StringAt(i),
         DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
@@ -88,17 +89,17 @@ class TF_Tooltip : Object ui {
 }
 
 // Mixin classes used for the menu and menu items.
-mixin class TF_TooltipMenu {
-  array<TF_Tooltip> tooltips;
-  TF_Tooltip tooltip_settings;
+mixin class MRGP_TooltipMenu {
+  array<MRGP_Tooltip> tooltips;
+  MRGP_Tooltip tooltip_settings;
 
   // Default settings:
   // - top left corner
   // - 30% of the screen width
   // - 1em horizontal margin and 0.5lh vertical margin
   // - white text using newsmallfont
-  TF_Tooltip GetDefaults() {
-    let tt = TF_Tooltip(new("TF_Tooltip"));
+  MRGP_Tooltip GetDefaults() {
+    let tt = MRGP_Tooltip(new("MRGP_Tooltip"));
     tt.x = tt.y = 0.0;
     tt.w = 0.3;
     tt.xpad = 1.0;
@@ -109,33 +110,32 @@ mixin class TF_TooltipMenu {
     return tt;
   }
 
-  TF_Tooltip AppendableTooltip(uint first, uint last) {
+  MRGP_Tooltip AppendableTooltip(uint first, uint last) {
     if (tooltips.size() <= 0) return null;
     let tt = tooltips[tooltips.size()-1];
     if (tt.first == first) return tt;
     return null;
   }
 
-  TF_Tooltip AddTooltip(uint first, uint last, string tooltip) {
+  MRGP_Tooltip AddTooltip(uint first, uint last, string tooltip) {
     if (first < 0) ThrowAbortException("Tooltip must have at least one menu item preceding it!");
-    let localtooltip = Stringtable.localize(tooltip);
     let tt = AppendableTooltip(first, last);
     if (tt) {
       // Existing tooltip that we're just appending to.
-      tt.text = tt.text .. "\n" .. localtooltip;
+      tt.text = tt.text .. "\n" .. tooltip;
       return tt;
     }
     // No existing tooltip for these menu entries, create a new one.
-    tt = new("TF_Tooltip");
+    tt = new("MRGP_Tooltip");
     tt.CopyFrom(tooltip_settings);
     tt.first = first;
     tt.last = last;
-    tt.text = localtooltip;
+    tt.text = tooltip;
     tooltips.push(tt);
     return tt;
   }
 
-  TF_Tooltip FindTooltipFor(int item) {
+  MRGP_Tooltip FindTooltipFor(int item) {
     // console.printf("FindTooltipFor(%d)", item);
     if (item < 0 || item >= mDesc.mItems.size()) return null;
     if (!mDesc.mItems[item].Selectable()) return null;
@@ -159,7 +159,7 @@ mixin class TF_TooltipMenu {
   // TODO: properly think about how the mutable tooltip API should work, including
   // access via the descriptor using the static methods, and release it as a
   // proper update.
-  TF_Tooltip PushTooltip(String tooltip, uint n=1) {
+  MRGP_Tooltip PushTooltip(String tooltip, uint n=1) {
     if (!tooltip) return null;
     if (n<1) ThrowAbortException("Tooltip must apply to at least one menu item!");
     return AddTooltip(mDesc.mItems.size()-n, mDesc.mItems.size()-1, tooltip);
@@ -184,10 +184,10 @@ mixin class TF_TooltipMenu {
   }
 }
 
-mixin class TF_TooltipHolder {
-  array<TF_Tooltip> tooltips;
+mixin class MRGP_TooltipHolder {
+  array<MRGP_Tooltip> tooltips;
 
-  Object Init(array<TF_Tooltip> tts) {
+  Object Init(array<MRGP_Tooltip> tts) {
     self.tooltips.copy(tts);
     return self;
   }
@@ -195,7 +195,7 @@ mixin class TF_TooltipHolder {
   override bool Selectable() { return false; }
 }
 
-mixin class TF_TooltipItem {
+mixin class MRGP_TooltipItem {
   string tooltip;
 
   Object Init(string tooltip) {
@@ -204,7 +204,7 @@ mixin class TF_TooltipItem {
   }
 }
 
-mixin class TF_TooltipGeometry {
+mixin class MRGP_TooltipGeometry {
   double x, y, w, xpad, ypad, scale;
 
   Object Init(
@@ -217,7 +217,7 @@ mixin class TF_TooltipGeometry {
     return self;
   }
 
-  void CopyTo(TF_Tooltip settings) {
+  void CopyTo(MRGP_Tooltip settings) {
     if (self.x >= 0) settings.x = self.x;
     if (self.y >= 0) settings.y = self.y;
     if (self.w >= 0) settings.w = self.w;
@@ -227,7 +227,7 @@ mixin class TF_TooltipGeometry {
   }
 }
 
-mixin class TF_TooltipAppearance {
+mixin class MRGP_TooltipAppearance {
   Font myfont;
   Color colour;
   TextureID texture;
@@ -239,7 +239,7 @@ mixin class TF_TooltipAppearance {
     return self;
   }
 
-  void CopyTo(TF_Tooltip settings) {
+  void CopyTo(MRGP_Tooltip settings) {
     if (self.myfont) settings.font = self.myfont;
     if (self.colour) settings.colour = self.colour;
     if (self.texture) settings.texture = self.texture;
