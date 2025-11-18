@@ -8,8 +8,7 @@ AddOptionMenu "OptionsMenu"
 OptionMenu "MRGoreParts_Menu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_Settings"
 	StaticText ""
@@ -52,8 +51,7 @@ OptionMenu "MRGoreParts_Menu"
 OptionMenu "MRGoreParts_BloodSpawnMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
@@ -86,8 +84,7 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 OptionMenu "MRGoreParts_EffectsMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_EffectsMenu"
 	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 3, .1
@@ -126,8 +123,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 OptionMenu "MRGoreParts_AppearanceMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_AppearanceMenu"
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
@@ -152,8 +148,7 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 OptionMenu "MRGoreParts_SpotsMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_SpotsMenu"
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "OnOff"
@@ -174,8 +169,7 @@ OptionMenu "MRGoreParts_SpotsMenu"
 OptionMenu "MRGoreParts_WoundsMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
@@ -190,8 +184,7 @@ OptionMenu "MRGoreParts_WoundsMenu"
 OptionMenu "MRGoreParts_UpdateMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, 1, 1.2//X, Y, Width, X margin, Y margin, Scale
-	MRGPToolTipAppearance "ConFont", "white", "tfttbg"
+	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_UpdateMenu"
 	Command "$MRGP_UpdateColors", "NetEvent MRGP_UpdateColors"
@@ -215,13 +208,6 @@ OptionValue "MRGoreParts_SpotsOption"
 	0, "$MRGoreParts_FloorSpots0"
 	1, "$MRGoreParts_FloorSpots1"
 	2, "$MRGoreParts_FloorSpots2"
-}
-
-OptionValue "MRGoreParts_OtherBlood"
-{
-	0, "$MRGoreParts_OnlyModsBlood0"
-	1, "$MRGoreParts_OnlyModsBlood1"
-	2, "$MRGoreParts_OnlyModsBlood2"
 }
 
 OptionValue "MRGoreParts_CorpseWoundsOption"

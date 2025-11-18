@@ -32,6 +32,12 @@ nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these e
 nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
 nosave string MRGoreParts_NoBloodEffectsList = "2 6";//Effects spawn for non bleeding actors
 ///
+
+server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
+nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding
+nosave int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
+nosave bool MRGoreParts_FloorSplash = false;//Floor splash on gibbing
+nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
 //
 
 //Blood appearance
@@ -67,11 +73,6 @@ nosave int MRGoreParts_MaxWounded = 5;//Max wounded entities
 nosave int MRGoreParts_MaxWounds = 7;//Max wounds per entity
 //
 
-server int MRGoreParts_Gibs = 1;//0 - No gibs, 1 - Only spawn effects when monster can be and is gibbed, 2 - Remove monster, spawn gibs when its health is very low
-nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the same time, when reaches the limit, the first monster stops bleeding
-nosave int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
-nosave bool MRGoreParts_FloorSplash = false;//Floor splash on gibbing
-nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
 nosave bool MRGoreParts_LiteDistance = false;//Lighter method of distance check, ignores portals
 
 
