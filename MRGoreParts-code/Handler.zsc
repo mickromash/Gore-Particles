@@ -75,9 +75,7 @@ Class MRGP_Handler: EventHandler
 	Array<MRGP_CrushedThinker> Crushed;
 	Array<int> GibsTime;
 	Array<MRGP_Spot> Spots;
-	
-	//Array<MRGP_DelayedSpawner> Spawners;
-	
+		
 	Array<Actor> Wounded;
 	Array<MRGP_Wound> Wounds;
 	
@@ -88,7 +86,8 @@ Class MRGP_Handler: EventHandler
 	Void UpdateEffects()
 	{
 		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
-		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");}
+		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+		
 		Effects.Clear();
 		
 		String TempStr = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
@@ -135,7 +134,7 @@ Class MRGP_Handler: EventHandler
 	Void UpdateEffectsData()
 	{
 		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
-		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Return;}
+		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
 		For(int i=0;i<Handler.Effects.Size();i++){
 			if(Handler.Effects[i])Handler.Effects[i].CountParticles(100);
 		}
@@ -144,6 +143,8 @@ Class MRGP_Handler: EventHandler
 	
 	Override Void OnRegister()
 	{
+		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
 		SetUpColors();
 		SetUpBlacklist();
 		SetUpSounds();
@@ -524,9 +525,6 @@ Class MRGP_Handler: EventHandler
 			if(Wounds[i])Wounds[i].Tick();
 		}
 		
-		/*For(int i=0;i<Spawners.Size();i++){
-			if(Spawners[i])Spawners[i].Tick();
-		}*/
 	}
 	
 	Void ThinkersClear()
@@ -551,9 +549,17 @@ Class MRGP_Handler: EventHandler
 			if(Thinkers[i])Thinkers[i].Destroy();
 		}
 		
-		/*For(int i=0;i<Spawners.Size();i++){
-			if(Spawners[i])Spawners[i].Destroy();
-		}*/
+		For(int i=0;i<Spots.Size();i++){
+			if(Spots[i])Spots[i].Destroy();
+		}
+		
+		ThinkerIterator iter = ThinkerIterator.Create('MRGP_Droplet');
+		
+		MRGP_Droplet mo;
+		
+		While((mo = MRGP_Droplet(iter.Next()))){
+			mo.Destroy();
+		}
 	}
 	
 	Override Void WorldTick()
@@ -1278,7 +1284,7 @@ Class MRGP_Handler: EventHandler
 		}
 		if(e.name ~== "MRGP_UpdateEffectsData"){
 			Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
-			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");}
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
 			Handler.OnRegister();
 			UpdateEffects();
 			UpdateEffectsData();
@@ -1290,6 +1296,8 @@ Class MRGP_Handler: EventHandler
 			For(int i=0;i<Handler.Effects.Size();i++){
 				if(Handler.Effects[i])Handler.Effects[i].Destroy();
 			}
+			
+			Handler.Destroy();
 			
 			ThinkersClear();
 			
