@@ -1,11 +1,10 @@
 [eng en enu default]
 
 MRGoreParts_DrawTip = "Turns on/off all mod's functions.";
-MRGoreParts_MaxDyingTip = "Maximum amount of monsters with dying splashes at once. When the limit is reached, the longest dying monster will stop spawn splashes.";
-MRGoreParts_MaxGibingTip = "Maximum gibbing effects. When the limit is reached, new gibbing effects won't appear.";
-MRGoreParts_FloorSplashTip = "Wave of blood on the floor appearing on gibbing.";
-MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reached, the longest remains will fall from the ceiling.";
+MRGoreParts_LiteDistanceTip = "Use simplified distance check between player and effects, which ignores GZDoom portals. May increase performance.";
+MRGoreParts_UpdateMenuTip = "If you're loading a game saved with older version of the mod, or different mod list this might be helpful.";
 MRGoreParts_CheckLimitTip = "A green particle will appear on the screen. When the particles will hit the amount limit, it will dissapear, or will start flickering. It works from time to time tho.";
+MRGoreParts_AllParticlesAmountTip = "If particles amount hit the limit, new particles won't spawn. I recommend setting the highest possible value, minimum of 400 particles.";
 GLLIGHTMNU_LIGHTPARTICLESTip = "Dynamic lighting affecting particles. Turning this option off, may increase performance a lot, especially on mobile devices.";
 
 //Spawn menu
@@ -16,17 +15,45 @@ MRGoreParts_BloodTypesTip = "Blood effects (actors) specific for some monsters w
 MRGoreParts_Quake2Tip = "Spawn small Quake 1-style particles splash on any damage appearance. Useful for shootable corpses from other mods.";
 
 MRGoreParts_NoBloodMonstersTip = "Spawn blood effects for monsters that are not supposed to bleed. Blacklisted monsters won't bleed anyway.";
-MRGoreParts_BlacklistTip = "Type class (actor) names of the monsters you don't want to bleed.\n\cgDefault:\c-\nLostSoul, Revenant.";
+MRGoreParts_BlacklistTip = "Type class (actor) names of the monsters you don't want to bleed.\n\cgDefault:\c- LostSoul, Revenant.";
 MRGoreParts_NoBloodMistTip = "Spawn dust effect when the non-bleeding monster is hit.";
 
+//Effects menu
+MRGoreParts_DistanceTip = "Partciles sizes and speed will be scaled and amount will be downscaled by distance from player.";
+MRGoreParts_LowAlphaTip = "If turned on, effects and sopts particles will shrink, rather than fade out. Particles that force alpha ignore this setting. May increase performance.";
+MRGoreParts_DripOnImpactTip = "Some blood will drip straight on the floor on any damage appearance.";
+MRGoreParts_DrawFlyingBloodTip = "Spawn long blood sprays line in Shadow Warrior (1997), Blood or Quake.";
+MRGoreParts_MaxFlyingBloodTip = "When the limit is reached, the longest spray will wanish.";
+
+MRGoreParts_MaxDyingTip = "Maximum amount of monsters with dying splashes at once. When the limit is reached, the longest dying monster will stop spawn splashes.";
+MRGoreParts_MaxGibingTip = "Maximum gibbing effects. When the limit is reached, new gibbing effects won't appear.";
+MRGoreParts_FloorSplashTip = "Wave of blood on the floor appearing on gibbing.";
+MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reached, the longest remains will fall from the ceiling.";
+
+//Appearance menu
+MRGoreParts_FuzzyBloodTip = "Partially invisible monsters (and players) will bleed partially invisible blood.";
+
+//Spots menu
+MRGoreParts_FloorSpotsTip = "Blood spots on the walls, celling and floor. Made via 'VisualThinker's and not listed in particles limit.";
+MRGoreParts_EffectsSpotsTip = "Spots leaved by damage effects.";
+MRGoreParts_DeathSpotsTip = "Spots leaved by dying monsters.";
+MRGoreParts_MaxSpotsTip = "When the limit is reached, the longest spost will wanish.";
+
+//Wounds menu
+MRGoreParts_VoxelTip = "Turn on if playing with 3D/voxel models.";
+
+//Update menu
+MRGP_UpdateColorsTip = "Update blood colors specific for some monsters.";
+MRGP_UpdateSoundsTip = "Update blood sounds utilized from other loaded mods.";
+MRGP_UpdateRemoveBloodTip = "Update list of blood actors from other mods to remove.";
+	
 [ru]
 
 MRGoreParts_DrawTip = "Включить/выключить все функции мода.";
-MRGoreParts_MaxDyingTip = "Максимальное кол-во монстров брыжащих кровью при смерти. Когда лимит достигнут, наиболее старый монстр перестанет кровоточить.";
-MRGoreParts_MaxGibingTip = "Максимальное кол-во эффектов от разноса монстра. Когда лимит достигнут, при разносе нового монстра эффекты не появятся.";
-MRGoreParts_FloorSplashTip = "Кровавая волна идущая по полу при разносе монстра.";
-MRGoreParts_CrushTip = "Максимальное кол-во останков от раздавленных монстров. Когда лимит достигунт, наиболее старые останку упадут с потолка.";
+MRGoreParts_LiteDistanceTip = "Использовать упрощённый рассчёт расстояния между эффектами и игроком, игнорируя порталы GZDoom. Может улучшить производительность.";
+MRGoreParts_UpdateMenuTip = "Может пригодиться при игре сохранённой со старой версией мода или другими модами.";
 MRGoreParts_CheckLimitTip = "На экране появится зелённая точка. Если она пропадёт, значит лимит частиц был достигнут. Впрочем, работает она не идеально.";
+MRGoreParts_AllParticlesAmountTip = "Если количество частиц превысит лимит, новые частицы перестанут появляться. Советую поставить максимально возможное количество, минимум от 400 частиц.";
 GLLIGHTMNU_LIGHTPARTICLESTip = "Влияние динамического освещения на частицы. Отключение данной опции может значительно повысить производительность, особенно на мобильных устройствах.";
 
 //Spawn menu
@@ -37,5 +64,34 @@ MRGoreParts_BloodTypesTip = "Кровавые эффекты (акторы) ун
 MRGoreParts_Quake2Tip = "При любом нанесении урона будут появляться небольшие всплески как в Quake 1. Данная опция полезна для расчленяемых трупов из разных модов (например Nashgore Next или Universal Gibs).";
 
 MRGoreParts_NoBloodMonstersTip = "Включить кровь для монстров которые не должны кровоточить. Монстры из чёрного списка не включены.";
-MRGoreParts_BlacklistTip = "Впишите названия акторов монстров которые не должны кровоточить.\n\cgПо умолчанию:\c-\nLostSoul, Revenant.";
+MRGoreParts_BlacklistTip = "Впишите названия акторов монстров которые не должны кровоточить.\n\cgПо умолчанию:\c- LostSoul, Revenant.";
 MRGoreParts_NoBloodMistTip = "При нанесении урона некровоточащим монстрам, будет появляться облако пыли.";
+
+//Effects menu
+MRGoreParts_DistanceTip = "Размер и скорость частиц будут увеличены в зависимости от расстояния до игрока. Количество частиц будет уменьшино.";
+MRGoreParts_LowAlphaTip = "Частицы эффектов и пятен будут сжиматься, вместо расстворения. Эффекты использующие альфа канал игнорируют данную настройку. Может увеличить производительность.";
+MRGoreParts_DripOnImpactTip = "Небольшое количество крови будет капать на пол при любом уроне.";
+MRGoreParts_DrawFlyingBloodTip = "Длинные струи крови на подобии тех что были в Shadow Warrior (1997), Blood или Quake.";
+MRGoreParts_MaxFlyingBloodTip = "Когда лимит достигнут, наиболее старая струя пропадёт.";
+
+MRGoreParts_MaxDyingTip = "Максимальное кол-во монстров брыжащих кровью при смерти. Когда лимит достигнут, наиболее старый монстр перестанет кровоточить.";
+MRGoreParts_MaxGibingTip = "Максимальное кол-во эффектов от разноса монстра. Когда лимит достигнут, при разносе нового монстра эффекты не появятся.";
+MRGoreParts_FloorSplashTip = "Кровавая волна идущая по полу при разносе монстра.";
+MRGoreParts_CrushTip = "Максимальное кол-во останков от раздавленных монстров. Когда лимит достигунт, наиболее старые останку упадут с потолка.";
+
+//Appearance menu
+MRGoreParts_FuzzyBloodTip = "Невидимые монстры (и игроки) будут кровоточить невидимой кровью.";
+
+//Spots menu
+MRGoreParts_FloorSpotsTip = "Кровавые пятна на стенах, потолках и полах. Реализованны через классы 'VisualThinker' и не включены в общий лимит количества частиц.";
+MRGoreParts_EffectsSpotsTip = "От эффектов появляющихся при уроне будут оставаться пятна.";
+MRGoreParts_DeathSpotsTip = "Пятна от умирающих монстров.";
+MRGoreParts_MaxSpotsTip = "Когда лимит достигнут, наиболее старые пятна будут пропадать.";
+
+//Wounds menu
+MRGoreParts_VoxelTip = "Включите при игре с 3Д/воксельными моделями.";
+
+//Update menu
+MRGP_UpdateColorsTip = "Обновть цвета крови определённых врагов.";
+MRGP_UpdateSoundsTip = "Обовить звуки крови используемые из других загруженных модов.";
+MRGP_UpdateRemoveBloodTip = "Обновить список кровавых эффектов (акторов) из других модов которые должны быть удалены.";

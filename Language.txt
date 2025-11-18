@@ -112,7 +112,7 @@ MRGoreParts_CorpseWounds0 = "None";
 MRGoreParts_CorpseWounds1 = "Only wounds and splashes";
 MRGoreParts_CorpseWounds2 = "Wounds, splashes and dripping blood";
 
-MRGoreParts_Voxel = "Voxel enemies";
+MRGoreParts_Voxel = "3D enemies";
 ////}
 
 MRGP_Recs = "Show recommend settings";
@@ -149,8 +149,6 @@ MRGoreParts_UninstallPromt = "Remove the mod so the saved game could be loaded w
 MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully unistalled.";
 
 MRGoreParts_AllParticlesAmount = "All particles amount";
-
-MRGoreParts_Text = "If particles amount hit the limit, new particles won't spawn";
 //}
 
 MR_GoreParticlesUi_RecS = "\cgParticle Gore\cd Recommended settings:";
@@ -280,7 +278,7 @@ MRGoreParts_CorpseWounds = "Раны на трупах";
 MRGoreParts_CorpseWounds0 = "Нет";
 MRGoreParts_CorpseWounds1 = "Только раны и всплески";
 MRGoreParts_CorpseWounds2 = "Раны и капающая кровь";
-MRGoreParts_Voxel = "Воксельные враги";
+MRGoreParts_Voxel = "3D враги";
 ////}
 
 MRGP_Recs = "Показать рекоммендованные настройки";
@@ -315,8 +313,6 @@ MRGoreParts_UninstallPromt = "Удалить данные мода из игры
 MRGoreParts_Uninstalled = "Gore-Particles: \cdМод успешно удалён.";
 
 MRGoreParts_AllParticlesAmount = "Количество всех частиц";
-
-MRGoreParts_Text2 = "Если количество частиц превысит лимит, новые частицы перестанут появляться";
 //}
 
 MR_GoreParticlesUi_RecS = "\cdРекомендованные настройки \cgКровавых частиц:";

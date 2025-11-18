@@ -72,7 +72,7 @@ nosave int MRGoreParts_MaxDying = 6;//Amount of dying bleeding monsters at the s
 nosave int MRGoreParts_MaxGibing = 4;//Amount of gibbing effects at the same time, when reaches the limit, stop spawning effects
 nosave bool MRGoreParts_FloorSplash = false;//Floor splash on gibbing
 nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
-nosave bool MRGoreParts_LiteDistance = true;//Lighter method of distance check, ignores portals
+nosave bool MRGoreParts_LiteDistance = false;//Lighter method of distance check, ignores portals
 
 
 nosave bool MRGoreParts_CheckLimit = false;
