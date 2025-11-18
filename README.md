@@ -22,12 +22,15 @@ There is no actors in the mod, which lowers its impact on the performance and ma
 
 __Mod requires GZDoom 4.14.2 or newer__
 
+## Credits
+
+Mod utilizes [LibToolTip](https://github.com/ToxicFrog/doom-mods/tree/main/libtooltipmenu) by ToxicFrog
+
 ## TO DO
 
 * Rework gibbing calculation (make something similar to UGibs)
 * Textured particles for wound blood (not sure about this one)
 * Blood amount and size based on damage
 * Wounds size based on damage
-* Running clarify line in options menu (like in Nashgore)
 * Add performance settings pressets
 * Work on projectiles impcat
