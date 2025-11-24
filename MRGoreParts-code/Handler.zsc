@@ -604,7 +604,7 @@ Class MRGP_Handler: EventHandler
 		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
 	
-	Void SpawnNoBlood(Actor mo, Actor inflictor, Double Angle, Actor Source = Null, Bool HDestArmor = false)//Spec. effects for non bleeding actors
+	Void SpawnNoBlood(Actor mo, Actor inflictor=Null, Double Angle=0, Actor Source = Null, Bool HDestArmor = false, Vector3 Offset=(0,0,0))//Spec. effects for non bleeding actors
 	{
 		if(MRGoreParts_NoBloodMist)
 		{
@@ -620,7 +620,7 @@ Class MRGP_Handler: EventHandler
 
 			Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
-			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*90, Col, Offset:(0,0,ZOfst));
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*90, Col, Offset:Offset+(0,0,ZOfst));
 			if(MRGoreParts_NoBloodSndVol>0)Who.A_StartSound(NoBloodSound, CHAN_AUTO, Volume:MRGoreParts_NoBloodSndVol*MRGoreParts_SndVol);
 		}
 		if(HDestArmor)
@@ -635,7 +635,7 @@ Class MRGP_Handler: EventHandler
 			if(Source && PlayerPawn(Source) && Inflictor)Pitch = Inflictor.PitchTo(Source, 5, Source.Player.ViewZ-Source.Pos.Z);
 			Pitch = 0;
 			
-			MRGP_Effect.SpawnEffect('MRGP_Effect_Sparks', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*-90, Offset:(0,0,ZOfst));
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Sparks', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*-90, Offset:Offset+(0,0,ZOfst));
 		}
 	}
 	
@@ -1262,6 +1262,9 @@ Class MRGP_Handler: EventHandler
 	
 	Override Void NetworkProcess(ConsoleEvent e)
 	{
+		Let Plr = Players[e.Player].mo;
+		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+		
 		if(e.name ~== "MRGP_UpdateEffects"){
 			UpdateEffects();
 			Return;
@@ -1283,16 +1286,64 @@ Class MRGP_Handler: EventHandler
 			Return;
 		}
 		if(e.name ~== "MRGP_UpdateEffectsData"){
-			Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
 			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
 			Handler.OnRegister();
 			UpdateEffects();
 			UpdateEffectsData();
 			Return;
 		}
+		if(e.name ~== "MRGoreParts_DemoEffect"){
+			if(!Plr)Return;
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+			
+			Let Effect = Handler.Effects[Min(Handler.Effects.Size()-1, e.args[0])].GetClassName();
+			String EffectName = StringTable.Localize(Handler.Effects[Min(Handler.Effects.Size()-1, e.args[0])].GetName());
+			
+			Vector3 Offset = (Actor.AngleToVector(Plr.Angle, 50*Cos(abs(Plr.Pitch))), Plr.Player.ViewZ-Plr.FloorZ -50*Sin(Plr.Pitch));
+			
+			
+			MRGP_Effect.SpawnEffect(Effect, Plr, MRGoreParts_FullBright?SGPF_Glow:0, Plr.Angle + 180 + e.args[1], Plr.Pitch + e.args[2], Gameinfo.defaultbloodcolor, MRGoreParts_Amount, MRGoreParts_Size,
+				MRGoreParts_Alpha, Offset);
+			
+			Console.Printf("Demonstrate: \cg"..EffectName.."\c- ("..Effect..")");
+			
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_DemoRandom" || e.name ~== "MRGoreParts_DemoAlways" || e.name ~== "MRGoreParts_DemoNoBlood"){
+			if(!Plr)Return;
+			Name EffectType = e.name;
+			
+			Vector3 Offset = (Actor.AngleToVector(Plr.Angle, 50*Cos(abs(Plr.Pitch))), Plr.Player.ViewZ-Plr.FloorZ -50*Sin(Plr.Pitch));
+			
+			Switch(EffectType)
+			{
+				Case 'MRGoreParts_DemoRandom':
+					{
+					Let Effect = Effects[CRandom(0, Effects.Size()-1)];
+					Effect.DoParticleEffect(Plr, MRGoreParts_FullBright?SGPF_Glow:0, Plr.Angle + 180 + e.args[0], Plr.Pitch + e.args[1], GameInfo.DefaultBloodColor, MRGoreParts_Amount, MRGoreParts_Size,
+						MRGoreParts_Alpha, Offset);
+					Console.Printf("Demonstrate Random effect: \cg"..StringTable.Localize(Effect.GetName().."\c- ("..Effect.GetClassName()..")"));
+					}
+					Break;
+				Case 'MRGoreParts_DemoAlways':
+					For(int i=0;i<AlwaysEffects.Size();i++){
+						Let Effect = AlwaysEffects[i];
+						Effect.DoParticleEffect(Plr, MRGoreParts_FullBright?SGPF_Glow:0, Plr.Angle + 180 + e.args[0], Plr.Pitch + e.args[1], GameInfo.DefaultBloodColor, MRGoreParts_Amount, MRGoreParts_Size,
+							MRGoreParts_Alpha, Offset);
+						Console.Printf("Demonstrate Always effect: \cg"..StringTable.Localize(Effect.GetName().."\c- ("..Effect.GetClassName()..")"));
+					}
+					Break;
+				Case 'MRGoreParts_DemoNoBlood':
+					SpawnNoBlood(Plr, Plr, Plr.Angle + 180 + e.args[0], Offset:Offset);
+					Console.Printf("Demonstrate No blood effect");
+					Break;
+			}
+			
+			Return;
+		}
 		
 		if(e.name ~== "MRGoreParts_Uninstall"){
-			Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
 			For(int i=0;i<Handler.Effects.Size();i++){
 				if(Handler.Effects[i])Handler.Effects[i].Destroy();
 			}
