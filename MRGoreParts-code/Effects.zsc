@@ -322,7 +322,7 @@ class MRGP_SightTracer : LineTracer
 	}
 }
 
-enum MRGP_EffectFlag{
+enum MRGP_EffectFlags{
 	SGPF_NoDist = 1,//Distance won't affect particles velocity and sizes
 	SGPF_FixAmount = 2,//Ignore particles amount CVar
 	SGPF_NoVel = 4,
@@ -733,9 +733,11 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
 		if(!MRGoreParts_Draw)Return 0;
-		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
+		if(!(Flags&SGPF_FixAmount)){
+			Amount *= MRGoreParts_Amount;
+			Amount = Min(1.1, Amount);
+		}
 		if(Amount<=0)Return 0;
-		Amount = Min(1.1, Amount);
 		Float Dist = MRGP_DistanceMult;
 		
 		int Particles;
@@ -819,9 +821,11 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
 		if(!MRGoreParts_Draw)Return 0;
-		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
+		if(!(Flags&SGPF_FixAmount)){
+			Amount *= MRGoreParts_Amount;
+			Amount = Min(1.1, Amount);
+		}
 		if(Amount<=0)Return 0;
-		Amount = Min(1.1, Amount);
 		Float Dist = MRGP_DistanceMult;
 		
 		int Particles;
@@ -903,6 +907,106 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 	}
 	
 	Override int GetID(){Return 6;}
+}
+
+Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
+{
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel)
+	{
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
+		
+		if(!MRGoreParts_Draw)Return 0;
+		if(!(Flags&SGPF_FixAmount)){
+			Amount *= MRGoreParts_Amount;
+			Amount = Min(1.1, Amount);
+		}
+		if(Amount<=0)Return 0;
+		
+		Float Dist = MRGP_DistanceMult;
+		
+		int Particles;
+		
+		Bool Water = mo.WaterLevel>2;
+		if(Water)Amount *= .5;
+		
+		if(Flags&SGPF_NODIST)Dist = 1;
+		else
+		{
+			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			if(Scale>1)Dist/=Scale;
+		}
+		
+		int Glow = 0;
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
+		
+		For(int i=CRandom(0, 2);i<5;i++)
+		{
+			Double TempPitch = Pitch-CFRandom(5, 10)+CFRandom(-30, 30);
+			Double TempAngle = Angle + CFRandom(-30, 30);
+			//Angle += CRandom(-15, 15);
+			Double Forw = .4;//CFRandom(.01, .2);
+			Double Size = CFRandom(2.4, 2.7)*MRGoreParts_Size*Dist;
+			Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
+			if(Water)Life *= 2;
+			Double StartLife = Life;
+			
+			Double Roll = CRandom(175, 360);
+			
+			Double CircleLength = Random(120, 360*Min(1, MRGoreParts_Amount));
+			Float Step = Max(.2, (Size*.75*Max(1, Dist*.1)/Amount)*2);
+			
+			Let Alph = MRGoreParts_Alpha;
+			Let LowAlpha = MRGoreParts_LowAlpha;
+			
+			int Skip = -CRandom(6, 10);
+			
+			For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
+			{
+				if(Skip>0){Skip--;Continue;}
+				
+				if(Skip<0)Skip++;
+				else Skip=CRandom(-3, 6);
+				
+				Double Ang = (j+CFRandom(-1.5, 1.5))*Cos(Roll);
+				Ang = TempAngle + Ang;
+				Double Pit = (j+CFRandom(-1.5, 1.5))*Sin(Roll);
+				Pit = TempPitch + Pit;
+				
+				Vector3 Vel = (Actor.AngleToVector(Ang, Forw)*Cos(Abs(Pit)), (-Sin(Pit)*(1.-abs(j/(CircleLength/2))))*Forw);
+				
+				Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+.1+Vel.Z*2));
+				Bright += CFRandom(-.05, .05);
+				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+				
+				Vel += Force;
+				Vel *= MRGoreParts_Speed;
+				Vel *= Scale;
+				Vel *= Dist;
+				Vel += mo.Vel*moVel;
+				
+				Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
+				
+				if(Water){Vel *= .5;AccelZ *= .5;}
+				
+				Float ReSize, Fade;
+				ReSize = -(Size/Life);
+				if(!LowAlpha){Fade = -1; ReSize *= .4;}
+				
+				if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize);
+
+				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
+				
+				Particles++;
+			}
+		}
+		
+		Return Particles;
+	}
+	
+	Override int GetID(){Return 7;}
 }
 
 Class MRGP_Effect_Sparks: MRGP_Effect
