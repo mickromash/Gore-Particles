@@ -1,0 +1,13 @@
+alias MRGoreParts_Uninstall "NetEvent MRGoreParts_Uninstall"
+
+alias MRGoreParts_UpdateBlacklist "NetEvent MRGP_UpdateBlacklist"
+alias MRGoreParts_UpdateColors "NetEvent MRGP_UpdateColors"
+alias MRGoreParts_UpdateSounds "NetEvent MRGP_UpdateSounds"
+alias MRGoreParts_UpdateRemoveBlood "NetEvent MRGP_UpdateRemoveBlood"
+alias MRGoreParts_UpdateEffectsData "NetEvent MRGP_UpdateEffectsData"
+alias MRGoreParts_UpdateEffects "NetEvent MRGP_UpdateEffects"
+
+alias MRGoreParts_DemoEffect "NetEvent MRGoreParts_DemoEffect %1 %2 %3"
+alias MRGoreParts_DemoRandomEffect "NetEvent MRGoreParts_DemoRandom %1 %2"
+alias MRGoreParts_DemoAlwaysEffect "NetEvent MRGoreparts_DemoAlways %1 %2"
+alias MRGoreParts_DemoNoBloodEffect "NetEvent MRGoreparts_DemoNoBlood %1 %2"
