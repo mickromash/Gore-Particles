@@ -136,10 +136,11 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		if(Age<CRandom(-40, 60))
 		{
 			if(Handler.Effects.Size()>0)
-				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow, Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5));
+				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5));
 			
 			//Dripping blood
-			if(!MRGoreParts_DeathSpots)Return;
+			Return;
+			//if(!MRGoreParts_DeathSpots)Return;
 			if(CRandom(0, 10)>4)Return;
 			
 			Bool Drop = false;
@@ -159,7 +160,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color ColTmp = Color(int(Bld.R*Bright), int(Bld.G*Bright), int(Bld.B*Bright));
 				if(!Drop){//Spot
-					Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
+					Let a = MRGP_Droplet.SpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
 					Drop = true;
 				}
 				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0), CRandom(29, 40), Size*1.3, 0, 1,0,Y*.9+5,
@@ -344,7 +345,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		
 		if(Perma.Size()>0 && Perma.Find(RandX[Rand])!=Perma.Size()){
 			if(CRandom(0, 10)>3){//Permanent drop leaves ceiling
-				Let a = MRGP_Droplet.MRGSpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), Scale: Sizes[Rand]*.5, RenderStyle:RenderStyle);
+				Let a = MRGP_Droplet.SpawnDrop(Colors[Rand], (RandX[Rand], RandY[Rand], CurSector.CenterCeiling()-3), Scale: Sizes[Rand]*.5, RenderStyle:RenderStyle);
 			}
 			else {//Permanent drop stays on ceiling
 				Color TempCol = Color(int(Colors[Rand].R*.9), int(Colors[Rand].G*.9), int(Colors[Rand].B*.9));
@@ -390,7 +391,7 @@ Class MRGP_Spot: VisualThinker
 	int Life, Age, Delay, Sliding;
 	Double Height, StartScale, StartAlpha;
 	Sector LinkedSector;
-	Bool NoAlpha, PlaySound, InArray, Drip, Fallin, OnLiquid;
+	Bool NoAlpha, PlaySound, InArray, ClearScale, Drip, Fallin, OnLiquid;
 	
 	Override Void Tick()
 	{
@@ -476,12 +477,12 @@ Class MRGP_Spot: VisualThinker
 		if(!Texture)Switch(MRGOreParts_SpotsStyle){
 			Case 2:
 				Texture = Texman.CheckForTexture("GParMst1");//Smooth
-				StartScale *= .01;
+				if(!ClearScale)StartScale *= .01;
 				//Offset = (32, 32)*-StartScale;
 				Break;
 			Case 1:
 				Texture = Texman.CheckForTexture("glpart2");//Round
-				StartScale *= .004;
+				if(!ClearScale)StartScale *= .004;
 				//Offset = (64, 64)*-StartScale;
 				Break;
 			Case 0:
@@ -569,8 +570,8 @@ Class MRGP_Spot: VisualThinker
 		Spot.CurSector = LevelLocals.PointInSector(Pos.XY);
 		
 		if(Spot.CurSector){//Check if spot is placed on the skybox
+			TextureId Pic;
 			Switch(Surface){
-					TextureId Pic;
 				Case 0:
 					if(LinkedSector){
 						Pic = LinkedSector.GetTexture(FromCeiling);
@@ -578,7 +579,7 @@ Class MRGP_Spot: VisualThinker
 					else Break;
 				Case 1:
 				Case 2:
-					if(!Pic)Pic = Spot.CurSector.GetTexture(Surface-1);
+					if(Pic.IsNull())Pic = Spot.CurSector.GetTexture(Surface-1);
 					String PicName = Texman.GetName(Pic);
 					if(PicName ~== "F_SKY1"||
 						PicName ~== "F_SKY"||
@@ -615,7 +616,7 @@ Class MRGP_Droplet: VisualThinker
 		Return b-a;
 	}
 	
-	Double StartScale;
+	Double StartScale, Resize, Fade, ImageScale;
 	int RenderStyle;
 	Vector3 Accel;
 	
@@ -628,15 +629,16 @@ Class MRGP_Droplet: VisualThinker
 	
 	Override Void PostBeginPlay()
 	{
+		ImageScale = 1;
 		if(!Texture)Switch(gl_particles_style){
 			Case 2:
 				Texture = Texman.CheckForTexture("GParMst1");//Smooth
-				Scale *= .01;
+				ImageScale = .01;
 				//Offset = (32, 32)*-StartScale;
 				Break;
 			Case 1:
 				Texture = Texman.CheckForTexture("glpart2");//Round
-				Scale *= .004;
+				ImageScale = .004;
 				//Offset = (64, 64)*-StartScale;
 				Break;
 			Default:
@@ -644,6 +646,7 @@ Class MRGP_Droplet: VisualThinker
 				//Offset = (.5, .5)*-StartScale;
 				Break;
 		}
+		Scale *= ImageScale;
 		
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler)Handler.Thinkers.Push(Self);
@@ -656,8 +659,12 @@ Class MRGP_Droplet: VisualThinker
 		
 		if(Level.IsFrozen())Return;
 		
-		Scale *= .95;
-		if(Scale.X<.0001){Destroy();Return;}
+		Scale.X += Resize*ImageScale;
+		Scale.Y += Resize*ImageScale;
+		if(Scale.X<.01*ImageScale||Scale.Y<.01*ImageScale){Destroy();Return;}
+		
+		Alpha -= Fade;
+		if(Alpha<.01){Destroy();Return;}
 				
 		Vector3 dir = Vel;
 		
@@ -667,7 +674,7 @@ Class MRGP_Droplet: VisualThinker
 		let tracer = new('MRGP_SightTracer');
 
 		tracer.CheckSurface = true;
-		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 5, 0, Line.ML_BLOCKEVERYTHING, true);
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 2, 0, Line.ML_BLOCKEVERYTHING, true);
 		
 		if(Tracer.HitType!=TRACE_HitNone){
 			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
@@ -702,19 +709,19 @@ Class MRGP_Droplet: VisualThinker
 		
 			Case TRACE_HitWall:
 				{
-				Double Angle = VectorAngle(HitLine.Delta.X, HitLine.Delta.Y);
-								
-				
-				Sector BackSector = HitLine.BackSector;
-				if(BackSector==CurSector)BackSector = HitLine.FrontSector;
-				
-				Bool Plane;
-				if(BackSector && HitPos.Z > BackSector.CenterCeiling())Plane = true;
+					Let PPos = HitPos;
+					Sector CurSec = Level.PointInSector(Pos.XY);
+					Double Angle = VectorAngle(HitLine.Delta.X, HitLine.Delta.Y);
+									
+					
+					Sector BackSector = HitLine.BackSector;
+					if(BackSector==CurSec)BackSector = HitLine.FrontSector;
+					
+					Bool Plane;
+					if(BackSector && HitPos.Z > BackSector.CenterCeiling())Plane = true;
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
-					
-					Let PPos = HitPos;
-					
+
 					PPos += Level.Vec2Diff(PPos.XY, Pos.XY).Unit()*1.5;
 					
 					Double Height;
@@ -722,13 +729,14 @@ Class MRGP_Droplet: VisualThinker
 						if(Plane)Height = PPos.Z-BackSector.CenterCeiling();
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
-					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, 0, Height, Plane, BackSector);
+										
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
+						a.ClearScale = true;
 						Handler.UpdateSpots(a);
 					}
 				}
@@ -740,14 +748,15 @@ Class MRGP_Droplet: VisualThinker
 				{
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, StartScale, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
-						//a.Drip = true;
+						a.ClearScale = true;
 						Handler.UpdateSpots(a);
+						a.CurSector = Level.PointInSector(a.Pos.XY);
 					}
 				}
 				Break;
@@ -819,7 +828,7 @@ Class MRGP_Droplet: VisualThinker
 		}
 	}
 	
-	Static MRGP_Droplet MRGSpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL)
+	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
 	{
 		Let Drop = MRGP_Droplet(level.SpawnVisualThinker('MRGP_Droplet'));
 		if(!Drop)Return Null;
@@ -832,6 +841,9 @@ Class MRGP_Droplet: VisualThinker
 		Drop.StartScale = Scale;
 		Drop.SetRenderStyle(RenderStyle);
 		Drop.RenderStyle = RenderStyle;
+		Drop.Resize = Resize;
+		Drop.Alpha = Alpha;
+		Drop.Fade = Fade;
 		
 		Return Drop;
 	}
