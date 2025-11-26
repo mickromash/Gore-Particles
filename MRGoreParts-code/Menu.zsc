@@ -142,11 +142,18 @@ class MRGP_EffectsMenu:GenericMenu
 				ViewList = !ViewList;
 				CurlY=0;
 				break;
+			case UIEvent.Key_F6:
+				CVar.FindCVar("MRGoreParts_CopyList").SetString(WorkingString[CursY]);
+				UpdateList();
+				break;
+			case UIEvent.Key_F9:
+				WorkingString[CursY] = CVar.FindCVar("MRGoreParts_CopyList").GetString();
+				UpdateList();
+				break;
 			case UIEvent.Key_F2:
 			case UIEvent.Key_F3:
 			case UIEvent.Key_F4:
 			case UIEvent.Key_F5:
-			case UIEvent.Key_F6:
 			case UIEvent.Key_F7:
 			case UIEvent.Key_F8:
 			case UIEvent.Key_F9:
@@ -179,6 +186,14 @@ class MRGP_EffectsMenu:GenericMenu
 					EventHandler.SendNetworkEvent("MRGP_UpdateEffects");
 					
 					WorkingString[CursY] = CVar.FindCVar(ConVar).GetString();
+					UpdateList();
+				}
+				else if(inp~=="c" && ev.IsCtrl){
+					CVar.FindCVar("MRGoreParts_CopyList").SetString(WorkingString[CurSY]);
+					UpdateList();
+				}
+				else if(inp~=="v" && ev.IsCtrl){
+					WorkingString[CurSY] = CVar.FindCVar("MRGoreParts_CopyList").GetString();
 					UpdateList();
 				}
 			}
