@@ -864,7 +864,7 @@ Class MRGP_Handler: EventHandler
 				
 				Float Bright = MRGoreParts_Brightness*CFRandom(.9, 1.5);
 				Color ColTemp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-				Let a = MRGP_Droplet.MRGSpawnDrop(ColTemp, Pos, Glow, Vel, (0,0,-.5), CFRandom(3, 6), Fuzzy?STYLE_Shadow:STYLE_Normal);
+				Let a = MRGP_Droplet.SpawnDrop(ColTemp, Pos, Glow, Vel, (0,0,-.5), CFRandom(3, 6), Fuzzy?STYLE_Shadow:STYLE_Normal);
 			}
 		}
 	}
@@ -1027,10 +1027,10 @@ Class MRGP_Handler: EventHandler
 		
 		
 		if(Effects.Size()>0)
-			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
+			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
 		For(int i=0;i<AlwaysEffects.Size();i++)
 		{
-			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
+			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
 		}
 		
 		if(CRandom(0, 50)>40)e.Inflictor.A_StartSound(DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
@@ -1064,7 +1064,7 @@ Class MRGP_Handler: EventHandler
 				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 				if(!Drop){//Spot
-					Let a = MRGP_Droplet.MRGSpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
+					Let a = MRGP_Droplet.SpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
 					Drop = true;
 				}
 				e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
@@ -1339,6 +1339,21 @@ Class MRGP_Handler: EventHandler
 					Break;
 			}
 			
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_ClearSpots"){
+			int i;
+			For(i=0;i<Spots.Size();i++){if(Spots[i])Spots[i].Destroy();}
+			Spots.Clear();
+			Console.Printf(i.." Spots removed");
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_ClearWounds"){
+			int i;
+			For(i=0;i<Wounds.Size();i++){if(Wounds[i])Wounds[i].Destroy();}
+			Wounds.Clear();
+			Wounded.Clear();
+			Console.Printf(i.." wounds removed");
 			Return;
 		}
 		
