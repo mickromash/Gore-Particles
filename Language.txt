@@ -96,8 +96,9 @@ MRGoreParts_FloorSpots = "Spots on surfaces";
 MRGoreParts_EffectsSpots = "Spots by effects";
 MRGoreParts_WoundsSpots = "Spots by bleeding wounds";
 MRGoreParts_DeathSpots = "Spots by dying bleeding";
+MRGoreParts_SpotsFrequency = "Spots spawn frequency";
 MRGoreParts_MaxSpots = "Max spots";
-MRGoreParts_SpotsTime = "Remove spot after * seconds";
+MRGoreParts_SpotsTime = "Spots life time";
 MRGOreParts_SpotsStyle = "Spots particles style";
 ////}
 
@@ -124,13 +125,6 @@ MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
 MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
 MRGoreParts_FloorSplash = "Floor splash on gibbing";
 MRGoreParts_Crush = "Maximum remains of crushed corpses";
-
-
-MRGoreParts_FloorSpots0 = "None";
-MRGoreParts_FloorSpots1 = "Only leaved by wounds";
-MRGoreParts_FloorSpots2 = "All";
-
-//MRGoreParts_SpotsTime = "Spots life time in seconds";
 
 MRGoreParts_UpdateMenu = "Update mod's data";
 ////{
@@ -264,8 +258,9 @@ MRGoreParts_FloorSpots = "Пятна на поверхностях";
 MRGoreParts_EffectsSpots = "Пятна от эффектов";
 MRGoreParts_WoundsSpots = "Пятна от крови из ран";
 MRGoreParts_DeathSpots = "Пятна от посмертных кровотечений";
+MRGoreParts_SpotsFrequency = "Частота появления пятен";
 MRGoreParts_MaxSpots = "Макс. пятен";
-MRGoreParts_SpotsTime = "Удалять пятна через * секунд";
+MRGoreParts_SpotsTime = "Время жизни пятен";
 MRGOreParts_SpotsStyle = "Стиль частиц пятен";
 ////}
 
@@ -292,12 +287,6 @@ MRGoreParts_MaxGibing = "Максимум джибсов";
 MRGoreParts_FloorSplash = "Растекающиеся останки";
 MRGoreParts_Crush = "Максимум раздавленных останков";
 
-//MRGoreParts_FloorSpots = "Кровь на поверхностях";
-MRGoreParts_FloorSpots0 = "Нет";
-MRGoreParts_FloorSpots1 = "Только кровь из ран";
-MRGoreParts_FloorSpots2 = "Вся";
-
-//MRGoreParts_SpotsTime = "Удалять пятна спустя * секунд";
 
 MRGoreParts_UpdateMenu = "Обновить данные мода";
 ////{

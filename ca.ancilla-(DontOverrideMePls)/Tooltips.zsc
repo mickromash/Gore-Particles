@@ -2,6 +2,7 @@
 
 class MRGP_Tooltip : Object ui {
   double x, y, w, xpad, ypad, scale; // Geometry
+  double Cx, Cy, Cw, Cxpad, Cypad, Cscale;
   int first, last; // First and last menuitems this applies to
   Font font;
   Color colour;
@@ -15,6 +16,12 @@ class MRGP_Tooltip : Object ui {
     self.xpad = settings.xpad;
     self.ypad = settings.ypad;
     self.scale = settings.scale;
+	self.Cx = settings.Cx;
+    self.Cy = settings.Cy;
+    self.Cw = settings.Cw;
+    self.Cxpad = settings.Cxpad;
+    self.Cypad = settings.Cypad;
+    self.Cscale = settings.Cscale;
     self.font = settings.font;
     self.colour = settings.colour;
     self.texture = settings.texture;
@@ -29,8 +36,39 @@ class MRGP_Tooltip : Object ui {
     if (height > screen_height) return 0;
     return (screen_height - height) * self.y;
   }
+  
+  int GetCX(uint screen_width, uint width) {
+    if (width > screen_width) return 0;
+    return (screen_width - width) * self.Cx;
+  }
+
+  int GetCY(uint screen_height, uint height) {
+    if (height > screen_height) return 0;
+    return (screen_height - height) * self.Cy;
+  }
 
   void Draw() {
+	DrawTip();
+	String Text = self.text;
+	if(Text.IndexOf("_(")<0)Return;
+	int Type;
+	String STyp = Text.Mid(Text.IndexOf("_(")+2);
+	STyp = STyp.Left(STyp.IndexOf(")")).MakeLower();
+	Name Typ = STyp;
+	Switch(Typ)
+	{
+		Case 'bool': Type = 0;Break;
+		Case 'int': Type = 1;Break;
+		Case 'float': Case 'double': Type = 2;Break;
+		Case 'string': Type = 3;Break;
+		Case 'color': Type = 4;Break;
+	}
+	Text.Replace("$", "");
+	Text = Text.Left(Text.IndexOf("Tip_"));
+	if(CVar.FindCVar(Text))DrawCVar(Text, Type);
+  }
+  
+  Void DrawTip() {
     // In order to draw the text readably at high resolutions, we calculate
     // everything using a virtual screen size and then tell DrawTexture and
     // DrawText to scale appropriately when blitting the background and tooltip
@@ -44,7 +82,9 @@ class MRGP_Tooltip : Object ui {
     // Nominal width is the maximum width of the tooltip based on configuration
     // in the MENUDEF.
     let nominal_width = virtual_width * self.w;
-	let localtooltip = Stringtable.localize(self.text);
+	String Text = self.text.MakeLower();
+	if(Text.IndexOf("tip_(")>-1)Text = Text.Left(Text.IndexOf("_("));
+	let localtooltip = Stringtable.localize(Text);
     let lines = self.font.BreakLines(localtooltip, nominal_width);
 
     // Calculate the real width of the tooltip. This may be less than the
@@ -86,6 +126,82 @@ class MRGP_Tooltip : Object ui {
         DTA_KeepRatio, true);
     }
   }
+  
+	Void DrawCVar(String CVa, int Type) {
+		// In order to draw the text readably at high resolutions, we calculate
+		// everything using a virtual screen size and then tell DrawTexture and
+		// DrawText to scale appropriately when blitting the background and tooltip
+		// text to the real screen.
+		uint virtual_height = screen.GetHeight() / CleanYFac_1 / Cscale;
+		let aspect = screen.GetAspectRatio();
+		let virtual_width = virtual_height * aspect;
+		// Font metrics: em width and line height.
+		let em = self.font.GetCharWidth(0x6D);
+		let lh = self.font.GetHeight();
+		// Nominal width is the maximum width of the tooltip based on configuration
+		// in the MENUDEF.
+		let nominal_width = virtual_width * self.Cw;
+		String Text;
+		Text = StringTable.Localize("$MRGoreParts_Tips_CVarStart")..CVa.."\c-\n"..StringTable.Localize("$MRGoreParts_Tips_CVarEnd");
+		Switch(Type)
+		{
+			Case 0://Bool
+				Text = Text..(CVar.FindCVar(CVa).GetDefaultBool()?StringTable.Localize("$TXT_YES"):StringTable.Localize("$TXT_NO"));
+				Break;
+			Case 1://int
+				Text = Text..CVar.FindCVar(CVa).GetDefaultInt();
+				Break;
+			Case 2://Double
+				Text = String.Format("%s %.2f", Text, CVar.FindCVar(CVa).GetDefaultFloat());
+				Break;
+			Case 3://String
+				Text = Text.."\""..CVar.FindCVar(CVa).GetDefaultString().."\"";
+				Break;
+			Case 4://Color
+				Color Val = CVar.FindCVar(CVa).GetDefaultInt();
+				Text = Text.."\c-(\cg"..Val.R.." \cd"..Val.G.." \cy"..Val.B.."\c-)";
+		}
+		let lines = self.font.BreakLines(Text, nominal_width);
+
+		// Calculate the real width of the tooltip. This may be less than the
+		// nominal width if it's a short one-liner. This is still in virtual screen
+		// coordinates, not real screen!
+		uint actual_width = 0;
+		for (int i = 0; i < lines.count(); ++i) {
+		  actual_width = max(actual_width, self.font.StringWidth(lines.StringAt(i)));
+		}
+		actual_width += self.Cxpad * 2.0 * em;
+
+		// Calculate the real height based on the number of lines we wrapped it into
+		// and the vertical margins.
+		uint actual_height = self.font.GetHeight() * (self.Cypad * 2.0 + lines.count());
+
+		// Get the coordinates of the top left corner of the tooltip's bounding box,
+		// including padding, in virtual screen coordinates.
+		uint x = GetCX(virtual_width, actual_width);
+		uint y = GetCY(virtual_height, actual_height);
+		
+		// Draw the background texture, if defined. DTA_Virtual* commands it to scale
+		// the virtual screen size to match the real screen; DTA_KeepRatio tells it
+		// to assume the ratio of the virtual screen matches the real screen. (The
+		// documentation on the wiki is wrong here; leaving it false forces a 4:3
+		// aspect ratio.)
+		Screen.DrawTexture(texture, true, x, y,
+			DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
+			DTA_KeepRatio, true,
+			DTA_LeftOffset, 0, DTA_TopOffset, 0,
+			DTA_DestWidth, actual_width+10, DTA_DestHeight, actual_height);
+
+		for (int i = 0; i < lines.count(); ++i) {
+		  screen.DrawText(
+			self.font, self.colour,
+			x + 5 + self.xpad*em,
+			y + i*lh + self.ypad*lh,
+			lines.StringAt(i),
+			DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
+			DTA_KeepRatio, true);
+		}
+	}
 }
 
 // Mixin classes used for the menu and menu items.
@@ -105,6 +221,11 @@ mixin class MRGP_TooltipMenu {
     tt.xpad = 1.0;
     tt.ypad = 0.5;
     tt.scale = 1.0;
+	tt.x = tt.Cy = 0.0;
+    tt.Cw = 0.3;
+    tt.Cxpad = 1.0;
+    tt.Cypad = 0.5;
+    tt.Cscale = 1.0;
     tt.font = newsmallfont;
     tt.colour = Font.CR_WHITE;
     return tt;
@@ -224,6 +345,29 @@ mixin class MRGP_TooltipGeometry {
     if (self.xpad >= 0) settings.xpad = self.xpad;
     if (self.ypad >= 0) settings.ypad = self.ypad;
     if (self.scale > 0) settings.scale = self.scale;
+  }
+}
+
+mixin class MRGP_CVarTipGeometry {
+  double Cx, Cy, Cw, Cxpad, Cypad, Cscale;
+
+  Object Init(
+      double Cx=-1.0, double Cy=-1.0, double Cw=-1.0,
+      double Cxpad=-1.0, double Cypad=-1.0,
+      double Cscale=-1.0) {
+    self.Cx = Cx; self.Cy = Cy; self.Cw = Cw;
+    self.Cxpad = Cxpad; self.Cypad = Cypad;
+    self.Cscale = Cscale;
+    return self;
+  }
+
+  void CopyTo(MRGP_Tooltip settings) {
+    if (self.Cx >= 0) settings.Cx = self.Cx;
+    if (self.Cy >= 0) settings.Cy = self.Cy;
+    if (self.Cw >= 0) settings.Cw = self.Cw;
+    if (self.Cxpad >= 0) settings.Cxpad = self.Cxpad;
+    if (self.Cypad >= 0) settings.Cypad = self.Cypad;
+    if (self.Cscale > 0) settings.Cscale = self.Cscale;
   }
 }
 

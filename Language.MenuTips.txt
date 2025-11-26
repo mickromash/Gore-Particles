@@ -1,11 +1,15 @@
 [eng en enu default]
 
+MRGoreParts_Tips_CVarStart = "Console var: \cg";
+MRGoreParts_Tips_CVarEnd = "Default Value: \cg";
+
 MRGoreParts_DrawTip = "Turns on/off all mod's functions.";
 MRGoreParts_LiteDistanceTip = "Use simplified distance check between player and effects, which ignores GZDoom portals. May increase performance.";
 MRGoreParts_UpdateMenuTip = "If you're loading a game saved with older version of the mod, or different mod list this might be helpful.";
 MRGoreParts_CheckLimitTip = "A green particle will appear on the screen. When the particles will hit the amount limit, it will dissapear, or will start flickering. It works from time to time tho.";
-MRGoreParts_AllParticlesAmountTip = "If particles amount hit the limit, new particles won't spawn. I recommend setting the highest possible value, minimum of 400 particles.";
-GLLIGHTMNU_LIGHTPARTICLESTip = "Dynamic lighting affecting particles. Turning this option off, may increase performance a lot, especially on mobile devices.";
+MRGoreParts_CheckLimitOffsetTip = "$$MRGoreParts_CheckLimitTip";
+r_maxparticlesTip = "If particles amount hit the limit, new particles won't spawn. I recommend setting the highest possible value, minimum of 400 particles.";
+gl_light_particlesTip = "Dynamic lighting affecting particles. Turning this option off, may increase performance a lot, especially on mobile devices.";
 
 //Spawn menu
 MRGoreParts_OnlyModsBloodTip = "Blood effects (actors) from other mods will be removed on spawn.\n\cgTurn off this option before playing with people that don't use this mod.";
@@ -15,14 +19,16 @@ MRGoreParts_BloodTypesTip = "Blood effects (actors) specific for some monsters w
 MRGoreParts_Quake2Tip = "Spawn small Quake 1-style particles splash on any damage appearance. Useful for shootable corpses from other mods.";
 
 MRGoreParts_NoBloodMonstersTip = "Spawn blood effects for monsters that are not supposed to bleed. Blacklisted monsters won't bleed anyway.";
-MRGoreParts_BlacklistTip = "Type class (actor) names of the monsters you don't want to bleed.\n\cgDefault:\c- LostSoul, Revenant.";
+MRGoreParts_BlacklistTip = "Type class (actor) names of the monsters you don't want to bleed.";
 MRGoreParts_NoBloodMistTip = "Spawn dust effect when the non-bleeding monster is hit.";
+MRGoreParts_NoBloodMistColorTip = "$$MRGoreParts_NoBloodMistTip";
 
 //Effects menu
 MRGoreParts_DistanceTip = "Partciles sizes and speed will be scaled and amount will be downscaled by distance from player.";
 MRGoreParts_LowAlphaTip = "If turned on, effects and sopts particles will shrink, rather than fade out. Particles that force alpha ignore this setting. May increase performance.";
 MRGoreParts_DripOnImpactTip = "Some blood will drip straight on the floor on any damage appearance.";
 MRGoreParts_DrawFlyingBloodTip = "Spawn long blood sprays line in Shadow Warrior (1997), Blood or Quake.";
+MRGoreParts_FlyingBloodChanceTip = "$$MRGoreParts_DrawFlyingBloodTip";
 MRGoreParts_MaxFlyingBloodTip = "When the limit is reached, the longest spray will wanish.";
 
 MRGoreParts_MaxDyingTip = "Maximum amount of monsters with dying splashes at once. When the limit is reached, the longest dying monster will stop spawn splashes.";
@@ -39,6 +45,7 @@ MRGoreParts_EffectsSpotsTip = "Spots leaved by damage effects.";
 MRGoreParts_DeathSpotsTip = "Spots leaved by dying monsters.";
 MRGoreParts_SpotsFrequencyTip = "Frequency of spots spawn. The biggre the value, the more spots will be lived by effects.";
 MRGoreParts_MaxSpotsTip = "When the limit is reached, the longest spost will wanish.";
+MRGoreParts_SpotsTimeTip = "How long spots lay before dissapear (in seconds).";
 
 //Wounds menu
 MRGoreParts_VoxelTip = "Turn on if playing with 3D/voxel models.";
@@ -50,12 +57,15 @@ MRGP_UpdateRemoveBloodTip = "Update list of blood actors from other mods to remo
 	
 [ru]
 
+MRGoreParts_Tips_CVarStart = "Переменная: \cg";
+MRGoreParts_Tips_CVarEnd = "По умолчанию: \cg";
+
 MRGoreParts_DrawTip = "Включить/выключить все функции мода.";
 MRGoreParts_LiteDistanceTip = "Использовать упрощённый рассчёт расстояния между эффектами и игроком, игнорируя порталы GZDoom. Может улучшить производительность.";
 MRGoreParts_UpdateMenuTip = "Может пригодиться при игре сохранённой со старой версией мода или другими модами.";
 MRGoreParts_CheckLimitTip = "На экране появится зелённая точка. Если она пропадёт, значит лимит частиц был достигнут. Впрочем, работает она не идеально.";
-MRGoreParts_AllParticlesAmountTip = "Если количество частиц превысит лимит, новые частицы перестанут появляться. Советую поставить максимально возможное количество, минимум от 400 частиц.";
-GLLIGHTMNU_LIGHTPARTICLESTip = "Влияние динамического освещения на частицы. Отключение данной опции может значительно повысить производительность, особенно на мобильных устройствах.";
+r_maxparticlesTip = "Если количество частиц превысит лимит, новые частицы перестанут появляться. Советую поставить максимально возможное количество, минимум от 400 частиц.";
+gl_light_particlesTip = "Влияние динамического освещения на частицы. Отключение данной опции может значительно повысить производительность, особенно на мобильных устройствах.";
 
 //Spawn menu
 MRGoreParts_OnlyModsBloodTip = "Кровавые эффекты (акторы) из других модов будут удаляться при появлении.\n\cgОтключите эту опцию если собираетесь играть с людьми не использующими этот мод.";
@@ -65,7 +75,7 @@ MRGoreParts_BloodTypesTip = "Кровавые эффекты (акторы) ун
 MRGoreParts_Quake2Tip = "При любом нанесении урона будут появляться небольшие всплески как в Quake 1. Данная опция полезна для расчленяемых трупов из разных модов (например Nashgore Next или Universal Gibs).";
 
 MRGoreParts_NoBloodMonstersTip = "Включить кровь для монстров которые не должны кровоточить. Монстры из чёрного списка не включены.";
-MRGoreParts_BlacklistTip = "Впишите названия акторов монстров которые не должны кровоточить.\n\cgПо умолчанию:\c- LostSoul, Revenant.";
+MRGoreParts_BlacklistTip = "Впишите названия акторов монстров которые не должны кровоточить.";
 MRGoreParts_NoBloodMistTip = "При нанесении урона некровоточащим монстрам, будет появляться облако пыли.";
 
 //Effects menu
@@ -89,6 +99,7 @@ MRGoreParts_EffectsSpotsTip = "От эффектов появляющихся п
 MRGoreParts_DeathSpotsTip = "Пятна от умирающих монстров.";
 MRGoreParts_SpotsFrequencyTip = "Частота появления пятен. Чем больше значение, тем больше пятен будут оставлять эффекты.";
 MRGoreParts_MaxSpotsTip = "Когда лимит достигнут, наиболее старые пятна будут пропадать.";
+MRGoreParts_SpotsTimeTip = "Как долго существуют пятна (в секундах).";
 
 //Wounds menu
 MRGoreParts_VoxelTip = "Включите при игре с 3Д/воксельными моделями.";

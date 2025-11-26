@@ -8,12 +8,13 @@ AddOptionMenu "OptionsMenu"
 OptionMenu "MRGoreParts_Menu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_Settings"
 	StaticText ""
 	Option "$MRGoreParts_Draw", "MRGoreParts_Draw", "YesNo"
-	MRGPToolTip "$MRGoreParts_DrawTip"
+	MRGPToolTip "$MRGoreParts_DrawTip_(Bool)"
 	StaticText ""
 	SubMenu "$MRGoreParts_BloodSpawnMenu", "MRGoreParts_BloodSpawnMenu"
 	SubMenu "$MRGoreParts_EffectsMenu", "MRGoreParts_EffectsMenu"
@@ -25,58 +26,61 @@ OptionMenu "MRGoreParts_Menu"
 	StaticText ""
 	MRGPToolTip ""
 	Option "$MRGoreParts_LiteDistance", "MRGoreParts_LiteDistance", "YesNo"
-	MRGPToolTip "$MRGoreParts_LiteDistanceTip"
+	MRGPToolTip "$MRGoreParts_LiteDistanceTip_(Bool)"
 	StaticText ""
 	SubMenu "$MRGoreParts_UpdateMenu", "MRGoreParts_UpdateMenu"
 	MRGPToolTip "$MRGoreParts_UpdateMenuTip"
 	StaticText ""
 	MRGPToolTip ""
 	Option "$MRGoreParts_CheckLimit", "MRGoreParts_CheckLimit", "OnOff"
+	MRGPToolTip "$MRGoreParts_CheckLimitTip_(Bool)"
 	Slider "$MRGoreParts_CheckLimitOffset", "MRGoreParts_CheckLimitOffset", -15, 15, .5
-	MRGPToolTip "$MRGoreParts_CheckLimitTip"
+	MRGPToolTip "$MRGoreParts_CheckLimitOffsetTip_(Double)"
 	StaticText ""
 	SafeCommand "$MRGoreParts_Uninstall", "MRGoreParts_Uninstall", "$MRGoreParts_UninstallPromt"
 	StaticText ""
 	StaticText "--------------- GZDoom ---------------"
 	MRGPToolTip ""
 	Slider "$MRGoreParts_AllParticlesAmount", "r_maxparticles", 100, 10000, 300, 0
-	MRGPToolTip "$MRGoreParts_AllParticlesAmountTip"
+	MRGPToolTip "$r_maxparticlesTip_(int)"
 	Option "$GLPREFMNU_PARTICLESTYLE", gl_particles_style, "Particles"
 	MRGPToolTip ""
 	Option "$GLLIGHTMNU_LIGHTPARTICLES", gl_light_particles, "YesNo"
-	MRGPToolTip "$GLLIGHTMNU_LIGHTPARTICLESTip"
+	MRGPToolTip "$gl_light_particlesTip_(Bool)"
 }
 
 
 OptionMenu "MRGoreParts_BloodSpawnMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_BloodSpawnMenu"
 	Option "$MRGoreParts_OnlyModsBlood", "MRGoreParts_OnlyModsBlood", "YesNo"
-	MRGPToolTip "$MRGoreParts_OnlyModsBloodTip"
+	MRGPToolTip "$MRGoreParts_OnlyModsBloodTip_(Bool)"
 	Option "$MRGoreParts_HideOtherBlood", "MRGoreParts_HideOtherBlood", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 1
-	MRGPToolTip "$MRGoreParts_HideOtherBloodTip"
+	MRGPToolTip "$MRGoreParts_HideOtherBloodTip_(Bool)"
 	Option "$MRGoreParts_BloodTypes", "MRGoreParts_BloodTypes", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 0
-	MRGPToolTip "$MRGoreParts_BloodTypesTip"
+	MRGPToolTip "$MRGoreParts_BloodTypesTip_(Bool)"
 	StaticText ""
 	Option "$MRGoreParts_Quake2", "MRGoreParts_Quake2", "YesNo"
-	MRGPToolTip "$MRGoreParts_Quake2Tip"
+	MRGPToolTip "$MRGoreParts_Quake2Tip_(Bool)"
 	StaticText ""
 	StaticText ""
 	StaticText "$MRGoreParts_MenuNoBloodTitle", "Gold"
 	MRGPToolTip ""
 	Option "$MRGoreParts_NoBloodMonsters", "MRGoreParts_NoBloodMonsters", "YesNo"
-	MRGPToolTip "$MRGoreParts_NoBloodMonstersTip"
+	MRGPToolTip "$MRGoreParts_NoBloodMonstersTip_(Bool)"
 	TextField "$MRGoreParts_Blacklist", "MRGoreParts_Blacklist"
-	MRGPToolTip "$MRGoreParts_BlacklistTip"
+	MRGPToolTip "$MRGoreParts_BlacklistTip_(String)"
 	Option "$MRGoreParts_BlacklistOn", "MRGoreParts_BlacklistOn", "OnOff"
 	Command "$MRGP_UpdateBlacklist", "MRGP_UpdateBlacklist"
 	MRGPToolTip ""
 	Option "$MRGoreParts_NoBloodMist", "MRGoreParts_NoBloodMist", "OnOff"
+	MRGPToolTip "$MRGoreParts_NoBloodMistTip_(Bool)"
 	ColorPicker "$MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMistColor", "MRGoreParts_NoBloodMist"
-	MRGPToolTip "$MRGoreParts_NoBloodMistTip"
+	MRGPToolTip "$MRGoreParts_NoBloodMistColorTip_(Color)"
 	Slider "$MRGoreParts_NoBloodSndVol", "MRGoreParts_NoBloodSndVol", 0, 1, .1, 1, "MRGoreParts_NoBloodMist"
 	StaticText ""
 }
@@ -84,46 +88,49 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 OptionMenu "MRGoreParts_EffectsMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_EffectsMenu"
 	Slider "$MRGoreParts_Amount", "MRGoreParts_Amount", 0, 3, .1
 	Slider "$MRGoreParts_Size", "MRGoreParts_Size", .1, 5, .1
 	MRGPToolTip ""
 	Slider "$MRGoreParts_Distance", "MRGoreParts_Distance", 0, 10, .2
-	MRGPToolTip "$MRGoreParts_DistanceTip"
+	MRGPToolTip "$MRGoreParts_DistanceTip_(Double)"
 	Slider "$MRGoreParts_Speed", "MRGoreParts_Speed", .1, 3, .1
 	Slider "$MRGoreParts_Gravity", "MRGoreParts_Gravity", 0, 3, .2, 2
 	StaticText ""
 	MRGPToolTip ""
 	Option "$MRGoreParts_LowAlpha", "MRGoreParts_LowAlpha", "YesNo"
-	MRGPToolTip "$MRGoreParts_LowAlphaTip"
+	MRGPToolTip "$MRGoreParts_LowAlphaTip_(Bool)"
 	StaticText ""
 	Option "$MRGoreParts_DripOnImpact", "MRGoreParts_DripOnImpact", "OnOff"
-	MRGPToolTip "$MRGoreParts_DripOnImpactTip"
+	MRGPToolTip "$MRGoreParts_DripOnImpactTip_(Bool)"
 	Option "$MRGoreParts_DrawFlyingBlood", "MRGoreParts_DrawFlyingBlood", "OnOff"
+	MRGPToolTip "$MRGoreParts_DrawFlyingBloodTip_(Bool)"
 	Slider "$MRGoreParts_FlyingBloodChance", "MRGoreParts_FlyingBloodChance", 0, 1, .05, 2, "MRGoreParts_DrawFlyingBlood"
-	MRGPToolTip "$MRGoreParts_DrawFlyingBloodTip"
+	MRGPToolTip "$MRGoreParts_FlyingBloodChanceTip_(Double)"
 	Slider "$MRGoreParts_MaxFlyingBlood", "MRGoreParts_MaxFlyingBlood", 1, 100, 2, 0, "MRGoreParts_DrawFlyingBlood"
-	MRGPToolTip "$MRGoreParts_MaxFlyingBloodTip"
+	MRGPToolTip "$MRGoreParts_MaxFlyingBloodTip_(int)"
 	Option "$MRGoreParts_MistTexture", "MRGoreParts_MistTexture", "MRGoreParts_MistTextureOption"
 	SubMenu "$MRGoreParts_EffectsListMenu", "MRGP_EffectsMenu"
 	StaticText ""
 	MRGPToolTip ""
 	Slider "$MRGoreParts_MaxDying", "MRGoreParts_MaxDying", 0, 30, 1, 0
-	MRGPToolTip "$MRGoreParts_MaxDyingTip"
+	MRGPToolTip "$MRGoreParts_MaxDyingTip_(int)"
 	Slider "$MRGoreParts_MaxGibing", "MRGoreParts_MaxGibing", 0, 30, 1, 0
-	MRGPToolTip "$MRGoreParts_MaxGibingTip"
+	MRGPToolTip "$MRGoreParts_MaxGibingTip_(int)"
 	Option "$MRGoreParts_FloorSplash", "MRGoreParts_FloorSplash", "OnOff", "MRGoreParts_MaxGibing", 1, 0
-	MRGPToolTip "$MRGoreParts_FloorSplashTip"
+	MRGPToolTip "$MRGoreParts_FloorSplashTip_(Bool)"
 	Slider "$MRGoreParts_Crush", "MRGoreParts_Crush", 0, 30, 1, 0
-	MRGPToolTip "$MRGoreParts_CrushTip"
+	MRGPToolTip "$MRGoreParts_CrushTip_(int)"
 }
 
 OptionMenu "MRGoreParts_AppearanceMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_AppearanceMenu"
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
@@ -134,7 +141,7 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 	StaticText ""
 	MRGPToolTip ""
 	Option "$MRGoreParts_FuzzyBlood", "MRGoreParts_FuzzyBlood", "YesNo"
-	MRGPToolTip "$MRGoreParts_FuzzyBloodTip"
+	MRGPToolTip "$MRGoreParts_FuzzyBloodTip_(Bool)"
 	StaticText ""
 	StaticText "$MRGoreParts_Sound", "Gold"
 	Slider "$MRGoreParts_SndVol", "MRGoreParts_SndVol", 0, 1, .05, 2
@@ -148,30 +155,33 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 OptionMenu "MRGoreParts_SpotsMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_SpotsMenu"
 	Option "$MRGoreParts_FloorSpots", "MRGoreParts_FloorSpots", "OnOff"
-	MRGPToolTip "$MRGoreParts_FloorSpotsTip"
+	MRGPToolTip "$MRGoreParts_FloorSpotsTip_(Bool)"
 	Option "$MRGoreParts_EffectsSpots", "MRGoreParts_EffectsSpots", "OnOff", "MRGoreParts_FloorSpots"
-	MRGPToolTip "$MRGoreParts_EffectsSpotsTip"
+	MRGPToolTip "$MRGoreParts_EffectsSpotsTip_(Bool)"
 	Option "$MRGoreParts_WoundsSpots", "MRGoreParts_WoundsSpots", "OnOff", "MRGoreParts_FloorSpots"
 	MRGPToolTip ""
 	Option "$MRGoreParts_DeathSpots", "MRGoreParts_DeathSpots", "OnOff", "MRGoreParts_FloorSpots"
-	MRGPToolTip "$MRGoreParts_DeathSpotsTip"
+	MRGPToolTip "$MRGoreParts_DeathSpotsTip_(Bool)"
 	Option "$MRGOreParts_SpotsStyle", "MRGOreParts_SpotsStyle", "Particles", "MRGoreParts_FloorSpots"
 	MRGPToolTip ""
 	Slider "$MRGoreParts_SpotsFrequency", "MRGoreParts_SpotsFrequency", 0, 2, .1, 2, "MRGoreParts_FloorSpots"
-	MRGPToolTip "$MRGoreParts_SpotsFrequencyTip"
+	MRGPToolTip "$MRGoreParts_SpotsFrequencyTip_(Double)"
 	Slider "$MRGoreParts_MaxSpots", "MRGoreParts_MaxSpots", 1, 2000, 50, 0, "MRGoreParts_FloorSpots"
-	MRGPToolTip "$MRGoreParts_MaxSpotsTip"
+	MRGPToolTip "$MRGoreParts_MaxSpotsTip_(int)"
 	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 300, 10, 0, "MRGoreParts_FloorSpots"
+	MRGPToolTip "$MRGoreParts_SpotsTimeTip_(int)"
 }
 
 OptionMenu "MRGoreParts_WoundsMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_Wounds", "MRGoreParts_Wounds", "OnOff"
@@ -180,13 +190,14 @@ OptionMenu "MRGoreParts_WoundsMenu"
 	Option "$MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWounds", "MRGoreParts_CorpseWoundsOption", "MRGoreParts_Wounds", 1, 0
 	MRGPToolTip ""
 	Option "$MRGoreParts_Voxel", "MRGoreParts_Voxel", "YesNo", "MRGoreParts_Wounds", 1, 0
-	MRGPToolTip "$MRGoreParts_VoxelTip"
+	MRGPToolTip "$MRGoreParts_VoxelTip_(Bool)"
 }
 
 OptionMenu "MRGoreParts_UpdateMenu"
 {
 	class MRGP_TooltipOptionMenu
-	MRGPToolTipGeometry 0, 1, .75, 0.5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPToolTipGeometry 0, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
+	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_UpdateMenu"
 	Command "$MRGP_UpdateColors", "MRGP_UpdateColors"

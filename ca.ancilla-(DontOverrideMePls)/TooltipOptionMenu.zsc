@@ -62,6 +62,8 @@ class MRGP_TooltipOptionMenu : OptionMenu {
         OptionMenuItemMRGPToolTipGeometry(items[i]).CopyTo(tooltip_settings);
       } else if (items[i] is "OptionMenuItemMRGPToolTipAppearance") {
         OptionMenuItemMRGPToolTipAppearance(items[i]).CopyTo(tooltip_settings);
+      } else if (items[i] is "OptionMenuItemMRGPCVarTipGeometry") {
+        OptionMenuItemMRGPCVarTipGeometry(items[i]).CopyTo(tooltip_settings);
       } else {
         if (tooltip_mode) {
           // Just finished a run of tooltips.
@@ -95,6 +97,10 @@ class OptionMenuItemMRGPToolTip : OptionMenuItem {
 
 class OptionMenuItemMRGPToolTipGeometry : OptionMenuItem {
   mixin MRGP_TooltipGeometry;
+}
+
+Class OptionMenuItemMRGPCVarTipGeometry: OptionMenuItem {
+  mixin MRGP_CVarTipGeometry;
 }
 
 class OptionMenuItemMRGPToolTipAppearance : OptionMenuItem {
