@@ -11,3 +11,7 @@ alias MRGoreParts_DemoEffect "NetEvent MRGoreParts_DemoEffect %1 %2 %3"
 alias MRGoreParts_DemoRandomEffect "NetEvent MRGoreParts_DemoRandom %1 %2"
 alias MRGoreParts_DemoAlwaysEffect "NetEvent MRGoreparts_DemoAlways %1 %2"
 alias MRGoreParts_DemoNoBloodEffect "NetEvent MRGoreparts_DemoNoBlood %1 %2"
+
+alias MRGoreParts_ClearWounds "NetEvent MRGoreParts_ClearWounds"
+alias MRGoreParts_ClearSpots "NetEvent MRGoreParts_ClearSpots"
+alias MRGoreParts_ClearCrushed "NetEvent MRGoreParts_ClearCrushed"
