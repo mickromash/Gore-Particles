@@ -37,6 +37,7 @@ MRGoreParts_FuzzyBloodTip = "Partially invisible monsters (and players) will ble
 MRGoreParts_FloorSpotsTip = "Blood spots on the walls, celling and floor. Made via 'VisualThinker's and not listed in particles limit.";
 MRGoreParts_EffectsSpotsTip = "Spots leaved by damage effects.";
 MRGoreParts_DeathSpotsTip = "Spots leaved by dying monsters.";
+MRGoreParts_SpotsFrequencyTip = "Frequency of spots spawn. The biggre the value, the more spots will be lived by effects.";
 MRGoreParts_MaxSpotsTip = "When the limit is reached, the longest spost will wanish.";
 
 //Wounds menu
@@ -86,6 +87,7 @@ MRGoreParts_FuzzyBloodTip = "Невидимые монстры (и игроки)
 MRGoreParts_FloorSpotsTip = "Кровавые пятна на стенах, потолках и полах. Реализованны через классы 'VisualThinker' и не включены в общий лимит количества частиц.";
 MRGoreParts_EffectsSpotsTip = "От эффектов появляющихся при уроне будут оставаться пятна.";
 MRGoreParts_DeathSpotsTip = "Пятна от умирающих монстров.";
+MRGoreParts_SpotsFrequencyTip = "Частота появления пятен. Чем больше значение, тем больше пятен будут оставлять эффекты.";
 MRGoreParts_MaxSpotsTip = "Когда лимит достигнут, наиболее старые пятна будут пропадать.";
 
 //Wounds menu
