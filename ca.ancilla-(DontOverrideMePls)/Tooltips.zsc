@@ -62,6 +62,7 @@ class MRGP_Tooltip : Object ui {
 		Case 'float': Case 'double': Type = 2;Break;
 		Case 'string': Type = 3;Break;
 		Case 'color': Type = 4;Break;
+		Case 'type': Type = 5;Break;
 	}
 	Text.Replace("$", "");
 	Text = Text.Left(Text.IndexOf("Tip_"));
@@ -160,6 +161,12 @@ class MRGP_Tooltip : Object ui {
 			Case 4://Color
 				Color Val = CVar.FindCVar(CVa).GetDefaultInt();
 				Text = Text.."\c-(\cg"..Val.R.." \cd"..Val.G.." \cy"..Val.B.."\c-)";
+				Break;
+			Case 5://Type
+				String Option = "$"..CVa;
+				if(StringTable.Localize(Option..CVar.FindCVar(CVa).GetDefaultInt())!=Option..CVar.FindCVar(CVa).GetDefaultInt())Text = Text..StringTable.Localize(Option..CVar.FindCVar(CVa).GetDefaultInt());
+				else Text = Text..CVar.FindCVar(CVa).GetDefaultInt();
+				Break;
 		}
 		let lines = self.font.BreakLines(Text, nominal_width);
 
