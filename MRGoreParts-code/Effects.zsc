@@ -986,7 +986,10 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		int Fuzzy = STYLE_NONE;
 		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
-		For(int i=CRandom(0, 2);i<5;i++)
+		int MaxLines = 5;
+		int StartLine = CRandom(0, 2);
+		
+		For(int i=StartLine;i<MaxLines;i++)
 		{
 			Double TempPitch = Pitch-CFRandom(5, 10)+CFRandom(-30, 30);
 			Double TempAngle = Angle + CFRandom(-30, 30);
@@ -1039,9 +1042,18 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 				ReSize = -(Size/Life);
 				if(!LowAlpha){Fade = -1; ReSize *= .4;}
 				
-				if(!(Flags&SGPF_TEST))mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
-					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize);
-
+				if(!(Flags&SGPF_TEST)){
+					if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 9*(MaxLines-StartLine))){
+						Vector3 PPos = (Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale);
+						if(!LowAlpha){
+							Fade = Alph/Life;
+						}
+						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
+					}
+					else mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize);
+				}
+				
 				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
 				
 				Particles++;
