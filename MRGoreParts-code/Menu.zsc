@@ -16,8 +16,8 @@ class MRGP_EffectsMenu:GenericMenu
 
 	string WorkingString[3];
 	
-	int CursX, CursY, CurlY, UpdLineTime;
-	string Undo;
+	int CursX, CursY, CurlY, MessageLineTime;
+	string Undo, MessageLine;
 	bool ViewList, Editing, UpdateData;
 	
 	override void Init(menu parent){
@@ -144,11 +144,12 @@ class MRGP_EffectsMenu:GenericMenu
 				break;
 			case UIEvent.Key_F6:
 				CVar.FindCVar("MRGoreParts_CopyList").SetString(WorkingString[CursY]);
-				UpdateList();
+				PrintMessage(StringTable.Localize("$MRGoreParts_ListCopied"));
 				break;
 			case UIEvent.Key_F9:
 				WorkingString[CursY] = CVar.FindCVar("MRGoreParts_CopyList").GetString();
 				UpdateList();
+				SaveChanges();
 				break;
 			case UIEvent.Key_F2:
 			case UIEvent.Key_F3:
@@ -156,7 +157,6 @@ class MRGP_EffectsMenu:GenericMenu
 			case UIEvent.Key_F5:
 			case UIEvent.Key_F7:
 			case UIEvent.Key_F8:
-			case UIEvent.Key_F9:
 			case UIEvent.Key_F11:
 			case UIEvent.Key_F12:
 				break;
@@ -181,7 +181,7 @@ class MRGP_EffectsMenu:GenericMenu
 					
 					String OldCVar = CVar.FindCVar(ConVar).GetString();
 					CVar.FindCVar(ConVar).resettodefault();
-					if(OldCVar!=CVar.FindCVar(ConVar).GetString())UpdLineTime = 40;
+					if(OldCVar!=CVar.FindCVar(ConVar).GetString())MessageLineTime = 40;
 					
 					EventHandler.SendNetworkEvent("MRGP_UpdateEffects");
 					
@@ -190,11 +190,12 @@ class MRGP_EffectsMenu:GenericMenu
 				}
 				else if(inp~=="c" && ev.IsCtrl){
 					CVar.FindCVar("MRGoreParts_CopyList").SetString(WorkingString[CurSY]);
-					UpdateList();
+					PrintMessage(StringTable.Localize("$MRGoreParts_ListCopied"));
 				}
 				else if(inp~=="v" && ev.IsCtrl){
 					WorkingString[CurSY] = CVar.FindCVar("MRGoreParts_CopyList").GetString();
 					UpdateList();
+					SaveChanges();
 				}
 			}
 		}else if(ev.Type==UIEvent.Type_Char){
@@ -213,8 +214,17 @@ class MRGP_EffectsMenu:GenericMenu
 		UpdateList(CursY);
 		return Super.OnUIEvent(ev);
 	}
+	
+	Void PrintMessage(String Message = "", int Time=40)
+	{
+		MessageLineTime = Time;
 		
-	void savechanges()
+		if(Message==""){MessageLine = StringTable.Localize("$MRGoreParts_EffectsUpdated");Return;}
+		
+		MessageLine = Message;
+	}
+		
+	Void SaveChanges()
 	{
 		String ConVar;
 		
@@ -239,7 +249,7 @@ class MRGP_EffectsMenu:GenericMenu
 		String OldCVar = CVar.FindCVar(ConVar).GetString();
 		CVar.FindCVar(ConVar).SetString(WorkingString[CursY]);
 		
-		if(OldCVar!=CVar.FindCVar(ConVar).GetString())UpdLineTime = 40;
+		if(OldCVar!=CVar.FindCVar(ConVar).GetString())PrintMessage();
 		
 		Editing = false;
 		
@@ -380,7 +390,16 @@ class MRGP_EffectsMenu:GenericMenu
 		vcurs+=BigFont.GetHeight();
 
 
-		TempStr=Stringtable.Localize("$MRGoreParts_EffectsListMenuControls");
+		TempStr=Stringtable.Localize("$MRGoreParts_EffectsListMenuControls1");
+		screen.DrawText(NewSmallFont,
+			OptionMenuSettings.mFontColorValue,
+			(screen.GetWidth() - NewSmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
+			vcurs*CleanYfac_1,
+			TempStr,DTA_CleanNoMove_1,true,
+			DTA_Alpha, .75
+		);
+		vcurs+=NewSmallFont.GetHeight();
+		TempStr=Stringtable.Localize("$MRGoreParts_EffectsListMenuControls2");
 		screen.DrawText(NewSmallFont,
 			OptionMenuSettings.mFontColorValue,
 			(screen.GetWidth() - NewSmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
@@ -418,9 +437,9 @@ class MRGP_EffectsMenu:GenericMenu
 		);
 		vcurs+=NewSmallFont.GetHeight()*3;
 		
-		if(UpdLineTime>0)//CVar updated line
+		if(MessageLineTime>0)//CVar updated line
 		{
-			TempStr = StringTable.Localize("$MRGoreParts_EffectsUpdated");
+			TempStr = MessageLine;
 			screen.DrawText(SmallFont,
 				OptionMenuSettings.mFontColorValue,
 				(screen.GetWidth() - SmallFont.StringWidth(TempStr) * CleanXfac_1) / 2,
@@ -428,7 +447,7 @@ class MRGP_EffectsMenu:GenericMenu
 				TempStr,DTA_CleanNoMove_1,true
 			);
 		
-			UpdLineTime--;
+			MessageLineTime--;
 		}
 		vcurs+=NewSmallFont.GetHeight()*2;
 		
