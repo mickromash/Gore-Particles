@@ -58,7 +58,7 @@ Class MRGP_Handler: EventHandler
 		Return b-a;
 	}
 	
-	Void UpdateSpots(MRGP_Spot a)
+	Void UpdateSpots(MRGP_Spot a)//Removes old spots if the limit is reached and pushes new one in the list
 	{
 		For(int i=0;i<Max(0, Spots.Size()-MRGoreParts_MaxSpots+1);i++)
 		{
@@ -68,7 +68,7 @@ Class MRGP_Handler: EventHandler
 		Spots.Push(a);
 	}
 	
-	Array<Object> Thinkers;
+	Array<Object> Thinkers;//Misc. thinkers that listed to be removed on mod uninstallation
 	
 	Array<MRGP_FlyingBlood> Streams;
 	Array<MRGP_DeathThinker> Dyings;
@@ -78,7 +78,6 @@ Class MRGP_Handler: EventHandler
 		
 	Array<Actor> Wounded;
 	Array<MRGP_Wound> Wounds;
-	
 	
 	
 	Array<MRGP_Effect> Effects, AlwaysEffects;
@@ -131,10 +130,11 @@ Class MRGP_Handler: EventHandler
 		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName().." ("..AlwaysEffects[i].GetClassName()..")");
 	}
 	
-	Void UpdateEffectsData()
+	Void UpdateEffectsData()//Updates effects information for effects menu
 	{
 		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+		
 		For(int i=0;i<Handler.Effects.Size();i++){
 			if(Handler.Effects[i])Handler.Effects[i].CountParticles(100);
 		}
@@ -155,15 +155,16 @@ Class MRGP_Handler: EventHandler
 	Map<String, Color> BldCols;//(Vanilla) monsters that supposed to have different blood color
 	Map<String, int> BldFlags;
 	/*
-		MRPRTCOL (MickRomash's gore PaRTiCle COLours) lump stores information
+		MRPRTCOL (MickRomash's gore PaRTicle COLours) lump stores information
 		about blood colours for specific monster classes
 		
 		Syntax:
-		MonsterClassName (R G B)
+		MonsterClassName (R G B) +flag +flag
 		
 		example:
 		HellKnight (10 80 10)
 		Cacodemon (30 30 120)
+		FireDemon (255 135 15) +glow
 		
 		(check filter folder)
 	*/
@@ -307,8 +308,6 @@ Class MRGP_Handler: EventHandler
 				}
 			}
 			
-			//Console.Printf(Files.Size().." Lumps Found");
-			
 			For(int i=0;i<Files.Size();i++){//Look inside each lump in case author of the mod wish to replace default aliases
 				String File = Files[i];
 				File = File.MakeLower();//For easier search
@@ -325,7 +324,6 @@ Class MRGP_Handler: EventHandler
 					int End = File.IndexOf(MRGPCommEnd);
 					File = File.Left(Start)..File.Mid(End+2);
 				}
-				//
 
 				int Cur, Akhtung;
 				Cur = File.IndexOf("mod ");
@@ -393,7 +391,7 @@ Class MRGP_Handler: EventHandler
 	Array<String> RemoveBloods, RemoveBloodTypes;
 	String RemoveBloodBase;
 	
-	Void SetUpBloodRemove()//Caching blood actors that will be hidden/removed
+	Void SetUpBloodRemove()//Caching blood classes that will be hidden/removed
 	{
 		RemoveBloods.Clear();
 		RemoveBloodTypes.Clear();
@@ -443,7 +441,6 @@ Class MRGP_Handler: EventHandler
 					File = File.Left(Start)..File.Mid(End+2);
 				}
 								
-				//Bool BreakAll;
 				int Cur, Akhtung;
 				Cur = File.IndexOf("mod ");
 				
@@ -456,7 +453,6 @@ Class MRGP_Handler: EventHandler
 					Mod.StripRight();
 
 					if((Class<Actor>)(Mod)){
-						//BreakAll = true;
 						String Removes = File.Mid(File.IndexOf("{", Cur)+1);
 						Removes = Removes.Left(Removes.IndexOf("}"));//Blood actors names
 
@@ -482,7 +478,6 @@ Class MRGP_Handler: EventHandler
 					}
 					Cur = File.IndexOf("mod ", Cur+1);
 				}
-				//if(BreakAll)Break;
 			}
 			Break;
 		}
@@ -497,7 +492,6 @@ Class MRGP_Handler: EventHandler
 		}
 	}
 	
-	Float ViewBob;
 	
 	Void ThinkersTick()
 	{
@@ -590,6 +584,8 @@ Class MRGP_Handler: EventHandler
 			
 		ViewBob = NewBob;
 	}
+	
+	Float ViewBob;
 		
 	Bool MRGPartsCheckDraw(Actor mo = Null)
 	{
@@ -764,7 +760,7 @@ Class MRGP_Handler: EventHandler
 		Let a = MRGP_Spot.MRGSpawnSpot(Col, (mo.pos.x+CFRandom(-1, 1), mo.pos.y+CFRandom(-1, 1), mo.floorz+1), 150, Delay, 1, CFRandom(2, 4), CFRandom(.8, .9));
 	}
 	
-	Void SpawnXDeath(Actor mo, Actor inflictor = Null, int damage = 0)
+	Void SpawnXDeath(Actor mo, Actor inflictor = Null, int damage = 0)//Gibbing effects
 	{
 		if(!MRGoreParts_Draw)Return;
 		
@@ -1121,7 +1117,7 @@ Class MRGP_Handler: EventHandler
 		}
 	}
 	
-	Override void WorldThingGround (WorldEvent e)//Crush
+	Override void WorldThingGround(WorldEvent e)//Actor was crushed
 	{
 		if(!MRGoreParts_Draw)Return;
 		

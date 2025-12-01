@@ -66,8 +66,7 @@ Class MRGP_Wound: MRGP_Thinker
 			Wounds++;
 			if(Corpse==0)Continue;
 			Bool Draw = MRGPartsCheckDraw();
-			//Console.Printf("InitZ: "..Locs[i].Z.." Z: "..Z);
-			if(!(Owner is 'PlayerPawn') && Draw){//Wound
+			if(!(Owner is 'PlayerPawn') && Draw){//Render wound
 				Color Col = Color(int(Col.R*MRGoreParts_Brightness),int(Col.G*MRGoreParts_Brightness),int(Col.B*MRGoreParts_Brightness));
 				Let Forw = Locs[i].X;
 				if(Owner.Health<1 && !MRGoreParts_Voxel)Forw = 1;
@@ -82,14 +81,14 @@ Class MRGP_Wound: MRGP_Thinker
 			{
 				MaxBlood--;
 				if(Draw && Corpse>1){
-					For(float j=CRandom(0, 2);j<3;j++){//Dripping blood
+					For(float j=CRandom(0, 2);j<3;j++){//Spawn dripping blood
 						Float Bright = MRGoreParts_Brightness*CFRandom(.9,2);
 						Owner.A_SpawnParticleEx(Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright)),
 							Texman.CheckForTexture("glpart"), Fuzzy, SPF_RELPOS, 30, Ages[i]/(35*15)*2, Angle, Locs[i].X,Locs[i].Y,Z-j*.5*(Ages[i]/(35*15)),
 							Owner.Vel.X,Owner.Vel.Y,Owner.Vel.Z, 0,0,-.3, MRGoreParts_Alpha);
 					}
 				
-					if(MRGoreParts_WoundsSpots && MRGoreParts_FloorSpots)//Spot
+					if(MRGoreParts_WoundsSpots && MRGoreParts_FloorSpots)//Spawn dripping blood that leaves spots
 					{
 						if(Spot>1){
 							Vector2 Pos = Owner.Pos.XY;
@@ -111,8 +110,8 @@ Class MRGP_Wound: MRGP_Thinker
 						else Spot++;
 					}
 				}
-				if(Ages[i]>35*3 && Draw)//CRandom(0, 10)>7 && Ages[i]>35*3)
-				{//Splash
+				if(Ages[i]>35*3 && Draw)//Blood splash
+				{
 					Double Angl = VectorAngle(Locs[i].X, Locs[i].Y);
 					Vector2 Pos = (0,0);
 					if(Owner.Health>0||MRGoreParts_Voxel)

@@ -325,11 +325,11 @@ class MRGP_SightTracer : LineTracer
 enum MRGP_EffectFlags{
 	SGPF_NoDist = 1,//Distance won't affect particles velocity and sizes
 	SGPF_FixAmount = 2,//Ignore particles amount CVar
-	SGPF_NoVel = 4,
-	SGPF_Fuzzy = 8,
-	SGPF_Test = 16,
-	SGPF_Glow = 32,
-	SGPF_Spots = 64,
+	SGPF_NoVel = 4,//It's only used for mist effect that appears on gibbing, you can do whatever you want with it
+	SGPF_Fuzzy = 8,//Effect was spawn by actor with partial invisibility
+	SGPF_Test = 16,//Effect was spawn to count its particles for effects menu
+	SGPF_Glow = 32,//Spawn fullbright particles
+	SGPF_Spots = 64,//Effect will leave spots
 };
 
 Class MRGP_Effect play abstract
@@ -488,7 +488,6 @@ Class MRGP_Effect_Mist: MRGP_Effect
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
 		if(!MRGoreParts_Draw)Return 0;
-		//if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
 		if(Amount<=0)Return 0;
 		
 		int Particles;
@@ -882,8 +881,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
 		
 		Pitch -= CFRandom(5, 10);
-		//Angle += CRandom(-15, 15);
-		Double Forw = .4;//CFRandom(.01, .2);
+		Double Forw = .4;
 		Double Size = CFRandom(3.4, 3.7)*MRGoreParts_Size*Dist;
 		Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
@@ -993,8 +991,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		{
 			Double TempPitch = Pitch-CFRandom(5, 10)+CFRandom(-30, 30);
 			Double TempAngle = Angle + CFRandom(-30, 30);
-			//Angle += CRandom(-15, 15);
-			Double Forw = .4;//CFRandom(.01, .2);
+			Double Forw = .4;
 			Double Size = CFRandom(2.4, 2.7)*MRGoreParts_Size*Dist;
 			Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
 			if(Water)Life *= 2;
@@ -1112,7 +1109,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
-			Float Life = CFRandom(25, 35)/MRGoreParts_Speed*LifeM;//Min(25, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
+			Float Life = CFRandom(25, 35)/MRGoreParts_Speed*LifeM;
 			Double Size = CFRandom(.7, .8)*Dist*MRGoreParts_Size*Scale;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			Accel.Z -= MRGoreParts_Gravity;
