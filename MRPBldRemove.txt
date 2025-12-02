@@ -38,13 +38,14 @@ Mod HDOperator//Hideous Destructor
 	HDBloodTrailFloor
 }
 
-Mod Doomer//Brutal dewm
+Mod HeadshotTargetBase//Brutal dewm
 {
 	Brutal_Blood
 	BloodSplasher
 	BlueBloodSplasher
 	GreenBloodSplasher
 	Brutal_FlyingBlood
+	DeadBlood
 }
 
 Mod TB_BloodActor//Trailblazer
