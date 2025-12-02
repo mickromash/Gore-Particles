@@ -81,3 +81,4 @@ nosave bool MRGoreParts_LiteDistance = false;//Lighter method of distance check,
 nosave bool MRGoreParts_CheckLimit = false;
 nosave float MRGoreParts_CheckLimitOffset = 0;
 server bool MRGoreParts_Debug = false;
+server bool MRGoreParts_DebugRemoveBlood = true;

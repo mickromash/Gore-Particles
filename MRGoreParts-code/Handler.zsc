@@ -1251,8 +1251,7 @@ Class MRGP_Handler: EventHandler
 		{
 			if(e.Thing is RemoveBloods[i]){DoOtherBlood(e.Thing);Return;}
 		}
-		
-		//Console.Printf(e.Thing.GetClassName());
+		if(MRGoreParts_DebugRemoveBlood && MRGoreParts_Debug)Console.Printf("Thing spawned: "..e.Thing.GetClassName().." at "..e.Thing.Pos);
 	}
 
 	
