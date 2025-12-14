@@ -137,6 +137,8 @@ OptionMenu "MRGoreParts_AppearanceMenu"
 	MRGPCVarTipGeometry .99, 1, .5, .5, -1, 1//X, Y, Width, X margin, Y margin, Scale
 	
 	Title "$MRGoreParts_AppearanceMenu"
+	Option "$MRGoreParts_ParticlesTexture", "MRGoreParts_ParticlesTexture", "MRGoreParts_ParticlesTextureOption"
+	MRGPToolTip "$MRGoreParts_ParticlesTextureTip_(Type)"
 	Option "$MRGoreParts_UseCustomColor", "MRGoreParts_UseCustomColor", "YesNo"
 	MRGPToolTip "$MRGoreParts_UseCustomColorTip_(Bool)"
 	ColorPicker "$MRGoreParts_Color", "MRGoreParts_Color", "MRGoreParts_UseCustomColor"
@@ -225,6 +227,14 @@ OptionValue "MRGoreParts_MistTextureOption"
 	1, "$MRGoreParts_MistTexture1"
 	2, "$MRGoreParts_MistTexture2"
 	3, "$MRGoreParts_MistTexture3"
+}
+
+OptionValue "MRGoreParts_ParticlesTextureOption"
+{
+	0, "$MRGoreParts_ParticlesTexture0"
+	1, "$MRGoreParts_ParticlesTexture1"
+	2, "$MRGoreParts_ParticlesTexture2"
+	3, "$MRGoreParts_ParticlesTexture3"
 }
 
 OptionValue "MRGoreParts_SpotsOption"

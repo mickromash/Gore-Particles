@@ -42,6 +42,7 @@ nosave int MRGoreParts_Crush = 4;//Max remains of crushed bodies
 //
 
 //Blood appearance
+nosave int MRGoreParts_ParticlesTexture = 0;//0 - GZDoom setting, 1 - Smooth, 2 - Round, 3 - Square
 nosave bool MRGoreParts_UseCustomColor = false;//Blend all blood in one color
 nosave color MRGoreParts_Color = "0 96 0";
 nosave float MRGoreParts_Brightness = 1;

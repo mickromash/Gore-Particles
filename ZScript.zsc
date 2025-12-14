@@ -121,7 +121,19 @@ Struct MRGParts
 				Case 3:p.Texture = Texman.CheckForTexture("glpart");Break;
 			}
 		}
+		else p.Texture = MRPartTexture();
 		Level.SpawnParticle(p);
+	}
+	
+	Static TextureID MRPartTexture()
+	{
+		Switch(MRGoreParts_ParticlesTexture)
+		{
+			Case 1:Return Texman.CheckForTexture("GParMst");
+			Case 2:Return Texman.CheckForTexture("glpart2");
+			Case 3:Return Texman.CheckForTexture("GParMst2");
+		}
+		Return Texman.CheckForTexture("glpart");
 	}
 }
 

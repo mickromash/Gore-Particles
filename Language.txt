@@ -53,7 +53,7 @@ MRGoreParts_MistTexture = "Blood mist texture";
 MRGoreParts_MistTexture0 = "Mod (128x128)";
 MRGoreParts_MistTexture1 = "Mod (64x64)";
 MRGoreParts_MistTexture2 = "Mod (1x1)";
-MRGoreParts_MistTexture3 = "Same as particles";
+MRGoreParts_MistTexture3 = "Same as other particles";
 
 MRGoreParts_EffectsListMenu = "Configure included effects";
 MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
@@ -74,6 +74,12 @@ MRGoreParts_EffectsListMenuNoParticles = "(enter a level to know particles amoun
 
 MRGoreParts_AppearanceMenu = "Blood appearance/Sound settings";
 ////{
+MRGoreParts_ParticlesTexture = "Gore particles texture";
+MRGoreParts_ParticlesTexture0 = "Same as other particles";
+MRGoreParts_ParticlesTexture1 = "Smooth";
+MRGoreParts_ParticlesTexture2 = "Round";
+MRGoreParts_ParticlesTexture3 = "Square";
+
 MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
 MRGoreParts_Brightness = "Blood brightness";
@@ -213,7 +219,7 @@ MRGoreParts_MistTexture = "Текстура дымки";
 MRGoreParts_MistTexture0 = "Из мода (128x128)";
 MRGoreParts_MistTexture1 = "Из мода (64x64)";
 MRGoreParts_MistTexture2 = "Из мода (1x1)";
-MRGoreParts_MistTexture3 = "Такая же как у частиц";
+MRGoreParts_MistTexture3 = "Такая же как у остальных частиц";
 
 
 MRGoreParts_EffectsListMenu = "Настроить включённые эффекты";
@@ -235,6 +241,12 @@ MRGoreParts_EffectsListMenuNoParticles = "(начните игру чтобы у
 
 MRGoreParts_AppearanceMenu = "Внейшний вид крови/Звук";
 ////{
+MRGoreParts_ParticlesTexture = "Текстура кровавых частиц";
+MRGoreParts_ParticlesTexture0 = "Такая же как у остальных частиц";
+MRGoreParts_ParticlesTexture1 = "Плавная";
+MRGoreParts_ParticlesTexture2 = "Круглая";
+MRGoreParts_ParticlesTexture3 = "Квадратная";
+
 MRGoreParts_UseCustomColor = "Кровь одного цвета";
 MRGoreParts_Color = "Цвет крови";
 MRGoreParts_Brightness = "Яркость крови";

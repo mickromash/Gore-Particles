@@ -10,6 +10,8 @@ MRGoreParts_CheckLimitTip = "A green particle will appear on the screen. When th
 MRGoreParts_CheckLimitOffsetTip = "$$MRGoreParts_CheckLimitTip";
 r_maxparticlesTip = "If particles amount hit the limit, new particles won't spawn. I recommend setting the highest possible value, minimum of 400 particles.";
 gl_particles_styleTip = "Texture used for particles. Has almost zero effect on performance.";
+gl_particles_style0 = "$$OPTVAL_SQUARE";
+gl_particles_style1 = "$$OPTVAL_ROUND";
 gl_particles_style2 = "$$OPTVAL_SMOOTH_2";
 gl_light_particlesTip = "Dynamic lighting affecting particles. Turning this option off, may increase performance a lot, especially on mobile devices.";
 
@@ -47,6 +49,7 @@ MRGoreParts_FloorSplashTip = "Wave of blood on the floor appearing on gibbing. M
 MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reached, the longest remains will fall from the ceiling. Big amount will affect performance extremely.";
 
 //Appearance menu
+MRGoreParts_ParticlesTextureTip = "Appearance of blood particles. Has almost zero effect on performance.";
 MRGoreParts_AppearanceMenuTip = "Here you can configure particles appearance. Color, translucenty, brightness and sounds.";
 MRGoreParts_UseCustomColorTip = "All particles will have this color.";
 MRGoreParts_ColorTip = "$$MRGoreParts_UseCustomColorTip";
@@ -122,6 +125,7 @@ MRGoreParts_FloorSplashTip = "Кровавая волна идущая по по
 MRGoreParts_CrushTip = "Максимальное кол-во останков от раздавленных монстров. Когда лимит достигунт, наиболее старые останки упадут с потолка. Большое количество останков сильно ухудшит производительность.";
 
 //Appearance menu
+MRGoreParts_ParticlesTextureTip = "Внешний вид кровавых частиц. Почти не влияет на производительность.";
 MRGoreParts_AppearanceMenuTip = "Здесь можно настроить внейшний вид частиц. Их прозрачность, яркость, цвет, а также звуки эффектов.";
 MRGoreParts_UseCustomColorTip = "Все частицы будут иметь этот цвет.";
 MRGoreParts_BrightnessTip = "Яркость цвета частиц.";
