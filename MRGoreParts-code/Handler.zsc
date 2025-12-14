@@ -597,7 +597,7 @@ Class MRGP_Handler: EventHandler
 		if(!mo)Return true;
 		
 		
-		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
+		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||MRGParts.Distance2D(Plr, mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
 	
 	Void SpawnNoBlood(Actor mo, Actor inflictor=Null, Double Angle=0, Actor Source = Null, Bool HDestArmor = false, Vector3 Offset=(0,0,0))//Spec. effects for non bleeding actors
@@ -606,7 +606,7 @@ Class MRGP_Handler: EventHandler
 		{
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
-			if(Inflictor&&MRGParts.MRDistance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
+			if(Inflictor&&MRGParts.Distance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
 			
 			if(!Who)Return;
 			
@@ -623,7 +623,7 @@ Class MRGP_Handler: EventHandler
 		{
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
-			if(Inflictor&& MRGParts.MRDistance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
+			if(Inflictor&& MRGParts.Distance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
 			
 			if(!Who)Return;
 			
@@ -789,7 +789,7 @@ Class MRGP_Handler: EventHandler
 		
 		Let Plr = Players[ConsolePlayer].Camera;
 		Bool Draw = true;
-		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||MRGParts.MRDistance2D(Plr, mo)<Plr.Radius*2;
+		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||MRGParts.Distance2D(Plr, mo)<Plr.Radius*2;
 		
 		Float Amount = MRGoreParts_Amount;
 		
@@ -1019,7 +1019,7 @@ Class MRGP_Handler: EventHandler
 		Double VOfst = 0;
 		Double DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
 
-		if(MRGParts.MRDistance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
+		if(MRGParts.Distance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
 		
 		
 		if(Effects.Size()>0)
@@ -1054,7 +1054,7 @@ Class MRGP_Handler: EventHandler
 						
 			For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
 				Float Dist = 1;
-				if(e.DamageSource)Dist *= 1+(MRGParts.MRDistance3D(e.Inflictor, e.DamageSource)-80)*.0025;
+				if(e.DamageSource)Dist *= 1+(MRGParts.Distance3D(e.Inflictor, e.DamageSource)-80)*.0025;
 				Float Size = CFRandom(.8, 1.6)*Dist;
 
 				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);

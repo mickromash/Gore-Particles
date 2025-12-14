@@ -53,7 +53,7 @@ Struct MRGParts
 		Return -atan2(Dif.Z, Dif.XY.Length());
 	}
 	
-	Static Double MRDistance2D(Actor mo, Actor mo1)
+	Static Double Distance2D(Actor mo, Actor mo1)
 	{
 		if(!MRGoreParts_LiteDistance)Return mo.Distance2D(mo1);
 		
@@ -66,14 +66,14 @@ Struct MRGParts
 		
 		Return Dif.Length();
 	}
-	Static Double MRDistance2DV(Vector2 Vec1, Vector2 Vec2)
+	Static Double Distance2DV(Vector2 Vec1, Vector2 Vec2)
 	{
 		Vector2 Dif = Levellocals.Vec2Diff(Vec1, Vec2);
 		
 		Return Dif.Length();
 	}
 	
-	Static Double MRDistance3D(Actor mo, Actor mo1)
+	Static Double Distance3D(Actor mo, Actor mo1)
 	{
 		if(!MRGoreParts_LiteDistance)Return mo.Distance3D(mo1);
 		
@@ -86,14 +86,14 @@ Struct MRGParts
 		
 		Return Dif.Length();
 	}
-	Static Double MRDistance3DV(Vector3 Vec1, Vector3 Vec2)
+	Static Double Distance3DV(Vector3 Vec1, Vector3 Vec2)
 	{
 		Vector3 Dif = Levellocals.Vec3Diff(Vec1, Vec2);
 		
 		Return Dif.Length();
 	}
 	
-	Static Void MRSpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
+	Static Void SpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
 	{
 		FSpawnParticleParams p;
 		p.Accel = Accel;
@@ -121,11 +121,11 @@ Struct MRGParts
 				Case 3:p.Texture = Texman.CheckForTexture("glpart");Break;
 			}
 		}
-		else p.Texture = MRPartTexture();
+		else p.Texture = PartTexture();
 		Level.SpawnParticle(p);
 	}
 	
-	Static TextureID MRPartTexture()
+	Static TextureID PartTexture()
 	{
 		Switch(MRGoreParts_ParticlesTexture)
 		{

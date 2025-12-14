@@ -172,7 +172,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 		Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 		
-		MRGParts.MRSpawnParticle(TempCol, Glow, RenderStyle, 1, Scale*MRGoreParts_Size*Dist, 0, Pos, Vel, Alpha:MRGoreParts_Alpha, SizeStep:0);
+		MRGParts.SpawnParticle(TempCol, Glow, RenderStyle, 1, Scale*MRGoreParts_Size*Dist, 0, Pos, Vel, Alpha:MRGoreParts_Alpha, SizeStep:0);
 		
 		
 		Vector3 Dif = Level.Vec3Diff(Pos, Prev);
@@ -186,7 +186,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 			
 			Float Rand = CFRandom(-Scale*MRGoreParts_Size*.1, Scale*MRGoreParts_Size*.1);
 			
-			MRGParts.MRSpawnParticle(CurCol, Glow, RenderStyle, 20, Scale*MRGoreParts_Size*Dist,
+			MRGParts.SpawnParticle(CurCol, Glow, RenderStyle, 20, Scale*MRGoreParts_Size*Dist,
 				0, Pos + (Dif.X*Step+Vel.X*.5+Rand, Dif.Y*Step+Vel.Y*.5+Rand, Dif.Z*Step+Vel.Z*.5+Rand), Accel:(0,0,-Gravity*.5), Alpha:MRGoreParts_Alpha,
 					SizeStep:-Scale*MRGoreParts_Size*.9*.05);
 		}
@@ -212,7 +212,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					int Life = CRandom(15, 21);
 					Float Size = CFRandom(.2, .5)*Scale*MRGoreParts_Size;
 										
-					MRGParts.MRSpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0, HitPos - (0,0,i),
+					MRGParts.SpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0, HitPos - (0,0,i),
 						-Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*2),
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/Life));
 				}
@@ -262,7 +262,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					int Life = CRandom(15, 21);
 					Float Size = CFRandom(.2, .5)*Scale*MRGoreParts_Size;
 					
-					MRGParts.MRSpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0,
+					MRGParts.SpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0,
 						HitPos - (0,0,i), -Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*Ofst*2),
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/Life));
 				}
@@ -411,7 +411,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -426,7 +426,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		Let Alph = MRGoreParts_Alpha;
 		
-		TextureID ParTex = MRGParts.MRPartTexture();
+		TextureID ParTex = MRGParts.PartTexture();
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
@@ -501,7 +501,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -590,7 +590,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -612,7 +612,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		Let Alph = MRGoreParts_Alpha;
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		
-		TextureID ParTex = MRGParts.MRPartTexture();
+		TextureID ParTex = MRGParts.PartTexture();
 		
 		For(float j=.1;j<1.1;j+=Step)
 		{
@@ -689,7 +689,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -706,7 +706,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		Float Life = CFRandom(35, 40)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
 		
-		TextureID ParTex = MRGParts.MRPartTexture();
+		TextureID ParTex = MRGParts.PartTexture();
 		
 		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);
 		For(float j=.1;j<1.1;j+=Step)
@@ -780,7 +780,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -805,7 +805,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		Let Alph = MRGoreParts_Alpha;
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		
-		TextureID ParTex = MRGParts.MRPartTexture();
+		TextureID ParTex = MRGParts.PartTexture();
 		
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
 		{
@@ -879,7 +879,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -903,7 +903,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		Let Alph = MRGoreParts_Alpha;
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		
-		TextureID ParTex = MRGParts.MRPartTexture();
+		TextureID ParTex = MRGParts.PartTexture();
 		
 		int Skip = -CRandom(6, 10);
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
@@ -984,7 +984,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		
@@ -996,7 +996,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		int MaxLines = 5;
 		int StartLine = CRandom(0, 2);
 		
-		TextureID ParTex = MRGParts.MRPartTexture();
+		TextureID ParTex = MRGParts.PartTexture();
 		
 		For(int i=StartLine;i<MaxLines;i++)
 		{
@@ -1099,7 +1099,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
-			Dist *= Max(1, 1+(MRGParts.MRDistance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
 		}
 		

@@ -22,9 +22,9 @@ Class MRGP_Thinker: Object play
 		if(!Plr)Return false;
 		
 		
-		if(dist!=0 && MRGParts.MRDistance3D(mo, Plr)>Dist)Return false;
+		if(dist!=0 && MRGParts.Distance3D(mo, Plr)>Dist)Return false;
 		
-		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat() && MRGParts.MRDistance2D(Plr, mo)>Plr.Radius*2)Return false;
+		if(abs(Actor.DeltaAngle(Plr.AngleTo(mo), Plr.Angle))>CVar.FindCVar("FOV").GetFloat() && MRGParts.Distance2D(Plr, mo)>Plr.Radius*2)Return false;
 		
 		Return Plr.CheckSight(mo, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
 	}
@@ -43,29 +43,6 @@ Class MRGP_Thinker: Object play
 		Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 	}
-	
-	/*Void SpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
-	{
-		FSpawnParticleParams p;
-		p.Accel = Accel;
-		p.Vel = Vel;
-		
-		p.Pos = Pos;
-		
-		p.Color1 = Col;
-		p.LifeTime = Life;
-		p.size = Size;
-		p.sizeStep = SizeStep;
-		p.startalpha = Alpha;
-		p.fadestep = Fade;
-		
-		int Glow = 0;
-		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
-		p.Flags = Glow|Flags;
-		p.Style = Style;
-		
-		Level.SpawnParticle(p);
-	}*/
 }
 
 Class MRGP_DeathThinker: MRGP_Thinker
@@ -276,7 +253,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 					if(CRandom(0, 10)>3)Continue;
 										
 					if(InDist){
-						MRGParts.MRSpawnParticle(Colors[i], Glow, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
+						MRGParts.SpawnParticle(Colors[i], Glow, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
 					}
 					RandX.Delete(i);RandY.Delete(i);Colors.Delete(i);Sizes.Delete(i);
 				}
@@ -355,7 +332,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		}
 		else {
 			S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
-			MRGParts.MRSpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
+			MRGParts.SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
 		}
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
 	}
@@ -369,7 +346,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
 		
 		For(int i=0;i<RandX.Size();i++){
-			MRGParts.MRSpawnParticle(Colors[i], SPF_REPLACE|Glow, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
+			MRGParts.SpawnParticle(Colors[i], SPF_REPLACE|Glow, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
 		}
 	}
 	
@@ -533,7 +510,7 @@ Class MRGP_Spot: VisualThinker
 		if(!IsLiquid)Return false;
 		
 		if(CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
-			MRGParts.MRSpawnParticle(SColor, MRSPF_SMOKE, 0, 35, StartScale*3, 0, Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
+			MRGParts.SpawnParticle(SColor, MRSPF_SMOKE, 0, 35, StartScale*3, 0, Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
 			S_StartSoundAt(Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
 			Destroy();
 			Return true;
@@ -833,7 +810,7 @@ Class MRGP_Droplet: VisualThinker
 			Color Col = Color(int(SColor.R*Bright), int(SColor.G*Bright), int(SColor.B*Bright));
 			Float Life = CRandom(7, 10);
 			Float Scal = StartScale*CFRandom(.2, .4);
-			MRGParts.MRSpawnParticle(Col, Glow, RenderStyle, Life, Scal, 0, Pos,
+			MRGParts.SpawnParticle(Col, Glow, RenderStyle, Life, Scal, 0, Pos,
 				TempDir*CFRandom(.8, 1.1), (0,0,-.4), SizeStep:-(Scal/Life));
 		}
 	}
