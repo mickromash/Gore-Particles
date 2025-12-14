@@ -172,7 +172,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 		Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 		
-		SpawnParticle(TempCol, Glow, RenderStyle, 1, Scale*MRGoreParts_Size*Dist, 0, Pos, Vel, Alpha:MRGoreParts_Alpha, SizeStep:0);
+		MRGParts.MRSpawnParticle(TempCol, Glow, RenderStyle, 1, Scale*MRGoreParts_Size*Dist, 0, Pos, Vel, Alpha:MRGoreParts_Alpha, SizeStep:0);
 		
 		
 		Vector3 Dif = Level.Vec3Diff(Pos, Prev);
@@ -186,7 +186,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 			
 			Float Rand = CFRandom(-Scale*MRGoreParts_Size*.1, Scale*MRGoreParts_Size*.1);
 			
-			SpawnParticle(CurCol, Glow, RenderStyle, 20, Scale*MRGoreParts_Size*Dist,
+			MRGParts.MRSpawnParticle(CurCol, Glow, RenderStyle, 20, Scale*MRGoreParts_Size*Dist,
 				0, Pos + (Dif.X*Step+Vel.X*.5+Rand, Dif.Y*Step+Vel.Y*.5+Rand, Dif.Z*Step+Vel.Z*.5+Rand), Accel:(0,0,-Gravity*.5), Alpha:MRGoreParts_Alpha,
 					SizeStep:-Scale*MRGoreParts_Size*.9*.05);
 		}
@@ -212,7 +212,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					int Life = CRandom(15, 21);
 					Float Size = CFRandom(.2, .5)*Scale*MRGoreParts_Size;
 										
-					SpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0, HitPos - (0,0,i),
+					MRGParts.MRSpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0, HitPos - (0,0,i),
 						-Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*2),
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/Life));
 				}
@@ -262,7 +262,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					int Life = CRandom(15, 21);
 					Float Size = CFRandom(.2, .5)*Scale*MRGoreParts_Size;
 					
-					SpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0,
+					MRGParts.MRSpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0,
 						HitPos - (0,0,i), -Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*Ofst*2),
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/Life));
 				}
@@ -426,6 +426,8 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		Let Alph = MRGoreParts_Alpha;
 		
+		TextureID ParTex = MRGParts.MRPartTexture();
+		
 		For(float i1=0;i1<Mult;i1++)
 		{
 			Double Ang = CRandom(0, 360);
@@ -449,7 +451,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			Float Life = Min(45, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
 			if(Water)Life *= 2;
 			
-			Double Size = CFRandom(.9, 3)*Dist*Scale*MRGoreParts_Size;
+			Double Size = CFRandom(.9, 2)*Dist*Scale*MRGoreParts_Size;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			Accel.Z -= MRGoreParts_Gravity*.1;
 			
@@ -464,7 +466,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 3))
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Offset + Ofst*CFRandom(.3, .7) + (0,0,5), Glow, Vel, Accel, Size, Fuzzy);
 					
-				else mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alph, Fade, ReSize);
 			}
 			Particles++;
@@ -610,6 +612,8 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		Let Alph = MRGoreParts_Alpha;
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		
+		TextureID ParTex = MRGParts.MRPartTexture();
+		
 		For(float j=.1;j<1.1;j+=Step)
 		{
 			Double Ang = CRandom(0, 360);
@@ -652,7 +656,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 					Accel.Z = Max(-MRGoreParts_Gravity*4, Accel.Z);
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*j + Offset + (0,0,5), Glow, Vel, Accel, (Size+j*3)*CFRandom(.9, 1.1), Fuzzy, ReSize);
 				}
-				else mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+MRGoreParts_Gravity*4), Alph, Fade, ReSize);
 			}
 			Life-=.5/MRGoreParts_Speed*LifeM;
@@ -702,7 +706,9 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		Float Life = CFRandom(35, 40)/MRGoreParts_Speed*LifeM;
 		if(Water)Life *= 2;
 		
-		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);	
+		TextureID ParTex = MRGParts.MRPartTexture();
+		
+		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);
 		For(float j=.1;j<1.1;j+=Step)
 		{
 			Double Ang = CRandom(0, 360);
@@ -738,7 +744,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			if(!(Flags&SGPF_TEST))
-				mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+MRGoreParts_Gravity*4), MRGoreParts_Alpha, -1, ((Size+j*3)/Life)*.05);
 			Life-=.5/MRGoreParts_Speed*LifeM;
 			
@@ -799,6 +805,8 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		Let Alph = MRGoreParts_Alpha;
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		
+		TextureID ParTex = MRGParts.MRPartTexture();
+		
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
 		{
 			Double Ang = (j+CFRandom(-1.5, 1.5))*Cos(Roll);
@@ -834,7 +842,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 					}
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
 				}
-				else mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize);
 			}
 
@@ -895,8 +903,9 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		Let Alph = MRGoreParts_Alpha;
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		
-		int Skip = -CRandom(6, 10);
+		TextureID ParTex = MRGParts.MRPartTexture();
 		
+		int Skip = -CRandom(6, 10);
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
 		{
 			if(Skip>0){Skip--;Continue;}
@@ -937,7 +946,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 					}
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
 				}
-				else mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize);
 			}
 
@@ -986,6 +995,8 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		
 		int MaxLines = 5;
 		int StartLine = CRandom(0, 2);
+		
+		TextureID ParTex = MRGParts.MRPartTexture();
 		
 		For(int i=StartLine;i<MaxLines;i++)
 		{
@@ -1047,7 +1058,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 						}
 						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
 					}
-					else mo.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+					else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize);
 				}
 				
