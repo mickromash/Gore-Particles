@@ -44,7 +44,7 @@ Class MRGP_Thinker: Object play
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 	}
 	
-	Void SpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
+	/*Void SpawnParticle(Color Col=Color(0,0,0), int Flags=0, int Style=STYLE_None, int Life=1, double Size=1, double Angle=0, Vector3 Pos=(0,0,0), Vector3 Vel=(0,0,0), Vector3 Accel=(0,0,0), Double Alpha=1, Double Fade=0, Double SizeStep=0)
 	{
 		FSpawnParticleParams p;
 		p.Accel = Accel;
@@ -65,7 +65,7 @@ Class MRGP_Thinker: Object play
 		p.Style = Style;
 		
 		Level.SpawnParticle(p);
-	}
+	}*/
 }
 
 Class MRGP_DeathThinker: MRGP_Thinker
@@ -276,7 +276,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 					if(CRandom(0, 10)>3)Continue;
 										
 					if(InDist){
-						SpawnParticle(Colors[i], Glow, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
+						MRGParts.MRSpawnParticle(Colors[i], Glow, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
 					}
 					RandX.Delete(i);RandY.Delete(i);Colors.Delete(i);Sizes.Delete(i);
 				}
@@ -355,7 +355,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		}
 		else {
 			S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
-			SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
+			MRGParts.MRSpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
 		}
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
 	}
@@ -369,7 +369,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
 		
 		For(int i=0;i<RandX.Size();i++){
-			SpawnParticle(Colors[i], SPF_REPLACE|Glow, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
+			MRGParts.MRSpawnParticle(Colors[i], SPF_REPLACE|Glow, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
 		}
 	}
 	
@@ -630,21 +630,31 @@ Class MRGP_Droplet: VisualThinker
 	Override Void PostBeginPlay()
 	{
 		ImageScale = 1;
-		if(!Texture)Switch(gl_particles_style){
-			Case 2:
-				Texture = Texman.CheckForTexture("GParMst1");//Smooth
-				ImageScale = .01;
-				//Offset = (32, 32)*-StartScale;
-				Break;
-			Case 1:
-				Texture = Texman.CheckForTexture("glpart2");//Round
-				ImageScale = .004;
-				//Offset = (64, 64)*-StartScale;
-				Break;
-			Default:
-				Texture = Texman.CheckForTexture("GParMst2");//Square
-				//Offset = (.5, .5)*-StartScale;
-				Break;
+		if(!Texture){
+			Switch(MRGoreParts_ParticlesTexture)
+			{
+				Case 1:Texture = Texman.CheckForTexture("GParMst");ImageScale = .004;Break;
+				Case 2:Texture = Texman.CheckForTexture("glpart2");ImageScale = .004;Break;
+				Case 3:Texture = Texman.CheckForTexture("GParMst2");Break;
+				Case 0:
+					Switch(gl_particles_style){
+						Case 2:
+							Texture = Texman.CheckForTexture("GParMst1");//Smooth
+							ImageScale = .01;
+							//Offset = (32, 32)*-StartScale;
+							Break;
+						Case 1:
+							Texture = Texman.CheckForTexture("glpart2");//Round
+							ImageScale = .004;
+							//Offset = (64, 64)*-StartScale;
+							Break;
+						Default:
+							Texture = Texman.CheckForTexture("GParMst2");//Square
+							//Offset = (.5, .5)*-StartScale;
+							Break;
+					}
+					Break;
+			}
 		}
 		Scale *= ImageScale;
 		
@@ -730,13 +740,13 @@ Class MRGP_Droplet: VisualThinker
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 										
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
-						a.ClearScale = true;
+						//a.ClearScale = true;
 						Handler.UpdateSpots(a);
 					}
 				}
@@ -748,13 +758,13 @@ Class MRGP_Droplet: VisualThinker
 				{
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
 						a.Flags = Glow;
 						a.InArray = true;
-						a.ClearScale = true;
+						//a.ClearScale = true;
 						Handler.UpdateSpots(a);
 						a.CurSector = Level.PointInSector(a.Pos.XY);
 					}
