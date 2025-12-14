@@ -2,7 +2,7 @@
 GZDoom mini mod that adds fancy blood particles animations
 
 Mod uses sound effects from loaded gore mods, but you can also use
-[this sfx add-on](https://drive.google.com/file/d/1m2uRR5Aw2YcJhw8IR-lAHvpnnfMVo0fB/view?usp=sharing)
+[this sfx add-on](https://drive.google.com/file/d/1m2uRR5Aw2YcJhw8IR-lAHvpnnfMVo0fB/view?usp=sharing) (updated: 5.dec.25)
 
 ## Features
 
