@@ -382,7 +382,7 @@ Class MRGP_Spot: VisualThinker
 			}
 		}
 				
-		if(Age+20>=Life){
+		if(Life>0 && Age+20>=Life){
 			if(Age>=Life){
 				if(InArray){
 					Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
@@ -572,6 +572,8 @@ Class MRGP_Spot: VisualThinker
 	
 	Void Remove()
 	{
+		if(Life<0)Life = 20;
+		
 		if(Age>Life-20)Destroy();
 		else Age = Life-20;
 	}

@@ -65,7 +65,7 @@ MRGoreParts_EffectsSpotsTip = "Spots leaved by damage effects. Got big performan
 MRGoreParts_DeathSpotsTip = "Spots leaved by dying monsters. Got even bigger performance impact";
 MRGoreParts_SpotsFrequencyTip = "Frequency of spots spawn. The biggre the value, the more spots will be lived by effects. Increasing or lowering the value will affect performance.";
 MRGoreParts_MaxSpotsTip = "When the limit is reached, the longest spost will wanish.";
-MRGoreParts_SpotsTimeTip = "How long spots lay before dissapear (in seconds).";
+MRGoreParts_SpotsTimeTip = "How long spots lay before dissapear (in seconds). -1 for infinite.";
 
 //Wounds menu
 MRGoreParts_WoundsMenuTip = "Here you can configure bleeding wounds on enemies.";
@@ -140,7 +140,7 @@ MRGoreParts_EffectsSpotsTip = "От эффектов появляющихся п
 MRGoreParts_DeathSpotsTip = "Пятна от умирающих монстров. Может значительно ухудшить производительность.";
 MRGoreParts_SpotsFrequencyTip = "Частота появления пятен. Чем больше значение, тем больше пятен будут оставлять эффекты. Имеет сильное влияние на производительность.";
 MRGoreParts_MaxSpotsTip = "Когда лимит достигнут, наиболее старые пятна будут пропадать.";
-MRGoreParts_SpotsTimeTip = "Как долго существуют пятна (в секундах).";
+MRGoreParts_SpotsTimeTip = "Как долго существуют пятна (в секундах). -1 для неограниченного времени.";
 
 //Wounds menu
 MRGoreParts_WoundsMenuTip = "Здесь можно настроить кровоточащие раны на врагах.";

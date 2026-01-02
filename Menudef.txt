@@ -183,7 +183,7 @@ OptionMenu "MRGoreParts_SpotsMenu"
 	MRGPToolTip "$MRGoreParts_SpotsFrequencyTip_(Double)"
 	Slider "$MRGoreParts_MaxSpots", "MRGoreParts_MaxSpots", 1, 2000, 50, 0, "MRGoreParts_FloorSpots"
 	MRGPToolTip "$MRGoreParts_MaxSpotsTip_(int)"
-	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", 1, 300, 10, 0, "MRGoreParts_FloorSpots"
+	Slider "$MRGoreParts_SpotsTime", "MRGoreParts_SpotsTime", -1, 300, 10, 0, "MRGoreParts_FloorSpots"
 	MRGPToolTip "$MRGoreParts_SpotsTimeTip_(int)"
 }
 
