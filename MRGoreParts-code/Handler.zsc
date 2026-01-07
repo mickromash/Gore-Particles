@@ -604,6 +604,8 @@ Class MRGP_Handler: EventHandler
 	{
 		if(MRGoreParts_NoBloodMist)
 		{
+			if(!mo)Return;
+			
 			Actor Who = mo;
 			Double ZOfst = mo.Height*.5;
 			if(Inflictor&&MRGParts.Distance2D(Inflictor, mo)<mo.Radius*1.5){Who = Inflictor; Angle = Who.AngleTo(mo)+180; ZOfst = 0;}
@@ -616,7 +618,9 @@ Class MRGP_Handler: EventHandler
 
 			Col = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
-			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', Who, 0, Angle, Who.Pos.Z/(mo.Pos.Z+mo.Height*.5)*90, Col, Offset:Offset+(0,0,ZOfst));
+			Double PitchTo = mo.Pos.Z+mo.Height*.5;
+			if(PitchTo==0)PitchTo += .1;
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', Who, 0, Angle, Who.Pos.Z/PitchTo*90, Col, Offset:Offset+(0,0,ZOfst));
 			if(MRGoreParts_NoBloodSndVol>0)Who.A_StartSound(NoBloodSound, CHAN_AUTO, Volume:MRGoreParts_NoBloodSndVol*MRGoreParts_SndVol);
 		}
 		if(HDestArmor)
