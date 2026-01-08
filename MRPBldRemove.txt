@@ -64,3 +64,9 @@ Mod NashGore_Blood//XWeapons, Led's mod
 	TinyBloodSplasher
 	SuperBloodSplasher
 }
+
+Mod XBlood//Smooth Doom
+{
+	XBlood2
+	Gibs1
+}
