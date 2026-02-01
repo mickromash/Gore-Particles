@@ -64,7 +64,7 @@ OptionMenu "MRGoreParts_BloodSpawnMenu"
 	MRGPToolTip "$MRGoreParts_OnlyModsBloodTip_(Bool)"
 	Option "$MRGoreParts_HideOtherBlood", "MRGoreParts_HideOtherBlood", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 1
 	MRGPToolTip "$MRGoreParts_HideOtherBloodTip_(Bool)"
-	Option "$MRGoreParts_BloodTypes", "MRGoreParts_BloodTypes", "YesNo", "MRGoreParts_OnlyModsBlood", 1, 0
+	Option "$MRGoreParts_BloodTypes", "MRGoreParts_BloodTypes", "YesNo"
 	MRGPToolTip "$MRGoreParts_BloodTypesTip_(Bool)"
 	StaticText ""
 	StaticText "$MRGoreParts_MenuNoBloodTitle", "Gold"
