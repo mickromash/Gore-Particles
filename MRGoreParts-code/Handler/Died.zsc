@@ -1,0 +1,276 @@
+/*
+	Spawning dying fountains, gibbing and crashing effects
+*/
+
+Extend Class MRGP_Handler
+{
+	Array<MRGP_DeathThinker> Dyings;
+	Array<MRGP_CrushedThinker> Crushed;
+	Array<int> GibsTime;
+	
+	Void SpawnXDeath(Actor mo, Actor inflictor = Null, int damage = 0)//Gibbing effects
+	{
+		if(!MRGoreParts_Draw)Return;
+		
+		MRGParts.StartSound(mo, GibSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_GibSndVol);
+		
+		if(GibsTime.Size()>=MRGoreParts_MaxGibing)Return;
+		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (mo.GetRenderStyle() == STYLE_OptFuzzy||mo.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
+		
+		int Flags;
+		if(BldFlags.CheckKey(mo.GetClassName()))Flags = BldFlags.Get(mo.GetClassName());
+		int Glow = 0;
+		if(Flags&GPBCF_Glow||SPF_FullBright)Glow = SGPF_Glow;
+		
+		Color Col = mo.BloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		else
+		{
+			if(mo.BloodColor==0 && mo.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			if(BldCols.CheckKey(mo.GetClassName()))Col = BldCols.Get(mo.GetClassName());
+		}
+		
+		Let Plr = Players[ConsolePlayer].Camera;
+		Bool Draw = true;
+		if(Plr)Draw = abs(Actor.deltaangle(Plr.AngleTo(mo), Plr.Angle))<CVar.FindCVar("FOV").GetFloat()||MRGParts.Distance2D(Plr, mo)<Plr.Radius*2;
+		
+		Float Amount = MRGoreParts_Amount;
+		
+		Vector3 Force;
+		if(inflictor){
+			Force.XY += Actor.AngleToVector(mo.AngleTo(inflictor), Damage/10);
+			Force.Z += Sin(mo.PitchTo(inflictor, GetDefaultByType(mo.GetClass()).Height*.5))*Damage/10;
+		}
+		
+		GibsTime.Push(0);
+		
+		Float Angle = CRandom(0, 360);
+		
+		if(Inflictor)Angle = mo.AngleTo(Inflictor)+CRandom(-60, 60);
+		
+		if(Draw){
+			Double Size = mo.Height;
+			if(mo.Height<mo.Radius)Size = mo.Radius;
+			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy|Glow, Angle+CRandom(-120, 120), 0, Col, 1, Size, 2, (0,0,mo.Height*.5), 2, Force, 1/(mo.Mass*.1));
+		
+			For(int i=CRandom(0, 4)*Amount;i<Amount*12;i++)
+			{
+				if(Effects.Size()>0)
+					Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(mo, Fuzzy|Glow, Angle+CRandom(-120, 120), CRandom(-20, 0)*4, Col, 1.1, 4, 1,
+						(CRandom(-mo.Radius, mo.Radius)*.5,CRandom(-mo.Radius, mo.Radius)*.5,CRandom(10, mo.Height*.5)), 4, Force, 1/(mo.Mass*.1));
+			}
+			
+			if(MRGoreParts_FloorSplash)For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<40*MRGoreParts_Amount;i++){//Floor splash
+				Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
+				Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
+				Size *= .04;
+				Size *= CFRandom(.5, 1.5);
+				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy|(Glow?SPF_FULLBRIGHT:0), SPF_RELATIVE, 100, Size, CRandom(0, 360),
+					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, MRGoreParts_Alpha, 0, -(Size/100.));
+				}
+		}
+				
+		if(MRGoreParts_DrawFlyingBlood){
+			int SAmount;
+			For(int i=CRandom(0, 3);i<12*MRGoreParts_FlyingBloodChance;i++)
+			{
+				if(SAmount>5*Amount)Break;
+				Float Strn = CRandom(5, 7);
+				Float Pitch = -CRandom(40, 90);
+				Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-120, 120), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
+				MRGP_FlyingBlood.Create(mo.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel+Force);
+				MRGParts.StartSound(mo, SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
+				SAmount++;
+			}
+		}
+		
+		if(MRGoreParts_FloorSpots){
+			For(int i=CRandom(0, 6)*MRGoreParts_Amount;i<20*MRGoreParts_Amount;i++)
+			{
+				Float Angle = CRandom(0, 360);
+				Vector3 Pos = mo.Pos;
+				Pos.XY += Actor.AngleToVector(Angle, CFRandom(0, mo.Radius*.3));
+				Pos.Z += GetDefaultByType(mo.GetClass()).Height*CFRandom(.2, 1);
+				
+				Vector3 Vel;
+				if(inflictor){
+					Vel.XY = Actor.AngleToVector(mo.AngleTo(inflictor), Damage/10);
+					Vel.Z += Sin(mo.PitchTo(inflictor, (Pos.Z-mo.Pos.Z), inflictor.Height*.5))*Damage/10;
+				}
+				Vel.XY += Actor.AngleToVector(Angle, CRandom(4, 7));
+				Vel.Z += CFRandom(-2, 3)*2;
+				
+				Float Bright = MRGoreParts_Brightness*CFRandom(.9, 1.5);
+				Color ColTemp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+				Let a = MRGP_Droplet.SpawnDrop(ColTemp, Pos, Glow, Vel, (0,0,-.5), CFRandom(3, 6), Fuzzy?STYLE_Shadow:STYLE_Normal);
+			}
+		}
+	}
+	
+	
+	Override Void WorldThingDied(WorldEvent e)
+	{
+		if(!MRGoreParts_Draw)Return;
+		
+		if(!e.Thing||!(e.Thing.bIsMonster || e.Thing is 'PlayerPawn')||(e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters)||
+			(BlackList.Find(e.Thing.GetClass())!=BlackList.Size()&&MRGoreParts_BlacklistOn) )Return;
+		
+		if(MRGoreParts_BlacklistOn)For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
+		
+		Color Col = e.Thing.BloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		else
+		{
+			if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
+		}
+		
+		Float Amount = MRGoreParts_Amount;
+
+		if(e.Thing.FindState("XDeath") && e.Thing.Health<-GetDefaultByType(e.Thing.GetClass()).Health)
+		{
+			SpawnXDeath(e.Thing, e.Inflictor, e.Damage);
+		}
+		else if(MRGoreParts_MaxDying>0)
+		{
+			Let a = New('MRGP_DeathThinker');
+			a.Owner = e.Thing;
+			a.PostBeginPlay();
+			a.Bld = Col;
+			a.Artery = Max(0, CRandom(-5, 2));
+			
+			int Flags;
+			if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
+			
+			if(Flags&GPBCF_Glow||MRGoreParts_FullBright)a.Glow = SGPF_Glow;
+			
+			if(Dyings.Size()>=MRGoreParts_MaxDying)
+			{
+				Dyings[0].Destroy();
+			}
+			
+			Dyings.Push(a);
+		}
+	}
+	
+	Override void WorldThingGround(WorldEvent e)//Actor was crushed
+	{
+		if(!MRGoreParts_Draw)Return;
+		
+		if(MRGoreParts_Crush<1)Return;
+		
+		if(!e.Thing)Return;
+		if(!e.Thing.bIsMonster&&!e.Thing.bCorpse)Return;
+		
+		if(MRGoreParts_Debug)Console.Printf(e.Thing.GetClassName().." at "..e.Thing.Pos.." Crushed! (ceiling: "..e.Thing.CeilingZ..")");
+
+		Color Col = e.Thing.BloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		else
+		{
+			if(e.Thing.BloodColor==0 && e.Thing.BloodTranslation==0)Col = GameInfo.defaultbloodcolor;
+			if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
+		}
+		
+		Sector Crusher;
+		
+		Float Radius = GetDefaultByType(e.Thing.GetClass()).Radius*1.5;
+		
+		Float Lowest, CeilingZ;
+		CeilingZ = e.Thing.CeilingZ;
+		
+		For(int x = e.Thing.Pos.X-Radius;x<e.Thing.Pos.X+Radius;x+=5)
+		{
+			For(int Y = e.Thing.Pos.Y-Radius;Y<e.Thing.Pos.Y+Radius;Y+=5)
+			{
+				Sector TempSect = LevelLocals.PointInSector((X,Y));
+				
+				if(TempSect.CenterCeiling()!=CeilingZ)Continue;
+				
+				if(TempSect.PlaneMoving(1)){Crusher = TempSect;Break;}
+			}
+			if(Crusher)Break;
+		}
+		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
+		
+		MRGParts.StartSound(e.Thing, GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol*MRGoreParts_GibSndVol);
+		
+		if(Crushed.Size()>=MRGoreParts_Crush){
+			if(Crushed[0])Crushed[0].DropAll();
+		}
+				
+		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
+		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
+		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, MoVel: 1/(e.Thing.Mass*.1));
+		
+		
+		For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<50*MRGoreParts_Amount;i++){//Floor splash
+			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
+			Color ColTemp = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
+			Size *= .05;
+			Size *= CFRandom(.5, 1.5);
+			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, CRandom(0, 360),
+				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, MRGoreParts_Alpha, 0, -(Size/130.));
+		}
+		
+		if(!Crusher){
+			SpawnXDeath(e.Thing);
+			Return;
+		}
+		
+		if(MRGoreParts_Debug)Console.printf("Got sector");
+		
+		MRGP_CrushedThinker Nerd = New('MRGP_CrushedThinker');
+		
+		Nerd.Pos = e.Thing.Pos.XY;
+		Nerd.Bld = Col;
+		int Flags;
+		if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
+		
+		if(Flags&GPBCF_Glow||MRGoreParts_FullBright)Nerd.Glow = SGPF_Glow;
+		
+		Nerd.RenderStyle = Fuzzy;
+		Nerd.CurSector = Crusher;
+		int PermaDel = 8;
+		int Perma;
+		For(int i=0;i<360;i+=CRandom(2, 4))//Setting up drops places
+		{
+			For(float r=CFRandom(1, 4);r<Radius;r*=Max(1.1, CFRandom(1.3, 2)/Min(1, MRGoreParts_Amount))){
+				Vector2 Pos = Nerd.Pos+Actor.AngleToVector(i, r);
+				
+				Sector TempSect = LevelLocals.PointInSector(Pos);
+				if(!TempSect)Continue;
+				if(TempSect == Nerd.CurSector||TempSect.CenterCeiling()==Nerd.CurSector.CenterCeiling()){
+					Nerd.RandX.Push(Pos.X);Nerd.RandY.Push(Pos.Y);
+					if(PermaDel>0)PermaDel--;
+					else {Perma++; PermaDel = 8;}
+				}
+			}
+		}
+
+		Array<Float> RandX;
+		RandX.Copy(Nerd.RandX);
+		For(int i=0;i<Perma;i++){
+			int Random = CRandom(0, RandX.Size()-1);
+			Nerd.Perma.Push(RandX[Random]);
+			RandX.Delete(Random);
+		}
+		
+		Nerd.PostBeginPlay();
+	}
+}

@@ -1,0 +1,45 @@
+/*
+	Setting up recommended settings display for different mods
+*/
+
+Extend Class MRGP_Handler
+{
+	Ui Array<String> RecS;
+	Ui Bool ShowRecs;
+	Ui int RecsAnim, ShowingRecs;
+	
+	Ui Void CheckRecS(bool GameStart = false)
+	{
+		RecS.Clear();
+		String Mod = 'HDOperator';
+		if((class<actor>)(Mod))//Hideous destructor recommended settings
+		{
+			if(MRGoreParts_Quake2)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Quake2").."\cc 0");
+			if(!MRGoreParts_OnlyModsBlood)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_OnlyModsBlood")..
+				"\cc "..1);
+			if(MRGoreParts_BloodTypes)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BloodTypes").."\cc 0");
+			if(MRGoreParts_BlacklistOn)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_BloodSpawnMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_BlacklistOn").."\cc 0");
+			if(MRGoreParts_Distance>0)Recs.Push("\cc"..StringTable.Localize("$MRGoreParts_EffectsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Distance").."\cc 0");
+			if(!MRGoreParts_Wounds)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_Wounds").."\cc 1");
+			if(MRGoreParts_CorpseWounds!=1)RecS.Push("\cc"..StringTable.Localize("$MRGoreParts_WoundsMenu").."\cv/\cg"..StringTable.Localize("$MRGoreParts_CorpseWounds")..
+				"\cc "..StringTable.Localize("$MRGoreParts_CorpseWounds"..1));
+		}
+		
+		if(GameStart)
+		{
+			Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+			if(!Handler)Return;
+			Handler.RecSShown = true;
+			
+			if(RecS.Size()<1)Return;
+			Console.Printf(StringTable.Localize("$MR_GoreParticlesUi_RecS"));
+			
+			For(int i=0;i<Recs.Size();i++)
+			{
+				Console.Printf(Recs[i]);
+			}
+			
+			Console.Printf(StringTable.Localize("============================"));
+		}
+	}
+}

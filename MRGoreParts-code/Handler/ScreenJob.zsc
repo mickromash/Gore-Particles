@@ -1,0 +1,74 @@
+/*
+	Recommended settings display
+*/
+
+Extend Class MRGP_Handler
+{
+	Override Void InterfaceProcess(ConsoleEvent e)
+	{
+		if(e.name ~== "MRGP_OpenRecs")
+		{
+			if(e.args[1])
+			{
+				Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+				if(!Handler)Return;
+				if(Handler.RecSShown)Return;
+			}
+			
+			CheckRecS(e.args[1]);
+			if(e.args[1] && Recs.Size()<1)Return;
+			
+			ShowRecs = !ShowRecs;
+			if(RecsAnim<1)RecsAnim = 20;
+			if(!ShowRecs)Return;
+			if(e.args[0]>0)ShowingRecs = 35*e.args[0];
+		}
+	}
+	
+	Override Void UiTick()
+	{
+		if(ShowRecs)CheckRecS();
+		if(menuactive!=menu.off||!ShowRecs)Return;
+				
+		if(ShowingRecs>1 && RecsAnim<1)ShowingRecs--;
+		if(ShowingRecs==1){ShowingRecs = 0;RecsAnim = 20;ShowRecs = false;Return;}
+	}
+	
+	Override Void RenderOverlay(RenderEvent e)
+	{
+		if(!ShowRecs && RecsAnim<0)Return;
+		
+		Let Sb = StatusBar;
+		
+		Vector2 HUDSca = Sb.GetHUDScale();
+		Double HUDScale = ((4/HUDSca.X)/(4/Sb.defaultScale.X));
+		
+		bool OriginalOffsets = Sb.FullscreenOffsets;
+		Sb.FullscreenOffsets = true;
+		
+		HUDFont MainFont = HUDFont.Create("NewSmallFont");
+		
+		Double Alph = RecsAnim;
+		Alph /= 20;
+		
+		if(ShowRecS)Alph = 1.-Alph;
+		
+		int PosY = -NewSmallFont.GetHeight()*.5 * (Recs.Size()-1);
+		Sb.DrawString(MainFont, StringTable.Localize("$MR_GoreParticlesUi_RecS"), (0, PosY)*HUDScale, Sb.DI_SCREEN_LEFT_CENTER, Alpha:Alph, Scale:(.5,.5)*HUDScale);
+		
+		if(RecS.Size()>0)For(int i=0;i<RecS.Size();i++)
+		{
+			Sb.DrawString(MainFont, RecS[i], (0, PosY+NewSmallFont.GetHeight()*.5*(i+1))*HUDScale, Sb.DI_SCREEN_LEFT_CENTER, Alpha:Alph, Scale:(.5,.5)*HUDScale);
+		}
+		else 
+		{
+			String DoneS = StringTable.Localize("$MR_GoreParticlesUi_RecSDone");
+			String Sounds = 'MRGP_SoundAddon';
+			if(!((class<object>)(Sounds)))DoneS = DoneS.."  "..StringTable.Localize("$MR_GoreParticlesUi_RecSSound");
+			Sb.DrawString(MainFont, DoneS, (0, PosY+NewSmallFont.GetHeight()*.5)*HUDScale, Sb.DI_SCREEN_LEFT_CENTER, Font.CR_GREEN, Alph, Scale:(.5,.5)*HUDScale);
+		}
+		if(RecsAnim>0)RecsAnim--;
+		
+		Sb.FullscreenOffsets = OriginalOffsets;
+	}
+}

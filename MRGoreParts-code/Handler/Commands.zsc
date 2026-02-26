@@ -1,0 +1,164 @@
+/*
+	Network events and console commands
+*/
+
+Extend Class MRGP_Handler
+{
+	Override Void NetworkProcess(ConsoleEvent e)
+	{
+		Let Plr = Players[e.Player].mo;
+		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+		
+		if(e.name ~== "MRGP_UpdateEffects"){
+			UpdateEffects();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateColors"){
+			SetUpColors();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateBlacklist"){
+			SetUpBlacklist();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateSounds"){
+			SetUpSounds();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateRemoveBlood"){
+			SetUpBloodRemove();
+			Return;
+		}
+		if(e.name ~== "MRGP_UpdateEffectsData"){
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+			Handler.OnRegister();
+			UpdateEffects();
+			UpdateEffectsData();
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_PrintEffects"){
+			Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+			if(!Handler)Return;
+			
+			Console.Printf(StringTable.Localize("$MRGoreParts_Event_EffectsList"));
+			For(int i=0;i<Handler.Effects.Size();i++)Console.Printf("\cv"..i.."\cf "..Handler.Effects[i].GetName().."\c- ("..Handler.Effects[i].GetClassName()..")");
+		}
+		if(e.name ~== "MRGoreParts_DemoEffect"){
+			if(!Plr)Return;
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+			
+			Let Effect = Handler.Effects[Min(Handler.Effects.Size()-1, e.args[0])].GetClassName();
+			String EffectName = StringTable.Localize(Handler.Effects[Min(Handler.Effects.Size()-1, e.args[0])].GetName());
+			
+			Vector3 Offset = (Actor.AngleToVector(Plr.Angle, 50*Cos(abs(Plr.Pitch))), Plr.Player.ViewZ-Plr.FloorZ -50*Sin(Plr.Pitch));
+			
+			
+			MRGP_Effect.SpawnEffect(Effect, Plr, MRGoreParts_FullBright?SGPF_Glow:0, Plr.Angle + 180 + e.args[1], Plr.Pitch + e.args[2], Gameinfo.defaultbloodcolor, MRGoreParts_Amount, MRGoreParts_Size,
+				MRGoreParts_Alpha, Offset);
+			
+			Console.Printf(StringTable.Localize("$MRGoreParts_Event_DemoEffect")..EffectName.."\c- ("..Effect..")");
+			
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_DemoRandom" || e.name ~== "MRGoreParts_DemoAlways" || e.name ~== "MRGoreParts_DemoNoBlood"){
+			if(!Plr)Return;
+			Name EffectType = e.name;
+			
+			Vector3 Offset = (Actor.AngleToVector(Plr.Angle, 50*Cos(abs(Plr.Pitch))), Plr.Player.ViewZ-Plr.FloorZ -50*Sin(Plr.Pitch));
+			
+			Switch(EffectType)
+			{
+				Case 'MRGoreParts_DemoRandom':
+					{
+					Let Effect = Effects[CRandom(0, Effects.Size()-1)];
+					Effect.DoParticleEffect(Plr, MRGoreParts_FullBright?SGPF_Glow:0, Plr.Angle + 180 + e.args[0], Plr.Pitch + e.args[1], GameInfo.DefaultBloodColor, MRGoreParts_Amount, MRGoreParts_Size,
+						MRGoreParts_Alpha, Offset);
+					Console.Printf(StringTable.Localize("$MRGoreParts_Event_DemoRandom")..StringTable.Localize(Effect.GetName().."\c- ("..Effect.GetClassName()..")"));
+					}
+					Break;
+				Case 'MRGoreParts_DemoAlways':
+					For(int i=0;i<AlwaysEffects.Size();i++){
+						Let Effect = AlwaysEffects[i];
+						Effect.DoParticleEffect(Plr, MRGoreParts_FullBright?SGPF_Glow:0, Plr.Angle + 180 + e.args[0], Plr.Pitch + e.args[1], GameInfo.DefaultBloodColor, MRGoreParts_Amount, MRGoreParts_Size,
+							MRGoreParts_Alpha, Offset);
+						Console.Printf(StringTable.Localize("$MRGoreParts_Event_DemoAlways")..StringTable.Localize(Effect.GetName().."\c- ("..Effect.GetClassName()..")"));
+					}
+					Break;
+				Case 'MRGoreParts_DemoNoBlood':
+					SpawnNoBlood(Plr, Plr, Plr.Angle + 180 + e.args[0], Offset:Offset);
+					Console.Printf(StringTable.Localize("$MRGoreParts_Event_DemoNoBlood"));
+					Break;
+			}
+			
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_ClearSpots"){
+			int i;
+			For(i=0;i<Spots.Size();i++){if(Spots[i])Spots[i].Destroy();}
+			Spots.Clear();
+			
+			Console.Printf(String.Format(StringTable.Localize("$MRGoreParts_Event_ClearSpots"), i));
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_ClearWounds"){
+			int i;
+			For(i=0;i<Wounds.Size();i++){if(Wounds[i])Wounds[i].Destroy();}
+			Wounds.Clear();
+			Wounded.Clear();
+			
+			Console.Printf(String.Format(StringTable.Localize("$MRGoreParts_Event_ClearWounds"), i));
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_ClearCrushed"){
+			int i;
+			For(i=0;i<Crushed.Size();i++){if(Crushed[i])Crushed[i].DropAll();}
+			Crushed.Clear();
+			
+			
+			Console.Printf(String.Format(StringTable.Localize("$MRGoreParts_Event_ClearCrushed"), i));
+			Return;
+		}
+		
+		if(e.name ~== "MRGoreParts_Uninstall"){
+			if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+			For(int i=0;i<Handler.Effects.Size();i++){
+				if(Handler.Effects[i])Handler.Effects[i].Destroy();
+			}
+			
+			Handler.Destroy();
+			
+			ThinkersClear();
+			
+			Uninstall = true;
+			Destroy();
+			Return;
+		}
+		
+		if(e.name ~== "MRGoreParts_Help"){
+			Console.Printf("\n"..StringTable.Localize("$MRGoreParts_Event_HelpOpen"));
+			
+			Console.Printf("\cgMRGoreParts_Uninstall "..StringTable.Localize("$MRGoreParts_Event_Help_Uninstall").."\n");
+			
+			Console.Printf("\cgMRGoreParts_UpdateBlacklist "..StringTable.Localize("$MRGoreParts_Event_Help_UpdateBlacklist"));
+			Console.Printf("\cgMRGoreParts_UpdateColors "..StringTable.Localize("$MRGoreParts_Event_Help_UpdateColors"));
+			Console.Printf("\cgMRGoreParts_UpdateSounds "..StringTable.Localize("$MRGoreParts_Event_Help_UpdateSounds"));
+			Console.Printf("\cgMRGoreParts_UpdateRemoveBlood "..StringTable.Localize("$MRGoreParts_Event_Help_UpdateRemoveBlood"));
+			Console.Printf("\cgMRGoreParts_UpdateEffectsData "..StringTable.Localize("$MRGoreParts_Event_Help_UpdateEffectsData"));
+			Console.Printf("\cgMRGoreParts_UpdateEffects "..StringTable.Localize("$MRGoreParts_Event_Help_UpdateEffects").."\n");
+			
+			
+			Console.Printf("\cgMRGoreParts_ClearWounds "..StringTable.Localize("$MRGoreParts_Event_Help_ClearWounds"));
+			Console.Printf("\cgMRGoreParts_ClearSpots "..StringTable.Localize("$MRGoreParts_Event_Help_ClearSpots"));
+			Console.Printf("\cgMRGoreParts_ClearCrushed "..StringTable.Localize("$MRGoreParts_Event_Help_ClearCrushed").."\n");
+			
+			Console.Printf("\cgMRGoreParts_PrintEffects "..StringTable.Localize("$MRGoreParts_Event_Help_PrintEffects"));
+			Console.Printf("\cgMRGoreParts_DemoEffect "..StringTable.Localize("$MRGoreParts_Event_Help_DemoEffect"));
+			Console.Printf("\cgMRGoreParts_DemoRandomEffect "..StringTable.Localize("$MRGoreParts_Event_Help_DemoRandomEffect"));
+			Console.Printf("\cgMRGoreParts_DemoAlwaysEffect "..StringTable.Localize("$MRGoreParts_Event_Help_DemoAlwaysEffect"));
+			Console.Printf("\cgMRGoreParts_DemoNoBloodEffect "..StringTable.Localize("$MRGoreParts_Event_Help_DemoNoBloodEffect").."\n");
+			
+			
+			Console.Printf(StringTable.Localize("$MRGoreParts_Event_HelpClose"));
+		}
+	}
+}

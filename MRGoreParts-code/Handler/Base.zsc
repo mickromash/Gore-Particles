@@ -1,0 +1,283 @@
+/*
+	Base Handler class
+	Things that happen every game tic, blood removing and some misc. actions
+	
+	Static handler class and effects setting up
+*/
+
+enum MRGP_BldFlags{
+	GPBCF_Glow = 1,
+}
+
+Class MRGP_StaticHandler: StaticEventHandler
+{
+	Ui Bool RecsShown;
+	Array<MRGP_Effect> Effects;
+	
+	
+	Override Void OnRegister()
+	{
+		Effects.Clear();
+		
+		Array<MRGP_Effect> EffectsTemp;
+		
+		For(int i=0;i<AllClasses.Size();i++)//Caching particle effects data
+		{
+			if(AllClasses[i] is 'MRGP_Effect' && !AllClasses[i].IsAbstract())
+			{
+				Let Clas = MRGP_Effect(New(AllClasses[i].GetClassName()));
+				EffectsTemp.Push(Clas);
+			}
+		}
+		
+		For(int i=0;i<EffectsTemp.Size();i++)
+		{
+			Let Clas = EffectsTemp[i];
+			
+			if(Clas.GetID()==-1)Continue;
+			
+			Effects.Insert(Clas.GetID(), Clas);
+			
+			EffectsTemp.Delete(i);
+			i--;
+		}
+		
+		Effects.Append(EffectsTemp);
+		
+		if(!MRGoreParts_Debug)Return;
+		
+		Console.Printf("\cdAll particles blood effects:");
+		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName());
+	}
+}
+
+Class MRGP_Handler: EventHandler
+{
+	Double Dif(Double a, Double b)
+	{
+		if(a>b)Return a-b;
+		
+		Return b-a;
+	}
+	
+	Static Bool MRGPartsCheckDraw(Actor mo = Null)
+	{
+		if(!MRGoreParts_Draw)Return false;
+		
+		Let Plr = Players[ConsolePlayer].Camera;
+		if(!Plr)Return true;
+		
+		if(!mo)Return true;
+		
+		
+		Return (abs(Actor.DeltaAngle(Plr.Angle, Plr.AngleTo(mo)))<CVar.FindCVar("FOV").GetFloat()||MRGParts.Distance2D(Plr, mo)<Plr.Radius*2) && mo.CheckSight(Plr, SF_IGNOREWATERBOUNDARY|SF_SEEPASTBLOCKEVERYTHING|SF_IGNOREVISIBILITY);
+	}
+	
+	Array<Object> Thinkers;//Misc. thinkers that listed to be removed on mod uninstallation
+	Array<MRGP_FlyingBlood> Streams;
+	
+	Array<MRGP_Spot> Spots;
+	Void UpdateSpots(MRGP_Spot a)//Removes old spots if the limit is reached and pushes new one in the list
+	{
+		For(int i=0;i<Max(0, Spots.Size()-MRGoreParts_MaxSpots+1);i++)
+		{
+			if(Spots[i]){Spots[i].Remove();Spots.Delete(i);i--;}
+		}
+		if(!a)Return;
+		Spots.Push(a);
+	}
+	
+	
+	Void ThinkersTick()
+	{
+		For(int i=0;i<Streams.Size()-MRGoreParts_MaxFlyingBlood;i++){
+			if(Streams[i])Streams[i].Destroy();
+		}
+		For(int i=0;i<Streams.Size();i++){
+			if(Streams[i])Streams[i].Tick();
+		}
+		
+		For(int i=0;i<GibsTime.Size();i++){//Not a thinker actually, but who cares
+			GibsTime[i]++;
+			if(GibsTime[i]>(MRGP_GibbingTime/MRGoreParts_Speed)){GibsTime.Delete(i);i--;}
+		}
+		
+		For(int i=0;i<Dyings.Size();i++){
+			if(Dyings[i])Dyings[i].Tick();
+		}
+		
+		For(int i=0;i<Crushed.Size();i++){
+			if(Crushed[i])Crushed[i].Tick();
+		}
+		
+		For(int i=0;i<Wounds.Size();i++){
+			if(Wounds[i])Wounds[i].Tick();
+		}
+		
+	}
+	
+	Void ThinkersClear()
+	{
+		For(int i=0;i<Streams.Size();i++){
+			if(Streams[i])Streams[i].Destroy();
+		}
+				
+		For(int i=0;i<Dyings.Size();i++){
+			if(Dyings[i])Dyings[i].Destroy();
+		}
+		
+		For(int i=0;i<Crushed.Size();i++){
+			if(Crushed[i])Crushed[i].Destroy();
+		}
+		
+		For(int i=0;i<Wounds.Size();i++){
+			if(Wounds[i])Wounds[i].Destroy();
+		}
+		
+		For(int i=0;i<Thinkers.Size();i++){
+			if(Thinkers[i])Thinkers[i].Destroy();
+		}
+		
+		For(int i=0;i<Spots.Size();i++){
+			if(Spots[i])Spots[i].Destroy();
+		}
+		
+		ThinkerIterator iter = ThinkerIterator.Create('MRGP_Droplet');
+		
+		MRGP_Droplet mo;
+		
+		While((mo = MRGP_Droplet(iter.Next()))){
+			mo.Destroy();
+		}
+	}
+	
+	Override Void WorldTick()
+	{
+		ThinkersTick();
+		
+		Damaged.Clear();
+
+		/////////////////////////////
+				
+		if(!MRGoreParts_CheckLimit)Return;
+		
+		Let Plr = Players[ConsolePlayer].Camera;
+		if(!Plr)Return;
+		
+		Vector3 Pos = (0,0, Plr.Player.ViewZ-Plr.Pos.Z);
+		Pos.XY += Actor.AngleToVector(Plr.Angle+90, -MRGoreParts_CheckLimitOffset + 1*Abs(Sin(Plr.Pitch)));
+		
+		Float NewBob = Plr.Player.ViewZ - Plr.Pos.Z - Plr.Player.ViewHeight;
+		Float Bob;
+		Bob = Actor.DeltaAngle(ViewBob, NewBob);
+		
+		Pos += (Actor.AngleToVector(Plr.Angle, 4)*Cos(Abs(Plr.Pitch)),Abs(Cos(Plr.Pitch))*2.3 -Sin(Plr.Pitch)*4);
+		Pos.XY += Actor.AngleToVector(Plr.Angle, 3.4)*Sin(Plr.Pitch);
+		
+		
+		if(GameTic%4==0)
+			Plr.A_SpawnParticle(Color(0,150,0), SPF_FULLBRIGHT, 1, .5, 0, Pos.X,Pos.Y,Pos.Z-Bob -Plr.Vel.Z*1.3,
+				Plr.Vel.X,Plr.Vel.Y,Bob +Plr.Vel.Z*1.3, FadeStepf:0);
+			
+		ViewBob = NewBob;
+	}
+	Float ViewBob;
+	
+	
+	Override Void WorldThingSpawned(WorldEvent e)
+	{
+		if(!MRGoreParts_OnlyModsBlood&&!MRGoreParts_HideOtherBlood)Return;
+		if(!e.Thing)Return;
+		
+		if(e.Thing is 'Blood'||e.Thing is 'BloodSplatter'||e.Thing is 'AxeBlood'||Actor.GetReplacement("Blood")==e.Thing.GetClass()
+			||e.Thing is RemoveBloodBase)
+		{
+			DoOtherBlood(e.Thing);
+			Return;
+		}
+		
+		if(MRGoreParts_BloodTypes)For(int i=0;i<RemoveBloodTypes.Size();i++)
+		{
+			if(e.Thing is RemoveBloodTypes[i]){DoOtherBlood(e.Thing);Return;}
+		}
+		
+		For(int i=0;i<RemoveBloods.Size();i++)
+		{
+			if(e.Thing is RemoveBloods[i]){DoOtherBlood(e.Thing);Return;}
+		}
+		if(MRGoreParts_DebugRemoveBlood && MRGoreParts_Debug)Console.Printf("Thing spawned: "..e.Thing.GetClassName().." at "..e.Thing.Pos);
+	}
+	
+	Void DoOtherBlood(Actor mo)//Remove or hide other mods gore
+	{
+		Color Col = Gameinfo.DefaultBloodColor;
+		if(MRGoreParts_UseCustomColor)
+		{
+			Col = MRGoreParts_Color;
+		}
+		
+		String HDBld = 'HDBloodTrailFloor';
+		if((Class<Actor>)(HDBld))
+		{
+			if(mo is HDBld)
+			{
+				Double Alph = CFRandom(.8, 1);
+				mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
+					0,0,0, 0,0,0, Alph, Alph/100.);
+				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
+				Return;
+			}
+			
+			HDBld = 'BloodSplat';
+			String HDBld2 = 'HDMasterBlood';
+			if(mo is HDBld2||mo is HDBld)
+			{
+				String Sheild = 'HDMagicShield';
+				if(mo is HDBld2 && mo.Target && mo.Target.CountInv(Sheild)>0 && !mo.bnobouncesound)Return;
+				
+				if(mo.Target && (mo.Target.BloodTranslation!=0||mo.Target.BloodColor!=0))Col = mo.Target.BloodColor;
+				SpawnBloodDrop(mo, Col);
+				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
+				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
+				Return;
+			}
+		}
+		
+		if(MRGoreParts_Draw && MRGoreParts_Quake2 && Players[ConsolePlayer].Camera){
+			
+			int Glow = 0;
+			if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+			For(Int i=CRandom(0, 3);i<9*MRGoreParts_Amount;i++)
+			{
+				Float Bright = MRGoreParts_Brightness*CFrandom(.8, 1.5);
+				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel|Glow, 25, CFRandom(1.5, 2.5)*MRGoreParts_Size, mo.AngleTo(Players[ConsolePlayer].Camera),
+					Xoff:CFRandom(-1.5, 1.5),CFRandom(-1.5, 1.5),CFRandom(4, 7), .1*MRGoreParts_Speed,0,.5*MRGoreParts_Speed, 0,0, -.05*MRGoreParts_Size*MRGoreParts_Speed);
+			}
+		}
+		
+		if(MRGoreParts_OnlyModsBlood){mo.Destroy();Return;}
+		
+		mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
+	}
+
+	
+	Bool Uninstall;
+	Override Void OnDestroy()
+	{
+		if(Uninstall)Console.printf(StringTable.Localize("$MRGoreParts_Uninstalled"));
+	}
+	
+	
+	Override Void PlayerEntered(PlayerEvent e)
+	{
+		SendInterfaceEvent(ConsolePlayer, "MRGP_OpenRecs", 5, 1);
+	}
+}
+
+#include "MRGoreParts-code/Handler/SettingUp.zsc"//Caching and updating stuff
+#include "MRGoreParts-code/Handler/Damaged.zsc"//Actors being damaged related events
+#include "MRGoreParts-code/Handler/Died.zsc"//Actors dying related events
+#include "MRGoreParts-code/Handler/Commands.zsc"//Network process, console commands
+#include "MRGoreParts-code/Handler/ScreenJob.zsc"//Render events
+#include "MRGoreParts-code/Handler/SettingsRecomendations.zsc"//Display of the setting recommended for the mods

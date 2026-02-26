@@ -1,0 +1,418 @@
+/*
+	Caching effects, blood colors, gore actors to remove and gore sounds
+*/
+
+Extend Class MRGP_Handler
+{
+	Array<MRGP_Effect> Effects, AlwaysEffects;
+	
+	Void UpdateEffects()
+	{
+		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+		
+		Effects.Clear();
+		
+		String TempStr = CVar.FindCVar("MRGoreParts_EffectsList").GetString();
+		
+		TempStr.Substitute("  ", " ");
+		int Akhtung;
+		While(TempStr.Length()>0)
+		{
+			String Num;
+			if(TempStr.IndexOf(" ")>-1){Num = TempStr.Left(TempStr.IndexOf(" "));TempStr = TempStr.Mid(TempStr.IndexOf(" ")+1);}
+			else {Num = TempStr;TempStr = "";}
+			
+			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())Effects.Push(Handler.Effects[Num.ToInt()]);
+			Akhtung++;
+			if(Akhtung>700)Break;
+		}
+		
+		AlwaysEffects.Clear();
+
+		TempStr = CVar.FindCVar("MRGoreParts_AlwaysEffectsList").GetString();
+				
+		TempStr.Substitute("  ", " ");
+		
+		Akhtung = 0;
+		While(TempStr.Length()>0)
+		{
+			String Num;
+			if(TempStr.IndexOf(" ")>-1){Num = TempStr.Left(TempStr.IndexOf(" "));TempStr = TempStr.Mid(TempStr.IndexOf(" ")+1);}
+			else {Num = TempStr;TempStr = "";}
+			
+			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())AlwaysEffects.Push(Handler.Effects[Num.ToInt()]);
+			Akhtung++;
+			if(Akhtung>700)Break;
+		}
+		
+		if(!MRGoreParts_Debug)Return;
+		
+		Console.Printf("\cdRandom effects:");
+		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName().." ("..Effects[i].GetClassName()..")");
+		Console.Printf("\cdAlways effects:");
+		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName().." ("..AlwaysEffects[i].GetClassName()..")");
+	}
+	
+	Void UpdateEffectsData()//Updates effects information for effects menu
+	{
+		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+		
+		For(int i=0;i<Handler.Effects.Size();i++){
+			if(Handler.Effects[i])Handler.Effects[i].CountParticles(100);
+		}
+	}
+	
+	
+	Override Void OnRegister()
+	{
+		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
+		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
+		SetUpColors();
+		SetUpBlacklist();
+		SetUpSounds();
+		SetUpBloodRemove();
+		UpdateEffects();
+	}
+	
+	Map<String, Color> BldCols;//(Vanilla) monsters that supposed to have different blood color
+	Map<String, int> BldFlags;
+	/*
+		MRPRTCOL (MickRomash's gore PaRTicle COLours) lump stores information
+		about blood colours for specific monster classes
+		
+		Syntax:
+		MonsterClassName (R G B) +flag +flag
+		
+		example:
+		HellKnight (10 80 10)
+		Cacodemon (30 30 120)
+		FireDemon (255 135 15) +glow
+		
+		(check filter folder)
+	*/
+	
+	Void SetUpColors()
+	{
+		BldCols.Clear();
+		Array<String> Files;
+		int LumpNum = 0;
+		While(LumpNum>-1)
+		{
+			int TempLump = Wads.FindLump("MRPRTCOL", LumpNum+1);
+			if(TempLump==-1)Break;
+			else {LumpNum = TempLump;Files.Push(Wads.ReadLump(LumpNum));}
+		}
+		
+		For(int i=0;i<Files.Size();i++){
+			String Lump = Wads.ReadLump(LumpNum);
+
+			int Akhtung;
+			While(Lump.IndexOf("(")>-1)
+			{
+				String Monster = Lump.Left(Lump.IndexOf(" "));
+				Monster.StripLeftRight();
+				
+				String Cols = Lump.Mid(Lump.IndexOf("(")+1);
+				Cols = Cols.Left(Cols.IndexOf("\n"));
+				int Vals[3];
+				
+				For(int i1=0;i1<3;i1++)
+				{
+					String Temp = Cols.Left(Cols.IndexOf(" "));
+					Vals[i1] = Temp.ToInt();
+					Cols = Cols.Mid(Cols.IndexOf(" ")+1);
+				}
+
+				if((Class<Actor>)(Monster)){
+					BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
+				
+					While(Cols.Indexof("+")>-1){
+						int Flags;
+						if(Cols.IndexOf("+glow")>-1){
+							Flags|=GPBCF_Glow;
+						}
+						BldFlags.Insert(Monster, Flags);
+						Break;
+					}
+				}
+				
+				if(Lump.IndexOf("\n")<0)Break;
+				Lump = Lump.Mid(Lump.IndexOf("\n")+1);
+				
+				Akhtung++;
+				if(Akhtung>700)Break;
+			}
+		}
+		
+		if(MRGoreParts_Debug){
+			Console.Printf("\cdBlood color override:");
+			Actor Monst;
+			Color Col;
+			
+			Foreach(Monst , Col : BldCols)
+			{
+				String Str = Monst.." "..Col;
+				if(BldFlags.CheckKey(Monst)){
+					int Flags = BldFlags.Get(Monst);
+					if(Flags&GPBCF_Glow)Str = Str.." glow";
+				}
+				Console.Printf(Str);
+			}
+		}
+	}
+	
+	Array< Class <Actor> > BlackList;//List of monsters that shouldn't bleed
+	
+	Void SetUpBlackList()
+	{
+		BlackList.Clear();
+		String BList = MRGoreParts_BlackList;
+		BList.Substitute(" ", "");
+		int Akhtung;
+		While(BList.Length()>2)
+		{
+			String Monst;
+			if(BList.IndexOf(",")>-1)
+			{
+				Monst = BList.Left(BList.IndexOf(","));
+				BList = BList.Mid(BList.IndexOf(",")+1);
+			}
+			else 
+			{
+				Monst = BList;
+				Blist = "";
+			}
+			
+			
+			Class<Actor> MonstCls = Monst;
+			if(MonstCls)BlackList.Push(MonstCls);
+			
+			Akhtung++;
+			if(Akhtung>700)Break;
+		}
+		
+		if(MRGoreParts_Debug){
+			Console.Printf("\cdBlacklist:");
+			For(int i=0;i<BlackList.Size();i++)Console.Printf("\cg"..BlackList[i].GetClassName());
+			Console.Printf("\cd===================");
+		}
+	}
+	
+	
+	String HitSound, SpraySound, DripSound, GibSound, WoundSound, NoBloodSound;
+	
+	Void SetUpSounds()//Utilize gore sounds from other mods, if sfx add-on wasn't loaded
+	{
+		HitSound = "MRGP/Splash";
+		DripSound = "MRGP/Drip";
+		GibSound = "MRGP/XDeath";
+		SpraySound = "MRGP/Spray";
+		WoundSound = "MRGP/Wound";
+		NoBloodSound = "MRGP/NoBlood";
+		
+		While(True)
+		{
+			String Mod;
+			
+			Mod = 'MRGP_SoundAddon';
+			if((Class<Object>)(Mod))Break;//If user loaded my sounds addon, don't use sounds from other mods
+			
+			
+			Array<String> Files;//MRPBldSounds (MRParticles Blood Sounds) lumps. Store aliases of which sounds from the loaded mods to use
+			int LumpNum = 0;
+			While(LumpNum>-1)
+			{
+				int TempLump = Wads.FindLump("MRPBldSounds", LumpNum+1);
+				if(TempLump==-1)Break;
+				else {
+					LumpNum = TempLump;
+					Files.Push(Wads.ReadLump(LumpNum));
+				}
+			}
+			
+			For(int i=0;i<Files.Size();i++){//Look inside each lump in case author of the mod wish to replace default aliases
+				String File = Files[i];
+				File = File.MakeLower();//For easier search
+				//Skip comments
+				While(File.IndexOf(MRGPCommLine)>-1){
+					int Start = File.IndexOf(MRGPCommLine);
+					String Temp = File.Mid(Start);
+					int End = Temp.IndexOf("\n")+Start;
+					File = File.Left(Start)..File.Mid(End);
+				}
+				
+				While(File.IndexOf(MRGPCommStart)>-1){
+					int Start = File.IndexOf(MRGPCommStart);
+					int End = File.IndexOf(MRGPCommEnd);
+					File = File.Left(Start)..File.Mid(End+2);
+				}
+
+				int Cur, Akhtung;
+				Cur = File.IndexOf("mod ");
+
+				While(File.IndexOf("mod ", Cur)>-1){
+					if(Akhtung>100)Break;
+					Akhtung++;
+					
+					Mod = File.Mid(File.IndexOf(" ", Cur)+1);//Name of the actor from loaded mod
+					Mod = Mod.Left(Mod.IndexOf("\n"));
+					Mod.StripRight();
+
+					if((Class<Actor>)(Mod)){
+						String Sounds = File.Mid(File.IndexOf("{", Cur)+1);
+						Sounds = Sounds.Left(Sounds.IndexOf("}"));//Sound aliases
+						
+						if(Sounds.IndexOf("hitsound")>-1){
+							int index = Sounds.IndexOf("hitsound");
+							HitSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							HitSound = HitSound.Left(HitSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("dripsound")>-1){
+							int index = Sounds.IndexOf("dripsound");
+							DripSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							DripSound = DripSound.Left(DripSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("gibsound")>-1){
+							int index = Sounds.IndexOf("gibsound");
+							GibSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							GibSound = GibSound.Left(GibSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("spraysound")>-1){
+							int index = Sounds.IndexOf("spraysound");
+							SpraySound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							SpraySound = SpraySound.Left(SpraySound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("woundsound")>-1){
+							int index = Sounds.IndexOf("woundsound");
+							WoundSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							WoundSound = WoundSound.Left(WoundSound.IndexOf(")"));
+						}
+						if(Sounds.IndexOf("nobloodsound")>-1){
+							int index = Sounds.IndexOf("nobloodsound");
+							NoBloodSound = Sounds.Mid(Sounds.IndexOf("(", index)+1);
+							NoBloodSound = NoBloodSound.Left(NoBloodSound.IndexOf(")"));
+						}
+						
+					}
+					Cur = File.IndexOf("mod ", Cur+1);
+				}
+			}
+			Break;
+		}
+			
+		if(MRGoreParts_Debug){
+			Console.printf("\n\cgSounds:");
+			Console.Printf("\ccHitSound:\cg \""..HitSound.."\"");
+			Console.Printf("\ccDripSound:\cg \""..DripSound.."\"");
+			Console.Printf("\ccSpraySound:\cg \""..SpraySound.."\"");
+			Console.Printf("\ccGibSound:\cg \""..GibSound.."\"");
+		}
+	}
+	
+	
+	Array<String> RemoveBloods, RemoveBloodTypes;
+	String RemoveBloodBase;
+	
+	Void SetUpBloodRemove()//Caching blood classes that will be hidden/removed
+	{
+		RemoveBloods.Clear();
+		RemoveBloodTypes.Clear();
+		
+		For(int i=0;i<AllActorClasses.Size();i++)
+		{
+			String Blud = GetDefaultByType(AllActorClasses[i]).BloodType;
+			if(Blud!="Blood" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
+			
+			Blud = GetDefaultByType(AllActorClasses[i]).BloodType2;
+			if(Blud!="BloodSplatter" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
+			
+			Blud = GetDefaultByType(AllActorClasses[i]).BloodType3;
+			if(Blud!="AxeBlood" && RemoveBloodTypes.Find(Blud)==RemoveBloodTypes.Size())RemoveBloodTypes.Push(Blud);
+		}
+		
+		Array<String> Files;//MRPBldRemove (MRParticles Blood to Remove) lumps. Store blood actors names that should be removed
+		int LumpNum = 0;
+		While(LumpNum>-1)
+		{
+			int TempLump = Wads.FindLump("MRPBldRemove", LumpNum+1);
+			if(TempLump==-1)Break;
+			else {
+				LumpNum = TempLump;
+				Files.Push(Wads.ReadLump(LumpNum));
+			}
+		}
+		
+		While(True)
+		{
+			String Mod;
+			
+			For(int i=0;i<Files.Size();i++){//Look inside each lump
+				String File = Files[i];
+				File = File.MakeLower();//For easier search
+				//Skip comments
+				While(File.IndexOf(MRGPCommLine)>-1){
+					int Start = File.IndexOf(MRGPCommLine);
+					String Temp = File.Mid(Start);
+					int End = Temp.IndexOf("\n")+Start;
+					File = File.Left(Start)..File.Mid(End);
+				}
+				
+				While(File.IndexOf(MRGPCommStart)>-1){
+					int Start = File.IndexOf(MRGPCommStart);
+					int End = File.IndexOf(MRGPCommEnd);
+					File = File.Left(Start)..File.Mid(End+2);
+				}
+								
+				int Cur, Akhtung;
+				Cur = File.IndexOf("mod ");
+				
+				While(File.IndexOf("mod ", Cur)>-1){
+					if(Akhtung>100)Break;
+					Akhtung++;
+										
+					Mod = File.Mid(File.IndexOf(" ", Cur)+1);//Name of the actor from loaded mod
+					Mod = Mod.Left(Mod.IndexOf("\n"));
+					Mod.StripRight();
+
+					if((Class<Actor>)(Mod)){
+						String Removes = File.Mid(File.IndexOf("{", Cur)+1);
+						Removes = Removes.Left(Removes.IndexOf("}"));//Blood actors names
+
+						Array<String> Removin;
+						int Akhtung1;
+						While(Removes.IndexOf("\n")>-1){
+							if(Akhtung1>100)Break;
+							Akhtung1++;
+							String Remove = Removes.Mid(Removes.IndexOf("\n")+2);
+							Removes = Remove;
+							Remove = Remove.Left(Remove.IndexOf("\n"));
+							Remove.StripLeftRight();
+							if((Class<Actor>)(Remove) && Removin.Find(Remove)==Removin.Size())Removin.Push(Remove);
+						}
+						
+						if(Removin.Size()>0){
+							RemoveBloodBase = Removin[0];
+							Removin.Delete(0);
+							For(int i1=0;i1<Removin.Size();i1++){
+								RemoveBloods.Push(Removin[i1]);
+							}
+						}
+					}
+					Cur = File.IndexOf("mod ", Cur+1);
+				}
+			}
+			Break;
+		}
+		if(MRGoreParts_Debug){
+			Console.Printf("\nRemove Blood:");
+			Console.Printf("\cgBase Blood: "..RemoveBloodBase);
+			Console.Printf("\cgBloods:");
+			For(int i=0;i<RemoveBloods.Size();i++)Console.Printf(i.." \""..RemoveBloods[i].."\"");
+			Console.Printf("\cgBlood Types:");
+			For(int i=0;i<RemoveBloodTypes.Size();i++)Console.Printf(i.." "..RemoveBloodTypes[i]);
+			Console.Printf("-----------");
+		}
+	}
+}
