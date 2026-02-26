@@ -1,85 +1,3 @@
-[eng en enu default]
-
-MRGoreParts_Tips_CVarStart = "Console var: \cg";
-MRGoreParts_Tips_CVarEnd = "Default Value: \cg";
-
-MRGoreParts_DrawTip = "Turns on/off all visual and audio effects of the mod.";
-MRGoreParts_LiteDistanceTip = "Use simplified distance check between player and effects, which ignores GZDoom portals. May increase performance a bit.";
-MRGoreParts_UpdateMenuTip = "If you're loading a game saved with older version of the mod, or different mod list this might be helpful.";
-MRGoreParts_CheckLimitTip = "A green particle will appear on the screen. When the particles will hit the amount limit, it will dissapear, or will start flickering. It works from time to time tho.";
-MRGoreParts_CheckLimitOffsetTip = "$$MRGoreParts_CheckLimitTip";
-r_maxparticlesTip = "If particles amount hit the limit, new particles won't spawn. I recommend setting the highest possible value, minimum of 400 particles.";
-gl_particles_styleTip = "Texture used for particles. Has almost zero effect on performance.";
-gl_particles_style0 = "$$OPTVAL_SQUARE";
-gl_particles_style1 = "$$OPTVAL_ROUND";
-gl_particles_style2 = "$$OPTVAL_SMOOTH_2";
-gl_light_particlesTip = "Dynamic lighting affecting particles. Turning this option off, may increase performance a lot, especially on mobile devices.";
-
-//Spawn menu
-MRGoreParts_BloodSpawnMenuTip = "Here you can configure how mod will affect other mods gore and non bleeding monsters.";
-MRGoreParts_OnlyModsBloodTip = "Blood effects (actors) from other mods will be removed on spawn.\n\cgTurn off this option before playing with people that don't use this mod. May increase performance with other gore mods.";
-MRGoreParts_HideOtherBloodTip = "Blood effects (actors) from other mods will be hidden on spawn. Some blood actors, mainly spots may still appear. Almost not affects performance.";
-MRGoreParts_BloodTypesTip = "Blood effects (actors) specific for some monsters will be included in remove/hide list. Turn this option on if playing with HFE mod.";
-
-MRGoreParts_NoBloodMonstersTip = "Spawn blood effects for monsters that are not supposed to bleed. Blacklisted monsters won't bleed anyway.";
-MRGoreParts_BlacklistTip = "Type class (actor) names of the monsters you don't want to bleed.";
-MRGoreParts_NoBloodMistTip = "Spawn dust effect when the non-bleeding monster is hit.";
-MRGoreParts_NoBloodMistColorTip = "$$MRGoreParts_NoBloodMistTip";
-
-//Effects menu
-MRGoreParts_EffectsMenuTip = "Here you can configure particle effects. Their size, speed, lifetime, amount and what effects will or will not appear.";
-MRGoreParts_AmountTip = "Multiplier of particles in effects. Increasing or lowering the value will affect performance.";
-MRGoreParts_SizeTip = "Multiplier of particles sizes. Too big particles may affect performance because of translucenty.";
-MRGoreParts_DistanceTip = "Partciles sizes and speed will be scaled and amount will be downscaled by distance from player. Increasing the value may improve performance.";
-MRGoreParts_SpeedTip = "Particles movement speed and lifetime multiplier. Bigger values may increase performance.";
-MRGoreParts_GravityTip = "Gravity of particles. Doesn't affect performance.";
-MRGoreParts_LowAlphaTip = "If turned on, effects and sopts particles will shrink, rather than fade out. Particles that force alpha ignore this setting. May increase performance.";
-MRGoreParts_DripOnImpactTip = "Some blood will drip straight on the floor on any damage appearance. Blood will stay on the floor if the option in the spots menu is turned on. Has medium affect on performance";
-MRGoreParts_Quake2Tip = "Spawn small Quake 1-style particles splash on any damage appearance. Useful for shootable corpses from other mods. Has very small performance impact.";
-MRGoreParts_DrawFlyingBloodTip = "Spawn long blood sprays line in Shadow Warrior (1997), Blood or Quake. Big amount of sprays will affect performance a lot.";
-MRGoreParts_FlyingBloodChanceTip = "$$MRGoreParts_DrawFlyingBloodTip";
-MRGoreParts_MaxFlyingBloodTip = "When the limit is reached, the longest spray will wanish.";
-MRGoreParts_MistTextureTip = "Appearance of the blood mist effect. Has almost zero effect on performance.";
-
-MRGoreParts_EffectsListMenuTip = "Here you can configure what particle effects will or will not appear.";
-
-MRGoreParts_MaxDyingTip = "Maximum amount of monsters with dying splashes at once. When the limit is reached, the longest dying monster will stop spawn splashes. Big amount will affect performance a lot.";
-MRGoreParts_MaxGibingTip = "Maximum gibbing effects. When the limit is reached, new gibbing effects won't appear. Big amount will affect performance a lot.";
-MRGoreParts_FloorSplashTip = "Wave of blood on the floor appearing on gibbing. May cause lags, especially on mobile devices.";
-MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reached, the longest remains will fall from the ceiling. Big amount will affect performance extremely.";
-
-//Appearance menu
-MRGoreParts_ParticlesTextureTip = "Appearance of blood particles. Has almost zero effect on performance.";
-MRGoreParts_AppearanceMenuTip = "Here you can configure particles appearance. Color, translucenty, brightness and sounds.";
-MRGoreParts_UseCustomColorTip = "All particles will have this color.";
-MRGoreParts_ColorTip = "$$MRGoreParts_UseCustomColorTip";
-MRGoreParts_BrightnessTip = "Brightness of particles.";
-MRGoreParts_AlphaTip = "Particles opacity. Values lower 1 may affect performance.";
-MRGoreParts_FullBrightTip = "Level lighting won't affect particles.";
-MRGoreParts_FuzzyBloodTip = "Partially invisible monsters (and players) will bleed partially invisible blood. May affect performance a bit.";
-
-//Spots menu
-MRGoreParts_SpotsMenuTip = "Here you can configure particles leaved on the surface.";
-MRGoreParts_FloorSpotsTip = "Blood spots on the walls, celling and floor. Made via 'VisualThinker's and not listed in particles limit. Big amount of spots will affect performance.";
-MRGoreParts_EffectsSpotsTip = "Spots leaved by damage effects. Got big performance impact.";
-MRGoreParts_DeathSpotsTip = "Spots leaved by dying monsters. Got even bigger performance impact";
-MRGoreParts_SpotsFrequencyTip = "Frequency of spots spawn. The biggre the value, the more spots will be lived by effects. Increasing or lowering the value will affect performance.";
-MRGoreParts_MaxSpotsTip = "When the limit is reached, the longest spost will wanish.";
-MRGoreParts_SpotsTimeTip = "How long spots lay before dissapear (in seconds). -1 for infinite.";
-
-//Wounds menu
-MRGoreParts_WoundsMenuTip = "Here you can configure bleeding wounds on enemies.";
-MRGoreParts_WoundsTip = "Bleeding wounds on the hit enemies. This feature affects performance a lot.";
-MRGoreParts_MaxWoundedTip = "Too many bleeding enemies will affect performance a lot.";
-MRGoreParts_MaxWoundsTip = "Too many wounds on one enemie will affect performance a lot.";
-MRGoreParts_CorpseWoundsTip = "";
-MRGoreParts_VoxelTip = "Turn on if playing with 3D/voxel models.";
-
-//Update menu
-MRGP_UpdateColorsTip = "Update blood colors specific for some monsters.";
-MRGP_UpdateSoundsTip = "Update blood sounds utilized from other loaded mods.";
-MRGP_UpdateRemoveBloodTip = "Update list of blood actors from other mods to remove.";
-	
 [ru]
 
 MRGoreParts_Tips_CVarStart = "Переменная: \cg";
@@ -89,8 +7,12 @@ MRGoreParts_DrawTip = "Включить/выключить все аудиови
 MRGoreParts_LiteDistanceTip = "Использовать упрощённый рассчёт расстояния между эффектами и игроком, игнорируя порталы GZDoom. Незначителтное влияние на производительность.";
 MRGoreParts_UpdateMenuTip = "Может пригодиться при игре, сохранённой со старой версией мода или другими модами.";
 MRGoreParts_CheckLimitTip = "На экране появится зелённая точка. Если она пропадёт, значит лимит частиц был достигнут. Впрочем, работает она не идеально.";
+MRGoreParts_CheckLimitOffsetTip = "$$MRGoreParts_CheckLimitTip";
 r_maxparticlesTip = "Если количество частиц превысит лимит, новые частицы перестанут появляться. Советую поставить максимально возможное количество, минимум от 400 частиц.";
 gl_particles_styleTip = "Внешний вид частиц. Почти не влияет на производительность.";
+gl_particles_style0 = "$$OPTVAL_SQUARE";
+gl_particles_style1 = "$$OPTVAL_ROUND";
+gl_particles_style2 = "$$OPTVAL_SMOOTH_2";
 gl_light_particlesTip = "Влияние динамического освещения на частицы. Отключение данной опции может значительно повысить производительность, особенно на мобильных устройствах.";
 
 //Spawn menu
@@ -102,6 +24,7 @@ MRGoreParts_BloodTypesTip = "Кровавые эффекты (акторы) ун
 MRGoreParts_NoBloodMonstersTip = "Включить кровь для монстров которые не должны кровоточить. Монстры из чёрного списка не включены.";
 MRGoreParts_BlacklistTip = "Впишите названия акторов монстров которые не должны кровоточить.";
 MRGoreParts_NoBloodMistTip = "При нанесении урона некровоточащим монстрам, будет появляться облако пыли.";
+MRGoreParts_NoBloodMistColorTip = "$$MRGoreParts_NoBloodMistTip";
 
 //Effects menu
 MRGoreParts_EffectsMenuTip = "Здесь можно настроить эффекты из частиц. Размер частиц, количество, скорость, время жизни и какие эффекты будут появляться.";
@@ -114,8 +37,10 @@ MRGoreParts_LowAlphaTip = "Частицы эффектов и пятен буд�
 MRGoreParts_DripOnImpactTip = "Небольшое количество крови будет капать на пол при любом уроне. Кровь будет оставаться на полу при включении соответствующей опции. Среднее влияние на производительность.";
 MRGoreParts_Quake2Tip = "При любом нанесении урона будут появляться небольшие всплески как в Quake 1. Данная опция полезна для расчленяемых трупов из разных модов (например Nashgore Next или Universal Gibs). Почти не влияет на производительность";
 MRGoreParts_DrawFlyingBloodTip = "Длинные струи крови на подобии тех что были в Shadow Warrior (1997), Blood или Quake.";
+MRGoreParts_FlyingBloodChanceTip = "$$MRGoreParts_DrawFlyingBloodTip";
 MRGoreParts_MaxFlyingBloodTip = "Когда лимит достигнут, наиболее старая струя пропадёт. Большое количество струй сильно повлияет на производительность.";
 MRGoreParts_MistTextureTip = "Внешний вид кровавой дымки. Почти не влияет на производительность.";
+MRGoreParts_NoFreezeTip = "Частицы не будут останавливаться в замороженном времени.";
 
 MRGoreParts_EffectsListMenuTip = "Здесь можно настроить какие эффекты будут появляться.";
 
@@ -128,10 +53,12 @@ MRGoreParts_CrushTip = "Максимальное кол-во останков о
 MRGoreParts_ParticlesTextureTip = "Внешний вид кровавых частиц. Почти не влияет на производительность.";
 MRGoreParts_AppearanceMenuTip = "Здесь можно настроить внейшний вид частиц. Их прозрачность, яркость, цвет, а также звуки эффектов.";
 MRGoreParts_UseCustomColorTip = "Все частицы будут иметь этот цвет.";
+MRGoreParts_ColorTip = "$$MRGoreParts_UseCustomColorTip";
 MRGoreParts_BrightnessTip = "Яркость цвета частиц.";
 MRGoreParts_AlphaTip = "Непрозрачность частиц. Значения ниже 1 могут повлиять на производительность.";
 MRGoreParts_FullBrightTip = "Освещение уровня не будет влияеть на частицы.";
 MRGoreParts_FuzzyBloodTip = "Невидимые монстры (и игроки) будут кровоточить невидимой кровью. Может незначительно ухудшить производительность из-за прозрачности.";
+MRGoreParts_SoundSpeedTip = "i_timescale будет влиять на темп и высоту звуков.";
 
 //Spots menu
 MRGoreParts_SpotsMenuTip = "Здесь можно настроить частицы на поверхностях.";

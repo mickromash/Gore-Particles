@@ -1,0 +1,200 @@
+[eng enu default en]
+
+MRGoreParts_Settings = "\cg✺\c- Configure Particle gore";
+
+MRGoreParts_Title = "Particle Gore";
+//{
+MRGoreParts_Draw = "Draw gore particles";
+
+MRGoreParts_BloodSpawnMenu = "Blood spawn settings";
+////{
+MRGoreParts_OnlyModsBlood = "\cv⊛\c-Remove other gore";
+MRGoreParts_HideOtherBlood = "Hide other gore";
+MRGoreParts_OnlyModsBlood0 = "No";
+MRGoreParts_OnlyModsBlood1 = "Only hide";
+MRGoreParts_OnlyModsBlood2 = "Yes";
+
+MRGoreParts_OnlyModsBloodText = "May cause lags when playing with Brutal Doom";
+
+MRGoreParts_BloodTypes = "\cv⊛\c-Remove blood types unic to some monsters";
+MRGoreParts_BloodTypesText = "Recommended for HfE";
+
+MRGorePats_ChangeBloodOnSpawn = "Change vanilla monsters blood colors on spawn";
+MRGorePats_ChangeBloodOnSpawnText = "Affects color of vanilla monsters blood decals and crushed remains";
+
+MRGoreParts_MenuNoBloodTitle = "Non-bleeding settings";
+MRGoreParts_Blacklist = "Monsters black list:";
+MRGoreParts_BlacklistOn = "Blacklist:";
+MRGP_UpdateBlacklist = "Apply blacklist";
+MRGoreParts_NoBloodMonsters = "Force blood for monsters with \"+NOBLOOD\" flag";
+MRGoreParts_NoBloodMist = "Spec. impact effect for monsters with no blood";
+MRGoreParts_NoBloodMistColor = "Effect color";
+MRGoreParts_NoBloodSndVol = "Non-bleeding hit sound volume";
+////}
+
+MRGoreParts_EffectsMenu = "Effects settings";
+////{
+MRGoreParts_Amount = "Particles amount in one effect";
+MRGoreParts_Size = "Particles sizes";
+MRGoreParts_Distance = "Effects scale by distance";
+
+MRGoreParts_LowAlpha = "Minimize alpha channel usage";
+MRGoreParts_LowAlphaText = "Improves performance by minimizing particles Transparency";
+
+MRGoreParts_Speed = "Particles speed/lifetime";
+MRGoreParts_Gravity = "Particles gravity";
+MRGoreParts_DripOnImpact = "Dripping blood on impact";
+MRGoreParts_Quake2 = "Quake puff style blood";
+MRGoreParts_DrawFlyingBlood = "Quake gibs style blood streams";
+MRGoreParts_FlyingBloodChance = "Blood streams spawn chance";
+MRGoreParts_MaxFlyingBlood = "Max. blood streams";
+
+MRGoreParts_MistTexture = "Blood mist texture";
+MRGoreParts_MistTexture0 = "Mod (128x128)";
+MRGoreParts_MistTexture1 = "Mod (64x64)";
+MRGoreParts_MistTexture2 = "Mod (1x1)";
+MRGoreParts_MistTexture3 = "Same as other particles";
+
+MRGoreParts_NoFreeze = "Don't freeze particles";
+
+
+MRGoreParts_EffectsListMenu = "Configure included effects";
+MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
+MRGoreParts_EffectsListMenuControls1 = "\cv[ESC]\c-: Reset Changes   \cv[ENTER]\c-: Save Changes   \cv[R]\c-: Reset to Default   \cv[BackSpace]\c-: Erase the list";
+MRGoreParts_EffectsListMenuControls2 = "\cv[Ctrl + C]\c- or \cv[F6]\c-: Copy the list   \cv[Ctrl + V]\c- or \cv[F9]\c-: Paste the list. Coppied list will be saved in the storage.";
+MRGoreParts_AllEffectsList = "\czAll effects ids";
+MRGoreParts_IncludedEffectsList = "\cbIncluded effects";
+MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- or \cvMouse wheel\c-: scroll the list\nEffects marked with \cf\"*\"\c- utilize alpha channel";
+MRGoreParts_EffectsList = "Random effects list";
+MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effect will appear on impact\nType same effect multiple times to increase its spawn chance";
+MRGoreParts_AlwaysEffectsList = "Constant effects list";
+MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these effects will appear on impact";
+MRGoreParts_EffectsUpdated = "Effects list updated";
+MRGoreParts_ListCopied = "Effects list copied";
+MRGoreParts_EffectsListMenuParticles = " particles";
+MRGoreParts_EffectsListMenuNoParticles = "(enter a level to know particles amount)";
+////}
+
+MRGoreParts_AppearanceMenu = "Blood appearance/Sound settings";
+////{
+MRGoreParts_ParticlesTexture = "Gore particles texture";
+MRGoreParts_ParticlesTexture0 = "Same as other particles";
+MRGoreParts_ParticlesTexture1 = "Smooth";
+MRGoreParts_ParticlesTexture2 = "Round";
+MRGoreParts_ParticlesTexture3 = "Square";
+
+MRGoreParts_UseCustomColor = "Use custom blood color";
+MRGoreParts_Color = "Custom blood color";
+MRGoreParts_Brightness = "Blood brightness";
+MRGoreParts_Alpha = "Blood opacity";
+MRGoreParts_FullBright = "Glowing blood";
+MRGoreParts_FuzzyBlood = "Fuzzy blood";
+MRGoreParts_FuzzyBloodText = "For transparent monsters";
+MRGoreParts_Sound = "Sound";
+MRGoreParts_SndVol = "Master gore volume";
+MRGoreParts_HitSndVol = "Hit sound volume";
+MRGoreParts_SpraySndVol = "Death sprays sound volume";
+MRGoreParts_DripSndVol = "Dripping blood volume";
+MRGoreParts_GibSndVol = "Gib sound volume";
+MRGoreParts_SoundSpeed = "Sound speed";
+////}
+
+MRGoreParts_SpotsMenu = "Spots settings";
+////{
+MRGoreParts_FloorSpots = "Spots on surfaces";
+MRGoreParts_EffectsSpots = "Spots by effects";
+MRGoreParts_WoundsSpots = "Spots by bleeding wounds";
+MRGoreParts_DeathSpots = "Spots by dying bleeding";
+MRGoreParts_SpotsFrequency = "Spots spawn frequency";
+MRGoreParts_MaxSpots = "Max spots";
+MRGoreParts_SpotsTime = "Spots life time";
+MRGOreParts_SpotsStyle = "Spots particles style";
+////}
+
+MRGoreParts_WoundsMenu = "Wounds settings";
+////{
+MRGoreParts_Wounds = "Bleeding wounds";
+MRGoreParts_MaxWounded = "Max wounded";
+MRGoreParts_MaxWounds = "Max wounds on one actor";
+
+MRGoreParts_CorpseWounds = "Wounds on corpses";
+MRGoreParts_CorpseWounds0 = "None";
+MRGoreParts_CorpseWounds1 = "Only wounds and splashes";
+MRGoreParts_CorpseWounds2 = "Wounds, splashes and dripping blood";
+
+MRGoreParts_Voxel = "3D enemies";
+////}
+
+MRGP_Recs = "Show recommend settings";
+
+MRGoreParts_LiteDistance = "Lighter distance check";
+MRGoreParts_LiteDistanceText = "Increases performance by ignoring portals";
+
+MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
+MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
+MRGoreParts_FloorSplash = "Floor splash on gibbing";
+MRGoreParts_Crush = "Maximum remains of crushed corpses";
+
+MRGoreParts_UpdateMenu = "Update mod's data";
+////{
+MRGP_UpdateColors = "Update monsters blood colors";
+MRGP_UpdateSounds = "Update blood sounds";
+MRGP_UpdateRemoveBlood = "\cv⊛\c-Update other mods blood list";
+////}
+
+MRGoreParts_Multiplayer = "Multiplayer friendly";
+
+MRGoreParts_CheckLimit = "Particles limit indicator";
+MRGoreParts_CheckLimitOffset = "Indicator offset";
+
+MRGoreParts_Uninstall = "Uninstall";
+MRGoreParts_UninstallPromt = "Remove the mod so the saved game could be loaded without it?";
+MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully unistalled.";
+
+MRGoreParts_AllParticlesAmount = "All particles amount";
+//}
+
+MRGoreParts_Ui_RecS = "\cgParticle Gore\cd Recommended settings:";
+MRGoreParts_Ui_RecSDone = "All setting done right.";
+MRGoreParts_Ui_RecSSound = "\cucheck readme for sound pack link.";
+
+//Effect names
+MRGP_Effect_SimpleSplash = "Round blood splash";
+MRGP_Effect_Sprays = "Blood sprays";
+MRGP_Effect_Mist = "Blood mist";
+MRGP_Effect_BeautifulSpray = "\"Beautiful\" blood spray";
+MRGP_Effect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
+MRGP_Effect_CurveLine = "Curve blood spray";
+MRGP_Effect_CurveLineTorn = "Curve torn blood spray";
+MRGP_Effect_CurveLinesSplash = "Splash of curve lines";
+MRGP_Effect_Sparks = "Sparks";
+
+//Handler
+MRGoreParts_Event_HelpOpen = "List of \cgParticle Gore\c- commands:\n\n";
+MRGoreParts_Event_Help_Uninstall = "\c-- Uninstalls the mod.\n";
+MRGoreParts_Event_Help_UpdateBlacklist = "\c-- Apply current monsters blacklist.\n";
+MRGoreParts_Event_Help_UpdateColors = "\c-- Update blood colors.\n";
+MRGoreParts_Event_Help_UpdateSounds = "\c-- Update gore sounds.\n";
+MRGoreParts_Event_Help_UpdateRemoveBlood = "\c-- Update gore actors from other mods to remove.\n";
+MRGoreParts_Event_Help_UpdateEffectsData = "\c-- Update effects list.\n";
+MRGoreParts_Event_Help_UpdateEffects = "\c-- Update set effects lists.\n";
+MRGoreParts_Event_Help_ClearWounds = "\c-- Remove wounds from the actors on current map.\n";
+MRGoreParts_Event_Help_ClearSpots = "\c-- Remove all spots from current map.\n";
+MRGoreParts_Event_Help_ClearCrushed = "\c-- Remove all crushed actors remains from current map.\n";
+MRGoreParts_Event_Help_PrintEffects = "\c-- Prints all mods effects ids, tags and class names.\n";
+MRGoreParts_Event_Help_DemoEffect = "\cvid angle pitch \c-- Spawn particle effect.\n";
+MRGoreParts_Event_Help_DemoRandomEffect = "\cvangle pitch \c-- Spawn effect from current random list.\n";
+MRGoreParts_Event_Help_DemoAlwaysEffect = "\cvangle pitch \c-- Spawn effects from current always list.\n";
+MRGoreParts_Event_Help_DemoNoBloodEffect = "\cvangle \c-- Spawn current non-bleeding effect.\n";
+MRGoreParts_Event_HelpClose = "You can also type MRGoreP and press [TAB] to see all commands and CVars.";
+
+
+MRGoreParts_Event_EffectsList = "List of \cgGore Particles\c- effects:\n";
+MRGoreParts_Event_DemoEffect = "Demonstrate: \cg";
+MRGoreParts_Event_DemoRandom = "Demonstrate Random effect: \cg";
+MRGoreParts_Event_DemoAlways = "Demonstrate Always effect: \cg";
+MRGoreParts_Event_DemoNoBlood = "Demonstrate No blood effect";
+
+MRGoreParts_Event_ClearSpots = "%i Spots removed";
+MRGoreParts_Event_ClearWounds = "%i Wounds removed";
+MRGoreParts_Event_ClearCrushed = "%i Crushed remains removed";
