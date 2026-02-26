@@ -32,7 +32,7 @@ Class MRGP_Thinker: Object play
 	Bool TickCheck()
 	{
 		if(!MRGoreParts_Draw){Destroy();Return false;}
-		if(Level.isFrozen())Return false;
+		if(Level.isFrozen() && !MRGoreParts_NoFreeze)Return false;
 		Return true;
 	}
 		
@@ -58,7 +58,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		Super.PostBeginPlay();
 		if(!Owner||!Handler)Return;
 		Mid = Owner.Height*.5;
-		Owner.A_StartSound(Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_SpraySndVol);
+		MRGParts.StartSound(Owner, Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_SpraySndVol);
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
 		RandAngle = CRandom(5, 30);
 	}
@@ -108,7 +108,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			Float Strn = CRandom(3, 5);
 			Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-RandAngle, RandAngle), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
 			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
-			S_StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
+			MRGParts.StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 		}
 		if(Age<CRandom(-40, 60))
 		{
@@ -331,7 +331,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 			Perma.Delete(Perma.Find(RandX[Rand]));
 		}
 		else {
-			S_StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+			MRGParts.StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
 			MRGParts.SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
 		}
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
@@ -364,7 +364,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 Class MRGP_Spot: VisualThinker
 {
 	int Surface;//0 - Wall, 1 - Floor, 2 - Ceiling
-	Bool FromCeiling;//In case spot placed on a wall of a sector that is originates from the ciling
+	Bool FromCeiling;//In case spot placed on a wall of a sector that is originates from the ceiling
 	int Life, Age, Delay, Sliding;
 	Double Height, StartScale, StartAlpha;
 	Sector LinkedSector;
@@ -378,7 +378,7 @@ Class MRGP_Spot: VisualThinker
 			Scale = (1, 1)*StartScale;
 			if(PlaySound){
 				Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
-				if(Handler)S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
+				if(Handler)MRGParts.StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
 			}
 		}
 				
@@ -511,7 +511,7 @@ Class MRGP_Spot: VisualThinker
 		
 		if(CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
 			MRGParts.SpawnParticle(SColor, MRSPF_SMOKE, 0, 35, StartScale*3, 0, Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
-			S_StartSoundAt(Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
+			MRGParts.StartSoundAt(Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
 			Destroy();
 			Return true;
 		}
@@ -691,7 +691,7 @@ Class MRGP_Droplet: VisualThinker
 		if(!Handler)Return;
 
 		Double Vol = Max(0, Min(1, Vel.Length()/9));
-		S_StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:Vol*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+		MRGParts.StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:Vol*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
 		
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 		Switch(HitType){
@@ -706,7 +706,7 @@ Class MRGP_Droplet: VisualThinker
 					Sector BackSector = HitLine.BackSector;
 					if(BackSector==CurSec)BackSector = HitLine.FrontSector;
 					
-					Bool Plane;
+					Bool Plane;//From ceiling
 					if(BackSector && HitPos.Z > BackSector.CenterCeiling())Plane = true;
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
