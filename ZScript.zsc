@@ -111,6 +111,7 @@ Struct MRGParts
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 		p.Flags = Glow|Flags;
+		if(MRGoreParts_NoFreeze)p.Flags |= SPF_NOTIMEFREEZE;
 		p.Style = Style;
 		
 		if(Flags&MRSPF_SMOKE){
@@ -135,10 +136,23 @@ Struct MRGParts
 		}
 		Return Texman.CheckForTexture("glpart");
 	}
+
+	Static Void StartSound(Actor Player, Sound WhatToPlay, int Slot = CHAN_BODY, int Flags = 0, Double Volume = 1.0, Double Attenuation = ATTN_NORM, Double Pitch = 1.0, Double StartTime = 0.)
+	{
+		if(MRGoreParts_SoundSpeed)Pitch *= i_timescale;
+		
+		Player.A_StartSound(WhatToPlay, Slot, Flags, Volume, Attenuation, Pitch, StartTime);
+	}
+	
+	Static Void StartSoundAt(Vector3 Pos, Sound WhatToPlay, int Slot = CHAN_BODY, int Flags = 0, Double Volume = 1.0, Double Attenuation = ATTN_NORM, Double Pitch = 1.0, Double StartTime = 0.)
+	{
+		if(MRGoreParts_SoundSpeed)Pitch *= i_timescale;
+		
+		Object.S_StartSoundAt(Pos, WhatToPlay, Slot, Flags, Volume, Attenuation, Pitch, StartTime);
+	}
 }
 
-//#include "MRGoreParts-code/HandlerFuncs.zsc"
-#include "MRGoreParts-code/Handler.zsc"
+#include "MRGoreParts-code/Handler/Base.zsc"
 #include "MRGoreParts-code/Thinkers.zsc"
 #include "MRGoreParts-code/Effects.zsc"
 #include "MRGoreParts-code/Wounds.zsc"

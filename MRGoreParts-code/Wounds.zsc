@@ -28,7 +28,7 @@ Class MRGP_Wound: MRGP_Thinker
 		Handler.Wounded.Push(Owner);
 		Handler.Wounds.Insert(Handler.Wounded.Find(Owner), Self);
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
-		Owner.A_StartSound(Handler.WoundSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*.5*MRGoreParts_HitSndVol, attenuation:ATTN_STATIC);
+		MRGParts.StartSound(Owner, Handler.WoundSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*.5*MRGoreParts_HitSndVol, attenuation:ATTN_STATIC);
 	}
 	
 	Override Void Tick()
