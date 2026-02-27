@@ -195,11 +195,13 @@ Extend Class MRGP_Handler
 
 		Spot.SetXYZ(Spot.Pos + (Actor.AngleToVector(Spot.AngleTo(Source)+180, mo.Radius), mo.Radius*Sin(Pitch)));//Hopefully it won't cause desync
 		
-		
 		Double VOfst = 0;
 		Double DifZ = Dif(Spot.Pos.Z, mo.pos.Z+mo.Height*.5);
 		
-		if(MRGParts.Distance2D(Inflictor, mo)>mo.Radius*1.5||DifZ>mo.Height*.5)Return;
+		if(MRGParts.Distance2D(Inflictor, mo)>mo.Radius*1.5||DifZ>mo.Height*.5){
+			Spot.SetXYZ(OldPos);
+			Return;
+		}
 		
 		
 		if(Effects.Size()>0)
