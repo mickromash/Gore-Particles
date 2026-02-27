@@ -39,8 +39,8 @@ MRGoreParts_Size = "Particles sizes";
 MRGoreParts_Distance = "Effects scale by distance";
 
 MRGoreParts_LowAlpha = "Minimize alpha channel usage";
-MRGoreParts_LowAlphaText = "Improves performance by minimizing particles Transparency";
 
+MRGoreParts_ExitWound = "Exit wounds";
 MRGoreParts_Speed = "Particles speed/lifetime";
 MRGoreParts_Gravity = "Particles gravity";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";

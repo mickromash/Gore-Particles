@@ -177,7 +177,7 @@ Extend Class MRGP_Handler
 	{
 		if(!mo || !Inflictor || !Source)Return;
 		
-		//if(Damage<12)Return;
+		if(CRandom(0, 10)<3)Return;
 		
 		if(Damaged.Find(mo) != Damaged.Size()){
 			Return;

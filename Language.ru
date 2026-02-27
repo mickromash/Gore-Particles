@@ -39,8 +39,8 @@ MRGoreParts_Size = "Размеры частиц";
 MRGoreParts_Distance = "Увеличение эффектов на расстоянии";
 
 MRGoreParts_LowAlpha = "Минимизировать использование альфа канала";
-MRGoreParts_LowAlphaText = "Улучшает производительность минимизируя прозрачность частиц";
 
+MRGoreParts_ExitWound = "Сквозные ранения";
 MRGoreParts_Speed = "Скорость/время жизни частиц";
 MRGoreParts_Gravity = "Вес частц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";

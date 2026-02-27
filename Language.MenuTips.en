@@ -34,6 +34,7 @@ MRGoreParts_DistanceTip = "Partciles sizes and speed will be scaled and amount w
 MRGoreParts_SpeedTip = "Particles movement speed and lifetime multiplier. Bigger values may increase performance.";
 MRGoreParts_GravityTip = "Gravity of particles. Doesn't affect performance.";
 MRGoreParts_LowAlphaTip = "If turned on, effects and sopts particles will shrink, rather than fade out. Particles that force alpha ignore this setting. May increase performance.";
+MRGoreParts_ExitWoundTip = "Spawn blood effect on the oposite side of the damage.";
 MRGoreParts_DripOnImpactTip = "Some blood will drip straight on the floor on any damage appearance. Blood will stay on the floor if the option in the spots menu is turned on. Has medium affect on performance";
 MRGoreParts_Quake2Tip = "Spawn small Quake 1-style particles splash on any damage appearance. Useful for shootable corpses from other mods. Has very small performance impact.";
 MRGoreParts_DrawFlyingBloodTip = "Spawn long blood sprays line in Shadow Warrior (1997), Blood or Quake. Big amount of sprays will affect performance a lot.";
