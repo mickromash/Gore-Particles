@@ -25,7 +25,7 @@ MRGorePats_ChangeBloodOnSpawnText = "Affects color of vanilla monsters blood dec
 MRGoreParts_MenuNoBloodTitle = "Non-bleeding settings";
 MRGoreParts_Blacklist = "Monsters black list:";
 MRGoreParts_BlacklistOn = "Blacklist:";
-MRGP_UpdateBlacklist = "Apply blacklist";
+MRGoreParts_UpdateBlacklist = "Apply blacklist";
 MRGoreParts_NoBloodMonsters = "Force blood for monsters with \"+NOBLOOD\" flag";
 MRGoreParts_NoBloodMist = "Spec. impact effect for monsters with no blood";
 MRGoreParts_NoBloodMistColor = "Effect color";
@@ -48,12 +48,6 @@ MRGoreParts_Quake2 = "Quake puff style blood";
 MRGoreParts_DrawFlyingBlood = "Quake gibs style blood streams";
 MRGoreParts_FlyingBloodChance = "Blood streams spawn chance";
 MRGoreParts_MaxFlyingBlood = "Max. blood streams";
-
-MRGoreParts_MistTexture = "Blood mist texture";
-MRGoreParts_MistTexture0 = "Mod (128x128)";
-MRGoreParts_MistTexture1 = "Mod (64x64)";
-MRGoreParts_MistTexture2 = "Mod (1x1)";
-MRGoreParts_MistTexture3 = "Same as other particles";
 
 MRGoreParts_NoFreeze = "Don't freeze particles";
 
@@ -82,7 +76,18 @@ MRGoreParts_ParticlesTexture0 = "Same as other particles";
 MRGoreParts_ParticlesTexture1 = "Smooth";
 MRGoreParts_ParticlesTexture2 = "Round";
 MRGoreParts_ParticlesTexture3 = "Square";
+MRGoreParts_ParticlesTexture4 = "Custom";
 
+MRGoreParts_ParticlesTextureName = "Custom particle texture";
+
+MRGoreParts_MistTexture = "Blood mist texture";
+MRGoreParts_MistTexture0 = "Mod (128x128)";
+MRGoreParts_MistTexture1 = "Mod (64x64)";
+MRGoreParts_MistTexture2 = "Mod (1x1)";
+MRGoreParts_MistTexture3 = "Same as other particles";
+MRGoreParts_MistTexture4 = "Custom";
+
+MRGoreParts_MistTextureName = "Custom mist texture";
 MRGoreParts_UseCustomColor = "Use custom blood color";
 MRGoreParts_Color = "Custom blood color";
 MRGoreParts_Brightness = "Blood brightness";
@@ -137,9 +142,9 @@ MRGoreParts_Crush = "Maximum remains of crushed corpses";
 
 MRGoreParts_UpdateMenu = "Update mod's data";
 ////{
-MRGP_UpdateColors = "Update monsters blood colors";
-MRGP_UpdateSounds = "Update blood sounds";
-MRGP_UpdateRemoveBlood = "\cv⊛\c-Update other mods blood list";
+MRGoreParts_UpdateColors = "Update monsters blood colors";
+MRGoreParts_UpdateSounds = "Update blood sounds";
+MRGoreParts_UpdateRemoveBlood = "\cv⊛\c-Update other mods blood list";
 ////}
 
 MRGoreParts_Multiplayer = "Multiplayer friendly";

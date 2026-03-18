@@ -25,7 +25,7 @@ MRGorePats_ChangeBloodOnSpawnText = "Влияет на цвет кровавых
 MRGoreParts_MenuNoBloodTitle = "Настройки монстров без крови";
 MRGoreParts_Blacklist = "Чёрный список монстров:";
 MRGoreParts_BlacklistOn = "Чёрный список монстров:";
-MRGP_UpdateBlacklist = "Применить чёрный список";
+MRGoreParts_UpdateBlacklist = "Применить чёрный список";
 MRGoreParts_NoBloodMonsters = "Включить кровь для монстров с флагом \"+NOBLOOD\"";
 MRGoreParts_NoBloodMist = "Спец. эффекты для безкровных";
 MRGoreParts_NoBloodMistColor = "Цвет эффектов";
@@ -48,12 +48,6 @@ MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_DrawFlyingBlood = "Струи крови (как в Quake)";
 MRGoreParts_FlyingBloodChance = "Шанс появления струи";
 MRGoreParts_MaxFlyingBlood = "Макс. струй";
-
-MRGoreParts_MistTexture = "Текстура дымки";
-MRGoreParts_MistTexture0 = "Из мода (128x128)";
-MRGoreParts_MistTexture1 = "Из мода (64x64)";
-MRGoreParts_MistTexture2 = "Из мода (1x1)";
-MRGoreParts_MistTexture3 = "Такая же как у остальных частиц";
 
 MRGoreParts_NoFreeze = "Не замораживать частицы";
 
@@ -81,7 +75,18 @@ MRGoreParts_ParticlesTexture0 = "Такая же как у остальных ч
 MRGoreParts_ParticlesTexture1 = "Плавная";
 MRGoreParts_ParticlesTexture2 = "Круглая";
 MRGoreParts_ParticlesTexture3 = "Квадратная";
+MRGoreParts_ParticlesTexture4 = "Своя";
 
+MRGoreParts_ParticlesTextureName = "Название кастомной текстуры";
+
+MRGoreParts_MistTexture = "Текстура дымки";
+MRGoreParts_MistTexture0 = "Из мода (128x128)";
+MRGoreParts_MistTexture1 = "Из мода (64x64)";
+MRGoreParts_MistTexture2 = "Из мода (1x1)";
+MRGoreParts_MistTexture3 = "Такая же как у остальных частиц";
+MRGoreParts_MistTexture4 = "Своя";
+
+MRGoreParts_MistTextureName = "Название кастомной текстуры";
 MRGoreParts_UseCustomColor = "Кровь одного цвета";
 MRGoreParts_Color = "Цвет крови";
 MRGoreParts_Brightness = "Яркость крови";
@@ -136,9 +141,9 @@ MRGoreParts_Crush = "Максимум раздавленных останков"
 
 MRGoreParts_UpdateMenu = "Обновить данные мода";
 ////{
-MRGP_UpdateColors = "Обновить цвета крови монстров";
-MRGP_UpdateSounds = "Обновить звуки крови";
-MRGP_UpdateRemoveBlood = "\cv⊛\c-Обновить список крови из других модов";
+MRGoreParts_UpdateColors = "Обновить цвета крови монстров";
+MRGoreParts_UpdateSounds = "Обновить звуки крови";
+MRGoreParts_UpdateRemoveBlood = "\cv⊛\c-Обновить список крови из других модов";
 ////}
 
 MRGoreParts_CheckLimit = "Индикатор лимита частиц";

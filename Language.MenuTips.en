@@ -2,6 +2,7 @@
 
 MRGoreParts_Tips_CVarStart = "Console var: \cg";
 MRGoreParts_Tips_CVarEnd = "Default Value: \cg";
+MRGoreParts_Tips_NoTexture = "No texture found.";
 
 MRGoreParts_DrawTip = "Turns on/off all visual and audio effects of the mod.";
 MRGoreParts_LiteDistanceTip = "Use simplified distance check between player and effects, which ignores GZDoom portals. May increase performance a bit.";
@@ -40,7 +41,6 @@ MRGoreParts_Quake2Tip = "Spawn small Quake 1-style particles splash on any damag
 MRGoreParts_DrawFlyingBloodTip = "Spawn long blood sprays line in Shadow Warrior (1997), Blood or Quake. Big amount of sprays will affect performance a lot.";
 MRGoreParts_FlyingBloodChanceTip = "$$MRGoreParts_DrawFlyingBloodTip";
 MRGoreParts_MaxFlyingBloodTip = "When the limit is reached, the longest spray will wanish.";
-MRGoreParts_MistTextureTip = "Appearance of the blood mist effect. Has almost zero effect on performance.";
 MRGoreParts_NoFreezeTip = "Particles won't be affected by time freeze.";
 
 MRGoreParts_EffectsListMenuTip = "Here you can configure what particle effects will or will not appear.";
@@ -52,6 +52,9 @@ MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reac
 
 //Appearance menu
 MRGoreParts_ParticlesTextureTip = "Appearance of blood particles. Has almost zero effect on performance.";
+MRGoreParts_ParticlesTextureNameTip = "Name of the texture from the game or loaded mods.";
+MRGoreParts_MistTextureTip = "Appearance of the blood mist effect. Has almost zero effect on performance.";
+MRGoreParts_MistTextureNameTip = "Name of the texture from the game or loaded mods.";
 MRGoreParts_AppearanceMenuTip = "Here you can configure particles appearance. Color, translucenty, brightness and sounds.";
 MRGoreParts_UseCustomColorTip = "All particles will have this color.";
 MRGoreParts_ColorTip = "$$MRGoreParts_UseCustomColorTip";
@@ -79,6 +82,6 @@ MRGoreParts_CorpseWoundsTip = "";
 MRGoreParts_VoxelTip = "Turn on if playing with 3D/voxel models.";
 
 //Update menu
-MRGP_UpdateColorsTip = "Update blood colors specific for some monsters.";
-MRGP_UpdateSoundsTip = "Update blood sounds utilized from other loaded mods.";
-MRGP_UpdateRemoveBloodTip = "Update list of blood actors from other mods to remove.";
+MRGoreParts_UpdateColorsTip = "Update blood colors specific for some monsters.";
+MRGoreParts_UpdateSoundsTip = "Update blood sounds utilized from other loaded mods.";
+MRGoreParts_UpdateRemoveBloodTip = "Update list of blood actors from other mods to remove.";
