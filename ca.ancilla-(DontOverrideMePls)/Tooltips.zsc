@@ -63,6 +63,7 @@ class MRGP_Tooltip : Object ui {
 		Case 'string': Type = 3;Break;
 		Case 'color': Type = 4;Break;
 		Case 'type': Type = 5;Break;
+		Case 'texture': Type = 6;Break;
 	}
 	Text.Replace("$", "");
 	Text = Text.Left(Text.IndexOf("Tip_"));
@@ -142,7 +143,7 @@ class MRGP_Tooltip : Object ui {
 		// Nominal width is the maximum width of the tooltip based on configuration
 		// in the MENUDEF.
 		let nominal_width = virtual_width * self.Cw;
-		String Text;
+		String Text, CVarTex;
 		Text = StringTable.Localize("$MRGoreParts_Tips_CVarStart")..CVa.."\c-\n"..StringTable.Localize("$MRGoreParts_Tips_CVarEnd");
 		Switch(Type)
 		{
@@ -166,6 +167,10 @@ class MRGP_Tooltip : Object ui {
 				String Option = "$"..CVa;
 				if(StringTable.Localize(Option..CVar.FindCVar(CVa).GetDefaultInt())!=Option..CVar.FindCVar(CVa).GetDefaultInt())Text = Text..StringTable.Localize(Option..CVar.FindCVar(CVa).GetDefaultInt());
 				else Text = Text..CVar.FindCVar(CVa).GetDefaultInt();
+				Break;
+			Case 6://Texture
+				Text = Text.."\""..CVar.FindCVar(CVa).GetDefaultString().."\"";
+				CVarTex = CVar.FindCVar(CVa).GetString();
 				Break;
 		}
 		let lines = self.font.BreakLines(Text, nominal_width);
@@ -207,6 +212,26 @@ class MRGP_Tooltip : Object ui {
 			lines.StringAt(i),
 			DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
 			DTA_KeepRatio, true);
+		}
+		
+		if(Type==6){
+			TextureID CVarTexture = Texman.CheckForTexture(CVarTex);
+			if(!CVarTexture.IsValid()){
+				Screen.DrawText(
+					self.font, self.colour,
+					x + actual_width*.5, //+ 5 + self.xpad*em,
+					y + -1*lh + self.ypad*lh,
+					StringTable.Localize("$MRGoreParts_Tips_NoTexture"),
+					DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
+					DTA_KeepRatio, true);
+			}
+			else {
+				Screen.DrawTexture(CVarTexture, true, x+actual_width-actual_height*2, y-actual_height,
+					DTA_VirtualWidthF, virtual_width, DTA_VirtualHeight, virtual_height,
+					DTA_KeepRatio, true,
+					DTA_LeftOffset, 0, DTA_TopOffset, 0,
+					DTA_DestWidth, int(actual_height), DTA_DestHeight, int(actual_height));
+			}
 		}
 	}
 }

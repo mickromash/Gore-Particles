@@ -107,6 +107,7 @@ Struct MRGParts
 		p.sizeStep = SizeStep;
 		p.startalpha = Alpha;
 		p.fadestep = Fade;
+		p.StartRoll = 180;
 		
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
@@ -120,9 +121,13 @@ Struct MRGParts
 				Case 0:p.Texture = Texman.CheckForTexture("GParMst");Break;
 				Default: p.Texture = Texman.CheckForTexture("GParMst"..MRGoreParts_MistTexture);Break;
 				Case 3:p.Texture = Texman.CheckForTexture("glpart");Break;
+				Case 4:p.Texture = Texman.CheckForTexture(MRGoreParts_ParticlesTextureName);p.Flags|=SPF_ROLL;Break;
 			}
 		}
-		else p.Texture = PartTexture();
+		else {
+			p.Texture = PartTexture();
+			if(MRGoreParts_ParticlesTexture==4)p.Flags|=SPF_ROLL;
+		}
 		Level.SpawnParticle(p);
 	}
 	
@@ -133,6 +138,7 @@ Struct MRGParts
 			Case 1:Return Texman.CheckForTexture("GParMst");
 			Case 2:Return Texman.CheckForTexture("glpart2");
 			Case 3:Return Texman.CheckForTexture("GParMst2");
+			Case 4:Return Texman.CheckForTexture(MRGoreParts_ParticlesTextureName);
 		}
 		Return Texman.CheckForTexture("glpart");
 	}
