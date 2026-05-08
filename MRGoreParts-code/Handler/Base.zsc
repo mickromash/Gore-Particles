@@ -79,14 +79,27 @@ Class MRGP_Handler: EventHandler
 	Array<MRGP_Spot> Spots;
 	Void UpdateSpots(MRGP_Spot a)//Removes old spots if the limit is reached and pushes new one in the list
 	{
-		For(int i=0;i<Max(0, Spots.Size()-MRGoreParts_MaxSpots+1);i++)
+		int MaxA = Max(0, Spots.Size()-MRGoreParts_MaxSpots+1);
+		For(int i=0;i<MaxA;i++)
 		{
+			if(i>=Spots.Size())Break;
 			if(Spots[i]){Spots[i].Remove();Spots.Delete(i);i--;}
 		}
 		if(!a)Return;
 		Spots.Push(a);
 	}
 	
+	Array<MRGP_SpreadingBlood> SpreadingBlood;
+	Void UpdateSpreadingBlood(MRGP_SpreadingBlood a)//Removes spreading blood particles if the limit is reached and pushes new one in the list
+	{
+		int MaxA = Max(0, SpreadingBlood.Size()-MRGoreParts_Crush*50*MRGoreParts_Amount+1);
+		For(int i=0;i<MaxA;i++)
+		{
+			if(SpreadingBlood[i]){SpreadingBlood[i].Remove();SpreadingBlood.Delete(i);i--;}
+		}
+		if(!a)Return;
+		SpreadingBlood.Push(a);
+	}
 	
 	Void ThinkersTick()
 	{

@@ -369,6 +369,7 @@ Class MRGP_Spot: VisualThinker
 	Double Height, StartScale, StartAlpha;
 	Sector LinkedSector;
 	Bool NoAlpha, PlaySound, InArray, ClearScale, Drip, Fallin, OnLiquid;
+	Vector2 BaseOffset;
 	
 	Override Void Tick()
 	{
@@ -403,6 +404,8 @@ Class MRGP_Spot: VisualThinker
 				Alpha = Alph;
 			}
 		}
+		
+		Offset = BaseOffset*Scale.X;
 		
 		if(Drip && !Fallin && CRandom(0, 100)==1)Fallin = true;
 		
@@ -455,16 +458,16 @@ Class MRGP_Spot: VisualThinker
 			Case 2:
 				Texture = Texman.CheckForTexture("GParMst1");//Smooth
 				if(!ClearScale)StartScale *= .01;
-				//Offset = (32, 32)*-StartScale;
+				BaseOffset = -(32,32);
 				Break;
 			Case 1:
 				Texture = Texman.CheckForTexture("glpart2");//Round
 				if(!ClearScale)StartScale *= .004;
-				//Offset = (64, 64)*-StartScale;
+				BaseOffset = -(64,64);
 				Break;
 			Case 0:
 				Texture = Texman.CheckForTexture("GParMst2");//Square
-				//Offset = (.5, .5)*-StartScale;
+				BaseOffset = -(.5,.5);
 				Break;
 		}
 		
@@ -479,16 +482,20 @@ Class MRGP_Spot: VisualThinker
 		Sliding = CRandom(1, 10)*35;
 		
 		if(CurSector && Surface>0){
-			if(CheckLiquid())Return;
+			OnLiquid = CheckLiquid(Self, StartScale, Surface);
+			if(OnLiquid){
+				Remove();
+				Return;
+			}
 		}
 		
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler)Handler.Thinkers.Push(Self);
 	}
 	
-	Bool CheckLiquid()
+	Static Bool CheckLiquid(VisualThinker Who, Double Scale, int Surface = 1)
 	{
-		Let Pic = CurSector.GetTexture(Surface-1);
+		Let Pic = Who.CurSector.GetTexture(Surface-1);
 
 		if(!Pic.IsValid())Return false;
 		
@@ -509,17 +516,14 @@ Class MRGP_Spot: VisualThinker
 		
 		if(!IsLiquid)Return false;
 		
-		if(CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
-			MRGParts.SpawnParticle(SColor, MRSPF_SMOKE, 0, 35, StartScale*3, 0, Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
-			MRGParts.StartSoundAt(Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
-			Destroy();
+		if(Who.CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
+			MRGParts.SpawnParticle(Who.SColor, MRSPF_SMOKE, 0, 35, Scale*3, 0, Who.Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
+			MRGParts.StartSoundAt(Who.Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
+			Who.Destroy();
 			Return true;
 		}
 		
-		OnLiquid = true;
-		Remove();
-		
-		Return false;
+		Return IsLiquid;
 	}
 	
 	Static MRGP_Spot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
@@ -835,5 +839,123 @@ Class MRGP_Droplet: VisualThinker
 		Drop.Fade = Fade;
 		
 		Return Drop;
+	}
+}
+
+Class MRGP_SpreadingBlood: VisualThinker
+{
+	int Life, Age;
+	Double StartScale, IntendetScale, StartAlpha;
+	Bool NoAlpha, ClearScale, OnLiquid;
+	Vector2 Moving, BaseOffset;
+	Sector LastSector, CurCurSector;
+	
+	Override Void Tick()
+	{
+		Super.Tick();
+		
+		Double Scal = Age;
+		Scal /= Life-1;
+		Scal = 1.-Scal;
+		
+		Scale = (1,1)*StartScale*Scal;
+		
+		Offset = BaseOffset*Scale.X;
+		
+		if(Age>=Life){
+			Destroy();
+			Return;
+		}
+		
+		
+		if(CurSector){
+			if(CurSector.CenterFloor()<Pos.Z-Scale.X-1){
+				if(LastSector && LastSector.CenterFloor()>=Pos.Z+1)Vel.Z = -.5*Scal;
+				else if(Vel.Z>-5)Vel.Z += -.5;
+			}
+			if(CurSector.CenterFloor()>Pos.Z+1 || !Level.IsPointInLevel(Pos+Vel))Vel *= 0;
+			else {
+				Vel.XY = (Moving*Scal);
+				if(CurSector.CenterFloor()>=Pos.Z-1){
+					Pos.Z = CurSector.CenterFloor()+Scale.X;
+					Vel.Z = 0;
+				}
+			}
+			if(Pos.Z+Vel.Z>CurSector.CenterFloor()+1)Vel.XY *= .2;
+		}
+		
+		if(CurCurSector!=CurSector)LastSector=CurCurSector;
+		CurCurSector = CurSector;
+		
+		Age++;
+	}
+	
+	Override Void PostBeginPlay()
+	{
+		if(!Texture)Switch(MRGOreParts_SpotsStyle){
+			Case 2:
+				Texture = Texman.CheckForTexture("GParMst1");//Smooth
+				if(!ClearScale)StartScale *= .01;
+				BaseOffset = -(32,32);
+				Break;
+			Case 1:
+				Texture = Texman.CheckForTexture("glpart2");//Round
+				if(!ClearScale)StartScale *= .004;
+				BaseOffset = -(64,64);
+				Break;
+			Case 0:
+				Texture = Texman.CheckForTexture("GParMst2");//Square
+				BaseOffset = -(.5,.5);
+				Break;
+		}
+		
+		Scale = (1, 1)*StartScale;
+		Alpha = StartAlpha;
+		
+		NoAlpha = MRGoreParts_LowAlpha;
+		
+		if(CurSector){
+			if(MRGP_Spot.CheckLiquid(Self, StartScale)){
+				OnLiquid = MRGP_Spot.CheckLiquid(Self, StartScale);
+				Remove();
+				Return;
+			}
+		}
+		else OnLiquid = false;
+	}
+	
+	Static MRGP_SpreadingBlood MRGSpawnSpreadingBlood(Color Col, Vector3 Pos, Vector2 Vel, int Life = 1, Double Scale = 1, Double Alpha = 1, int Flags = 0, int RenderStyle = STYLE_NORMAL)
+	{
+		Let Part = MRGP_SpreadingBlood(level.SpawnVisualThinker('MRGP_SpreadingBlood'));
+		if(!Part)Return Null;
+		
+		Part.Pos = Pos;
+		Part.Moving = Vel;
+		Part.Vel.XY = Vel;
+		Part.SColor = Col;
+		Part.Life = Life;
+		Part.StartScale = Scale;
+		Part.IntendetScale = Scale;
+		Part.StartAlpha = Alpha;
+		Part.Flags = Flags;
+		Part.SetRenderStyle(RenderStyle);
+		Part.CurSector = LevelLocals.PointInSector(Pos.XY);
+				
+		Return Part;
+	}
+	
+	Void Remove()
+	{
+		if(Life<0)Life = 20;
+		
+		if(Age>Life-20)Destroy();
+		else Age = Life-20;
+	}
+	
+	Override Void OnDestroy()
+	{
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
+		if(Handler && Handler.SpreadingBlood.Find(Self)<Handler.SpreadingBlood.Size())Handler.SpreadingBlood.Delete(Handler.SpreadingBlood.Find(Self));
+		Super.OnDestroy();
 	}
 }

@@ -71,9 +71,8 @@ Extend Class MRGP_Handler
 				Double Size = GetDefaultByType(mo.GetClass()).Radius*GetDefaultByType(mo.GetClass()).Height;
 				Size *= .04;
 				Size *= CFRandom(.5, 1.5);
-				mo.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy|(Glow?SPF_FULLBRIGHT:0), SPF_RELATIVE, 100, Size, CRandom(0, 360),
-					0,0,1, CFRandom(2, 3),0,-.05, -.03,0,0, MRGoreParts_Alpha, 0, -(Size/100.));
-				}
+				MRGP_SpreadingBlood.MRGSpawnSpreadingBlood(ColTemp, mo.Pos, Actor.AngleToVector(CRandom(0, 360), CFRandom(.5, 2)), 140, Size, MRGoreParts_Alpha, (Glow?SPF_FULLBRIGHT:0), Fuzzy);
+			}
 		}
 				
 		if(MRGoreParts_DrawFlyingBlood){
@@ -184,6 +183,12 @@ Extend Class MRGP_Handler
 			if(BldCols.CheckKey(e.Thing.GetClassName()))Col = BldCols.Get(e.Thing.GetClassName());
 		}
 		
+		int Fuzzy = 0;
+		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
+		
+		Bool Glow = MRGoreParts_FullBright;
+
+		
 		Sector Crusher;
 		
 		Float Radius = GetDefaultByType(e.Thing.GetClass()).Radius*1.5;
@@ -204,19 +209,11 @@ Extend Class MRGP_Handler
 			if(Crusher)Break;
 		}
 		
-		int Fuzzy = 0;
-		if(MRGoreParts_FuzzyBlood && (e.Thing.GetRenderStyle() == STYLE_OptFuzzy||e.Thing.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = STYLE_Shadow;
-		
 		MRGParts.StartSound(e.Thing, GibSound, CHAN_AUTO, Volume: .5*MRGoreParts_SndVol*MRGoreParts_GibSndVol);
 		
 		if(Crushed.Size()>=MRGoreParts_Crush){
 			if(Crushed[0])Crushed[0].DropAll();
 		}
-				
-		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
-		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
-		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, MoVel: 1/(e.Thing.Mass*.1));
-		
 		
 		For(int i=CRandom(0, 10)*MRGoreParts_Amount;i<50*MRGoreParts_Amount;i++){//Floor splash
 			Float Bright = MRGoreParts_Brightness*CFRandom(.5, 1.5);
@@ -224,9 +221,12 @@ Extend Class MRGP_Handler
 			Double Size = GetDefaultByType(e.Thing.GetClass()).Radius*GetDefaultByType(e.Thing.GetClass()).Height;
 			Size *= .05;
 			Size *= CFRandom(.5, 1.5);
-			e.Thing.A_SpawnParticleEx(ColTemp, Texman.CheckForTexture("glpart1"), Fuzzy, SPF_RELATIVE, 130, Size, CRandom(0, 360),
-				0,0,1, CFRandom(.6, 1),0,-.005, -CFRandom(.001, .005),0,0, MRGoreParts_Alpha, 0, -(Size/130.));
+			MRGP_SpreadingBlood.MRGSpawnSpreadingBlood(ColTemp, e.Thing.Pos, Actor.AngleToVector(CRandom(0, 360), CFRandom(.5, 1.5)), 140, Size, MRGoreParts_Alpha, (Glow?SPF_FULLBRIGHT:0), Fuzzy);
 		}
+			
+		Double Size = GetDefaultByType(e.Thing.GetClass()).Height;
+		if(Size<GetDefaultByType(e.Thing.GetClass()).Radius)Size = GetDefaultByType(e.Thing.GetClass()).Radius;
+		MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', e.Thing, SGPF_NoDist|SGPF_FixAmount|SGPF_NoVel|Fuzzy, CFRandom(0, 360), 0, Col, 1, Size, 2, (0,0,e.Thing.Height*.5), 2, MoVel: 1/(e.Thing.Mass*.1));
 		
 		if(!Crusher){
 			SpawnXDeath(e.Thing);
@@ -242,7 +242,7 @@ Extend Class MRGP_Handler
 		int Flags;
 		if(BldFlags.CheckKey(e.Thing.GetClassName()))Flags = BldFlags.Get(e.Thing.GetClassName());
 		
-		if(Flags&GPBCF_Glow||MRGoreParts_FullBright)Nerd.Glow = SGPF_Glow;
+		if(Flags&GPBCF_Glow||Glow)Nerd.Glow = SGPF_Glow;
 		
 		Nerd.RenderStyle = Fuzzy;
 		Nerd.CurSector = Crusher;
