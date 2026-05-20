@@ -36,7 +36,8 @@ MRGoreParts_EffectsMenu = "Настройки эффектов";
 ////{
 MRGoreParts_Amount = "Количество частиц в одном эффекте";
 MRGoreParts_Size = "Размеры частиц";
-MRGoreParts_Distance = "Увеличение эффектов на расстоянии";
+MRGoreParts_Distance = "Увеличение размера частиц на расстоянии";
+MRGoreParts_VelDistance = "Увеличение скорости частиц на расстоянии";
 
 MRGoreParts_LowAlpha = "Минимизировать использование альфа канала";
 
