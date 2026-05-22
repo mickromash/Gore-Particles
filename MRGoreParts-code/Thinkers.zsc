@@ -600,7 +600,7 @@ Class MRGP_Droplet: VisualThinker
 		Return b-a;
 	}
 	
-	Double StartScale, Resize, Fade, ImageScale;
+	Double StartScale, Resize, Fade, ImageScale, DistFactor;
 	int RenderStyle;
 	Vector3 Accel;
 	
@@ -724,7 +724,7 @@ Class MRGP_Droplet: VisualThinker
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 										
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale/DistFactor, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -742,7 +742,7 @@ Class MRGP_Droplet: VisualThinker
 				{
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale/DistFactor, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -822,7 +822,7 @@ Class MRGP_Droplet: VisualThinker
 		}
 	}
 	
-	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
+	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0, Double DistFactor=1)
 	{
 		Let Drop = MRGP_Droplet(level.SpawnVisualThinker('MRGP_Droplet'));
 		if(!Drop)Return Null;
@@ -838,6 +838,7 @@ Class MRGP_Droplet: VisualThinker
 		Drop.Resize = Resize;
 		Drop.Alpha = Alpha;
 		Drop.Fade = Fade;
+		Drop.DistFactor = DistFactor;
 		
 		Return Drop;
 	}

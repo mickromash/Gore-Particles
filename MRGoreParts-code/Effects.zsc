@@ -476,7 +476,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 3))
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Offset + Ofst*CFRandom(.3, .7) + (0,0,5), Glow|NoFreeze, Vel, Accel, Size, Fuzzy);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Offset + Ofst*CFRandom(.3, .7) + (0,0,5), Glow|NoFreeze, Vel, Accel, Size, Fuzzy, DistFactor:Dist);
 					
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alph, Fade, ReSize, 180);
@@ -684,7 +684,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 6)){
 					Accel.Z -= ((j-.1)*.015)*(2+MRGoreParts_Gravity*4);
 					Accel.Z = Max(-MRGoreParts_Gravity*4, Accel.Z);
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*j + Offset + (0,0,5), Glow|NoFreeze, Vel, Accel, (Size+j*3)*CFRandom(.9, 1.1), Fuzzy, ReSize);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*j + Offset + (0,0,5), Glow|NoFreeze, Vel, Accel, (Size+j*3)*CFRandom(.9, 1.1), Fuzzy, ReSize, DistFactor:Dist);
 				}
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+MRGoreParts_Gravity*4), Alph, Fade, ReSize, 180);
@@ -884,7 +884,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 					if(!LowAlpha){
 						Fade = Alph/Life;
 					}
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 				}
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
@@ -994,7 +994,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 					if(!LowAlpha){
 						Fade = Alph/Life;
 					}
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 				}
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
@@ -1112,7 +1112,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 						if(!LowAlpha){
 							Fade = Alph/Life;
 						}
-						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
+						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 					}
 					else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
