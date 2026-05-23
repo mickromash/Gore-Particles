@@ -6,6 +6,7 @@ Const MRGP_GibbingTime = 60.;
 
 enum MRGPartsSpawnFlags{
 	MRSPF_SMOKE = 1,
+	MRSPF_SPOTTEX = 2
 }
 
 Struct MRGParts
@@ -122,6 +123,19 @@ Struct MRGParts
 				Default: p.Texture = Texman.CheckForTexture("GParMst"..MRGoreParts_MistTexture);Break;
 				Case 3:p.Texture = Texman.CheckForTexture("glpart");Break;
 				Case 4:p.Texture = Texman.CheckForTexture(MRGoreParts_ParticlesTextureName);p.Flags|=SPF_ROLL;Break;
+			}
+		}
+		else if(Flags&MRSPF_SPOTTEX){
+			Switch(MRGoreParts_SpotsStyle){
+				Case 2:
+					p.Texture = Texman.CheckForTexture("GParMst1");//Smooth
+					Break;
+				Case 1:
+					p.Texture = Texman.CheckForTexture("glpart2");//Round
+					Break;
+				Case 0:
+					p.Texture = Texman.CheckForTexture("GParMst2");//Square
+					Break;
 			}
 		}
 		else {
