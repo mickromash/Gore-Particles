@@ -166,10 +166,11 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		
 		Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 		
-		Double Dist = 1;
+		Double Dist = MRGP_DistanceMult;
 		if(Players[ConsolePlayer].Camera){
 			Vector3 Dif = Level.Vec3Diff(Pos, Players[ConsolePlayer].Camera.Pos);
-			Dist = Max(1, 1+(Dif.Length()-80)*.0015*MRGoreParts_Distance);
+			Dist *= Max(1, 1+(Dif.Length()-80)*.0015*MRGoreParts_Distance);
+			if(Scale>1)Dist/=Scale;
 		}
 		
 		Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
