@@ -49,7 +49,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 {
 	Color Bld;
 	Bool Sos, Artery, Draw;
-	Float Mid, RandAngle;
+	Float Mid, RandAngle, DamageZ;
 	Actor Owner;
 	int Age, Fuzzy, Glow;
 		
@@ -91,8 +91,9 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			
 		Float y = Texman.CheckRealHeight(Sprt)*.9;
 		y *= Owner.Scale.Y;
+		if(DamageZ<0)DamageZ = Y;
 
-		Float Posy = Y;
+		Float PosY = Min(Y, DamageZ);
 		Double Pitch = -90;
 		if(Mid<Y)
 		{
@@ -107,13 +108,13 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		{
 			Float Strn = CRandom(3, 5);
 			Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-RandAngle, RandAngle), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
-			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,y), Bld, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
+			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,PosY*.9), Bld, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
 			MRGParts.StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 		}
 		if(Age<CRandom(-40, 60))
 		{
 			if(Handler.Effects.Size()>0)
-				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,Y*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5));
+				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5));
 			
 			//Dripping blood
 			Return;
@@ -123,7 +124,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			Bool Drop = false;
 			Vector3 Home = Owner.Pos;
 			Home.XY += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
-			Home.Z += Y*.9+5;
+			Home.Z += PosY*.9+5;
 			
 			Vector3 Vel;
 			Vel.XY = Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)+CFRandom(-40, 40), CFRandom(2, 4));
@@ -140,7 +141,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 					Let a = MRGP_Droplet.SpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
 					Drop = true;
 				}
-				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0), CRandom(29, 40), Size*1.3, 0, 1,0,Y*.9+5,
+				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0), CRandom(29, 40), Size*1.3, 0, 1,0,PosY*.9+5,
 						Vel.X,Vel.Y,Vel.Z, 0,0,-1, 1, 0, -Size/40);
 			}
 			
@@ -346,7 +347,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
 		
 		For(int i=0;i<RandX.Size();i++){
-			MRGParts.SpawnParticle(Colors[i], SPF_REPLACE|Glow, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
+			MRGParts.SpawnParticle(Colors[i], Glow|MRSPF_SPOTTEX, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
 		}
 	}
 	
@@ -454,7 +455,7 @@ Class MRGP_Spot: VisualThinker
 	
 	Override Void PostBeginPlay()
 	{
-		if(!Texture)Switch(MRGOreParts_SpotsStyle){
+		if(!Texture)Switch(MRGoreParts_SpotsStyle){
 			Case 2:
 				Texture = Texman.CheckForTexture("GParMst1");//Smooth
 				if(!ClearScale)StartScale *= .01;
@@ -599,7 +600,7 @@ Class MRGP_Droplet: VisualThinker
 		Return b-a;
 	}
 	
-	Double StartScale, Resize, Fade, ImageScale;
+	Double StartScale, Resize, Fade, ImageScale, DistFactor;
 	int RenderStyle;
 	Vector3 Accel;
 	
@@ -723,7 +724,7 @@ Class MRGP_Droplet: VisualThinker
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 										
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale/DistFactor, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -741,7 +742,7 @@ Class MRGP_Droplet: VisualThinker
 				{
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (0,0, Ofst), MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale/DistFactor, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -821,7 +822,7 @@ Class MRGP_Droplet: VisualThinker
 		}
 	}
 	
-	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
+	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0, Double DistFactor=1)
 	{
 		Let Drop = MRGP_Droplet(level.SpawnVisualThinker('MRGP_Droplet'));
 		if(!Drop)Return Null;
@@ -837,6 +838,7 @@ Class MRGP_Droplet: VisualThinker
 		Drop.Resize = Resize;
 		Drop.Alpha = Alpha;
 		Drop.Fade = Fade;
+		Drop.DistFactor = DistFactor;
 		
 		Return Drop;
 	}

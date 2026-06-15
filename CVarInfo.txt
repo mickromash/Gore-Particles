@@ -17,7 +17,8 @@ nosave color MRGoreParts_NoBloodMistColor = "70 70 70";//Color of dust
 //Effects menu
 nosave float MRGoreParts_Amount = 1;//Amount of particles for one effect (splash)
 nosave float MRGoreParts_Size = 1;//Size of particles
-nosave float MRGoreParts_Distance = 1;//Distance multiplier for effects velocity and scale
+nosave float MRGoreParts_Distance = 1;//Distance multiplier for particles scale
+nosave float MRGoreParts_VelDistance = 1;//Distance multiplier for particles velocity
 nosave float MRGoreParts_Speed = 1;//Scales particles speed and downscales lifetime
 nosave float MRGoreParts_Gravity = 1;//Scales particles gravity
 nosave bool MRGoreParts_LowAlpha = true;//Minimize usage of alpha channel for particles
