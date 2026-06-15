@@ -166,11 +166,10 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		
 		Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 		
-		Double Dist = MRGP_DistanceMult;
+		Double Dist = 1;
 		if(Players[ConsolePlayer].Camera){
 			Vector3 Dif = Level.Vec3Diff(Pos, Players[ConsolePlayer].Camera.Pos);
-			Dist *= Max(1, 1+(Dif.Length()-80)*.0015*MRGoreParts_Distance);
-			if(Scale>1)Dist/=Scale;
+			Dist = Max(1, 1+(Dif.Length()-80)*.0015*MRGoreParts_Distance);
 		}
 		
 		Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
@@ -413,15 +412,12 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		Bool Water = mo.WaterLevel>2;
 		
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			
-			VelDist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -455,7 +451,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
@@ -477,7 +473,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 3))
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Offset + Ofst*CFRandom(.3, .7) + (0,0,5), Glow|NoFreeze, Vel, Accel, Size, Fuzzy, DistFactor:Dist);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Offset + Ofst*CFRandom(.3, .7) + (0,0,5), Glow|NoFreeze, Vel, Accel, Size, Fuzzy);
 					
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alph, Fade, ReSize, 180);
@@ -510,15 +506,12 @@ Class MRGP_Effect_Mist: MRGP_Effect
 		Bool Water = mo.WaterLevel>2;
 		
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -558,7 +551,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 			
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel += mo.Vel*moVel;
 			
 			if(Water)Vel *=.5;
@@ -610,15 +603,12 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		if(Water)Amount *= .5;
 		
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -667,12 +657,12 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 			
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
 			Accel = -Accel;
-			Accel *= VelDist;
+			Accel *= Dist;
 			Accel *= Scale;
 			
 			if(Water){Vel *= .5;Accel *= .5;}
@@ -685,7 +675,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 6)){
 					Accel.Z -= ((j-.1)*.015)*(2+MRGoreParts_Gravity*4);
 					Accel.Z = Max(-MRGoreParts_Gravity*4, Accel.Z);
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*j + Offset + (0,0,5), Glow|NoFreeze, Vel, Accel, (Size+j*3)*CFRandom(.9, 1.1), Fuzzy, ReSize, DistFactor:Dist);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*j + Offset + (0,0,5), Glow|NoFreeze, Vel, Accel, (Size+j*3)*CFRandom(.9, 1.1), Fuzzy, ReSize);
 				}
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+MRGoreParts_Gravity*4), Alph, Fade, ReSize, 180);
@@ -716,15 +706,12 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		if(Water)Amount *= .5;
 		
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -760,7 +747,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
@@ -771,7 +758,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			Accel.XY += Actor.AngleToVector(Angle, -Strn.Z)*Sin(Pitch);
 			
 			Accel = -Accel;
-			Accel *= VelDist;
+			Accel *= Dist;
 			Accel *= Scale;
 			
 			if(Water){Vel *= .5;Accel *= .5;}
@@ -809,20 +796,17 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		}
 		if(Amount<=0)Return 0;
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
 		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		if(Water)Amount *= .5;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -868,7 +852,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
 			Vel *= Scale;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel += mo.Vel*moVel;
 			
 			Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
@@ -885,7 +869,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 					if(!LowAlpha){
 						Fade = Alph/(Life-1);
 					}
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
 				}
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
@@ -915,19 +899,17 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		}
 		if(Amount<=0)Return 0;
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
 		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		if(Water)Amount *= .5;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -978,7 +960,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
 			Vel *= Scale;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel += mo.Vel*moVel;
 			
 			Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
@@ -995,7 +977,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 					if(!LowAlpha){
 						Fade = Alph/(Life-1);
 					}
-					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
 				}
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
@@ -1026,19 +1008,17 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		if(Amount<=0)Return 0;
 		
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
 		int Particles;
 		
 		Bool Water = mo.WaterLevel>2;
 		if(Water)Amount *= .5;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		int Glow = 0;
@@ -1096,7 +1076,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 				Vel += Force;
 				Vel *= MRGoreParts_Speed;
 				Vel *= Scale;
-				Vel *= VelDist;
+				Vel *= Dist;
 				Vel += mo.Vel*moVel;
 				
 				Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
@@ -1113,7 +1093,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 						if(!LowAlpha){
 							Fade = Alph/(Life-1);
 						}
-						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
+						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade);
 					}
 					else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
@@ -1138,7 +1118,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
 		if(!MRGoreParts_Draw)Return 0;
-		if(!(Flags&SGPF_FixAmount))Amount *= CRandom(0, 1)*MRGoreParts_Amount;
+		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
 		if(Amount<=0)Return 0;
 		
 		int Particles;
@@ -1161,7 +1141,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		int NoFreeze = 0;
 		if(MRGoreParts_NoFreeze)NoFreeze = SPF_NOTIMEFREEZE;
 		
-		Float Mult = (CRandom(2, 4))/Max(1, Dist*.1)*Amount;
+		Float Mult = (CRandom(0, 4))/Max(1, Dist*.1)*Amount;
 		if(Water)Mult = Max(1, Mult*.5);
 		
 		Let LowAlpha = MRGoreParts_LowAlpha;
@@ -1239,14 +1219,12 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 		int Particles;
 		
 		Float Dist = MRGP_DistanceMult;
-		Float VelDist = Dist;
 		
-		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		if(Flags&SGPF_NODIST)Dist = 1;
 		else
 		{
 			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
 			if(Scale>1)Dist/=Scale;
-			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
 		}
 		
 		Float Mult = Max(1, (CRandom(1, 3))/Max(1, Dist*.1)*Amount);
@@ -1262,7 +1240,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 			
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
-			Vel *= VelDist;
+			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			

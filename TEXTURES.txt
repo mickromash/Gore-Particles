@@ -130,17 +130,17 @@ Texture "GPARM6", 8, 8
 	Patch "GPARP1", 1, 2
 	{
 		Rotate 90
-		Translation "1:255=%[0.6,0.6,0.6]:[2.00,2.00,2.00]"
+		Translation "1:255=%[1,1,1]:[2.00,2.00,2.00]"
 	}
 	Patch "GPARP1", 3, 2
 	{
 		Rotate 90
-		Translation "1:255=%[0.6,0.6,0.6]:[2.00,2.00,2.00]"
+		Translation "1:255=%[1,1,1]:[2.00,2.00,2.00]"
 	}
 	Patch "GPARP1", 5, 2
 	{
 		Rotate 90
-		Translation "1:255=%[0.6,0.6,0.6]:[2.00,2.00,2.00]"
+		Translation "1:255=%[1,1,1]:[2.00,2.00,2.00]"
 	}
 }
 
