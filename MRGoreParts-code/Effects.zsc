@@ -1146,7 +1146,21 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		
 		Let LowAlpha = MRGoreParts_LowAlpha;
 		Let Alph = MRGoreParts_Alpha;
-				
+		
+		int Cols[3];
+		Cols[0] = Col.R;
+		Cols[1] = Col.G;
+		Cols[2] = Col.B;
+		int Highest = 0;
+		For(int i=0;i<3;i++){
+			if(Cols[i]>Cols[Highest])Highest = i;
+		}
+		
+		For(int i=0;i<3;i++){
+			if(i==Highest)Continue;
+			Cols[i] = Clamp(Cols[i]*1.15, Cols[i]+20, Cols[Highest]*.9);
+		}
+		
 		For(float i1=0;i1<Mult;i1++)
 		{
 			TextureID ParTex = Texman.CheckForTexture("GParM"..CRandom(0, 6));
@@ -1158,8 +1172,8 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
-			Float Bright = MRGoreParts_Brightness+CFRandom(-.05, .05);
-			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+			Float Bright = MRGoreParts_Brightness*CFRandom(1, 1.2);
+			Color ColTmp = Color(int(Cols[0]*Bright), int(Cols[1]*Bright), int(Cols[2]*Bright));
 			
 			Vel += Force;
 			Vel *= MRGoreParts_Speed;
