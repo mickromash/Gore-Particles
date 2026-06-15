@@ -172,6 +172,7 @@ MRGP_Effect_BeautifulSprayGrowing = "\"Beautiful\" blood spray (growing)";
 MRGP_Effect_CurveLine = "Curve blood spray";
 MRGP_Effect_CurveLineTorn = "Curve torn blood spray";
 MRGP_Effect_CurveLinesSplash = "Splash of curve lines";
+MRGP_Effect_MeatSplash = "Flesh bits";
 MRGP_Effect_Sparks = "Sparks";
 
 //Handler

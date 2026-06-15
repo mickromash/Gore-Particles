@@ -30,7 +30,7 @@ nosave bool MRGoreParts_NoFreeze = false;//Effects ignore timefreeze
 ///Included effects menu
 nosave string MRGoreParts_EffectsList = "0 0 0 0 3 3 3 3 6";//When blood spawned, one of these effects will appear
 nosave string MRGoreParts_EffectsList2 = "";//When blood spawned, one of these effects will appear
-nosave string MRGoreParts_AlwaysEffectsList = "2";//When blood spawned, all of these effects will appear
+nosave string MRGoreParts_AlwaysEffectsList = "2 8";//When blood spawned, all of these effects will appear
 nosave string MRGoreParts_NoBloodEffectsList = "2 6";//Effects spawn for non bleeding actors
 nosave string MRGoreParts_CopyList = "";
 ///
