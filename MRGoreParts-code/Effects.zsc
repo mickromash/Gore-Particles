@@ -1111,6 +1111,107 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 	Override int GetID(){Return 7;}
 }
 
+Class MRGP_Gib: MRGP_Droplet
+{
+	int Age;
+	Override Void DoTick()
+	{
+		if(Level.IsFrozen())Return;
+		
+		Scale.X += Resize*ImageScale;
+		Scale.Y += Resize*ImageScale;
+		if(Scale.X<.01*ImageScale||Scale.Y<.01*ImageScale){Destroy();Return;}
+		Offset = (BaseOffset.X*Scale.X, BaseOffset.Y*Scale.Y);
+		
+		Alpha -= Fade;
+		if(Alpha<.01){Destroy();Return;}
+				
+		Vector3 dir = Vel;
+		
+		Bool Landed = false;
+		int HitSurface;
+		
+		let tracer = new('MRGP_SightTracer');
+
+		tracer.CheckSurface = true;
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 2, 0, Line.ML_BLOCKEVERYTHING, true);
+		
+		if(Tracer.HitType!=TRACE_HitNone){
+			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
+			Landed = true;
+		}
+				
+		if(CurSector){
+			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=abs(Vel.Z)){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;HitSurface = 1;}
+			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;HitSurface = 2;}
+		}
+		
+		if(Landed)Splash(Tracer.HitLine, HitSurface);
+		
+		Pos += Vel;
+		
+		Roll += (VectorAngle(Vel.X, Vel.Y))*Vel.Length()*.1;
+		
+		Vel += Accel;
+		
+		if(CurSector && Pos.Z <= CurSector.CenterFloor()+2){Pos.Z = CurSector.CenterFloor()+2;Vel.XY *= .8;Vel.Z = 0;Landed = true;}
+		
+		if(Landed)Age = Max(Age, 1);
+		
+		if(Age>140)Fade = Max(Fade, .1);
+		else if(Age>0)Age++;
+	}
+	
+	Override Void HitSurface(int HitType, Line HitLine, Vector3 HitPos)
+	{
+		if(!CurSector)Return;
+		
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
+		if(!Handler)Return;
+
+		Double Vol = Max(0, Min(1, Vel.Length()/9));
+		MRGParts.StartSoundAt(Pos, Handler.DripSound, CHAN_AUTO, Volume:Vol*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
+		
+		Switch(HitType){
+		
+			Case TRACE_HitWall:
+				if(Pos.Z>CurSector.CenterFloor())Vel.XY *= -.5;
+				else Vel.XY *= 0;
+				Break;
+				
+			Case TRACE_HitFloor:
+				if(Vel.Z<-1 && Pos.Z<=CurSector.CenterFloor()+2)Vel.Z *= -.5;
+				else if(Pos.Z<=CurSector.CenterFloor()+2){Pos.Z = CurSector.CenterFloor()+2;}
+				Vel.XY *= .9;
+				Break;
+			Case TRACE_HitCeiling:
+				if(Vel.Z>0)Vel.Z *= -.5;
+				Break;
+		}
+	}
+		
+	Static MRGP_Gib SpawnGib(String Texture = "GPARM0", Color Col=Color(255,255,255), Vector3 Pos=(0,0,0), int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
+	{
+		Let Gib = MRGP_Gib(level.SpawnVisualThinker('MRGP_Gib'));
+		if(!Gib)Return Null;
+		
+		Gib.Pos = Pos;
+		Gib.Vel = Vel;
+		Gib.Accel = Accel;
+		Gib.SColor = Col;
+		Gib.Flags = SPF_ROLL|SPF_ROLLCENTER;
+		if(Flags&GPBCF_Glow)Gib.Flags |= SPF_FULLBRIGHT;
+		Gib.StartScale = Scale;
+		Gib.SetRenderStyle(RenderStyle);
+		Gib.RenderStyle = RenderStyle;
+		Gib.Resize = Resize;
+		Gib.Alpha = Alpha;
+		Gib.Fade = Fade;
+		Gib.Texture = Texman.CheckForTexture(Texture);
+		
+		Return Gib;
+	}
+}
 Class MRGP_Effect_MeatSplash: MRGP_Effect
 {
 	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
@@ -1141,11 +1242,9 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		int NoFreeze = 0;
 		if(MRGoreParts_NoFreeze)NoFreeze = SPF_NOTIMEFREEZE;
 		
-		Float Mult = (CRandom(0, 4))/Max(1, Dist*.1)*Amount;
-		if(Water)Mult = Max(1, Mult*.5);
+		Float Mult = (CRandom(-5, 4))/Max(1, Dist*.1)*Amount;
 		
-		Let LowAlpha = MRGoreParts_LowAlpha;
-		Let Alph = MRGoreParts_Alpha;
+		if(Mult<1)Return 0;
 		
 		int Cols[3];
 		Cols[0] = Col.R;
@@ -1163,8 +1262,6 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
-			TextureID ParTex = Texman.CheckForTexture("GParM"..CRandom(0, 6));
-			
 			Double Ang = CRandom(0, 360);
 			Double Leng = CFRandom(0, .3);
 			Vector3 Strn = (CFRandom(.5, 1), Cos(Ang)*Leng, Sin(Ang)*Leng);
@@ -1187,18 +1284,15 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			if(Water)Life *= 2;
 			
 			Double Size = CFRandom(1, 4)*Dist*Scale*MRGoreParts_Size;
-			Vector3 Accel = -Vel*CFRandom(.004, .01);
-			Accel.Z -= MRGoreParts_Gravity*.2;
 			
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
-			
-			Float ReSize;
-			ReSize = -(Size/(Life-1));
+						
+			Vector3 Pos = mo.Pos + (Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z);
 			
 			if(!(Flags&SGPF_TEST)){
-				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|SPF_Roll, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
-					Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alph, 0, ReSize, 180, Vel.Length());
+				MRGP_Gib.SpawnGib("GParM"..CRandom(0, 6), ColTmp, Pos, Glow|SPF_Roll, Vel, (0,0,-MRGoreParts_Gravity*.2), Size, Fuzzy, 0);
+					
 			}
 			Particles++;
 		}

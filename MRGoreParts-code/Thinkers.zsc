@@ -617,40 +617,53 @@ Class MRGP_Droplet: VisualThinker
 		if(!Texture){
 			Switch(MRGoreParts_ParticlesTexture)
 			{
-				Case 1:Texture = Texman.CheckForTexture("GParMst");ImageScale = .004;Break;
-				Case 2:Texture = Texman.CheckForTexture("glpart2");ImageScale = .004;Break;
+				Case 1:Texture = Texman.CheckForTexture("GParMst");Break;
+				Case 2:Texture = Texman.CheckForTexture("glpart2");Break;
 				Case 3:Texture = Texman.CheckForTexture("GParMst2");Break;
 				Case 0:
 					Switch(gl_particles_style){
 						Case 2:
 							Texture = Texman.CheckForTexture("GParMst1");//Smooth
-							ImageScale = .01;
-							//Offset = (32, 32)*-StartScale;
 							Break;
 						Case 1:
 							Texture = Texman.CheckForTexture("glpart2");//Round
-							ImageScale = .004;
-							//Offset = (64, 64)*-StartScale;
 							Break;
 						Default:
 							Texture = Texman.CheckForTexture("GParMst2");//Square
-							//Offset = (.5, .5)*-StartScale;
 							Break;
 					}
 					Break;
 			}
 		}
-		Scale *= ImageScale;
+		
+		Vector2 Size = Texman.GetScaledSize(Texture);
+		
+		if(Size.X<1||Size.Y<1){Destroy();Return;}
+		
+		Double Bigger = Size.X;
+		if(Bigger<Size.Y)Bigger = Size.Y;
+		if(Bigger>1)Bigger *= 2;
+						
+		Scale /= Bigger;
+		ImageScale /= Bigger;
+		Scale *= StartScale;
+		
+		BaseOffset = Size*-.5;
+		Offset = (BaseOffset.X*Scale.X, BaseOffset.Y*Scale.Y);
 		
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler)Handler.Thinkers.Push(Self);
-		Scale *= StartScale;
 	}
 	
 	Override Void Tick()
 	{
 		Super.Tick();
 		
+		DoTick();
+	}
+	
+	Virtual Void DoTick()
+	{
 		if(Level.IsFrozen())Return;
 		
 		Scale.X += Resize*ImageScale;
