@@ -36,7 +36,7 @@ MRGoreParts_EffectsMenu = "Effects settings";
 ////{
 MRGoreParts_Amount = "Particles amount in one effect";
 MRGoreParts_Size = "Particles sizes";
-MRGoreParts_Distance = "Particles sizes scale by distance";
+MRGoreParts_Distance = "Particles size scale by distance";
 MRGoreParts_VelDistance = "Particles velocity scale by distance";
 
 MRGoreParts_LowAlpha = "Minimize alpha channel usage";

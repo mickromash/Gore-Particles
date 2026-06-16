@@ -6,7 +6,7 @@ Const MRGP_GibbingTime = 60.;
 
 enum MRGPartsSpawnFlags{
 	MRSPF_SMOKE = 1,
-	MRSPF_SPOTTEX = 2
+	MRSPF_SPOTTEX = 2,
 }
 
 Struct MRGParts

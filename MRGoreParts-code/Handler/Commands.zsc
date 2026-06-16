@@ -92,6 +92,21 @@ Extend Class MRGP_Handler
 			
 			Return;
 		}
+		if(e.name ~== "MRGoreParts_SpawnParticle"){
+			if(!Plr)Return;
+			
+			Plr.A_SpawnParticle(Color(255,255,255), SPF_FULLBRIGHT|SPF_RELATIVE, 35, 1, 0, 10,0,Plr.Player.ViewZ-Plr.Pos.Z, 0,0,0, 0,0,0, 1);
+			
+			Return;
+		}
+		if(e.name ~== "MRGoreParts_SpawnDroplet"){
+			if(!Plr)Return;
+			
+			MRGP_Droplet.SpawnDrop(Color(255,255,255), (Plr.Pos.XY + Actor.AngleToVector(Plr.Angle, 10), Plr.Player.ViewZ), Accel:(0,0,0), Scale:1, Resize: 0, Fade: -.01);
+			
+			Return;
+		}
+		
 		if(e.name ~== "MRGoreParts_ClearSpots"){
 			int i;
 			For(i=0;i<Spots.Size();i++){if(Spots[i])Spots[i].Destroy();}

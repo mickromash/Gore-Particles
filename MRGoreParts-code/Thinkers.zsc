@@ -347,7 +347,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
 		
 		For(int i=0;i<RandX.Size();i++){
-			MRGParts.SpawnParticle(Colors[i], Glow|MRSPF_SPOTTEX, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
+			MRGParts.SpawnParticle(Colors[i], Glow|MRSPF_SPOTTEX|SPF_Replace, RenderStyle, 1, Sizes[i], 0, (RandX[i],RandY[i],CurPos-1), (0,0,VelZ), Alpha:MRGoreParts_Alpha);
 		}
 	}
 	
@@ -603,6 +603,7 @@ Class MRGP_Droplet: VisualThinker
 	Double StartScale, Resize, Fade, ImageScale, DistFactor;
 	int RenderStyle;
 	Vector3 Accel;
+	Vector2 BaseOffset;
 	
 	Override Void OnDestroy()
 	{
