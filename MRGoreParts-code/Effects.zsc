@@ -842,7 +842,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		
 		Double Roll1 = CRandom(175, 360);
 		
-		Double CircleLength = Random(120, 360*Min(1, MRGoreParts_Amount));
+		Double CircleLength = CRandom(120, 360*Min(1, MRGoreParts_Amount));
 		Float Step = Max(.1, Size*.75*Max(1, Dist*.1)/Amount);
 		
 		Let Alph = MRGoreParts_Alpha;
@@ -946,7 +946,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		
 		Double Roll1 = CRandom(175, 360);
 		
-		Double CircleLength = Random(120, 360*Min(1, MRGoreParts_Amount));
+		Double CircleLength = CRandom(120, 360*Min(1, MRGoreParts_Amount));
 		Float Step = Max(.1, Size*.75*Max(1, Dist*.1)/Amount);
 		
 		Let Alph = MRGoreParts_Alpha;
@@ -1067,7 +1067,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 			
 			Double Roll1 = CRandom(175, 360);
 			
-			Double CircleLength = Random(120, 360*Min(1, MRGoreParts_Amount));
+			Double CircleLength = CRandom(120, 360*Min(1, MRGoreParts_Amount));
 			Float Step = Max(.2, (Size*.75*Max(1, Dist*.1)/Amount)*2);
 			
 			Let Alph = MRGoreParts_Alpha;
