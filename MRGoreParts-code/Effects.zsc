@@ -2,13 +2,14 @@
 	Blood effects actors(kinda) and classes
 */
 
-Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client side actor)
+Class MRGP_FlyingBlood: VisualThinker//Quake gibs blood stream
 {
-	Vector3 Pos, Prev, Vel;
+	MRGP_Handler Handler;
 	Color Col;
 	int Age, RenderStyle;
-	Double Gravity, Scale, FOV;
-	Sector CurSector;
+	Double Gravity, FOV;
+	Double StartScale, ClearScale, BaseScale;
+	Vector2 BaseOffset;
 	
 	Bool NoFreeze;
 	
@@ -60,15 +61,59 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 	
 	Static MRGP_FlyingBlood Create(Vector3 Pos, Color Col, int Flags, Float Gravity=.4, Float Scale=3, Vector3 Vel=(0,0,0))
 	{
-		Let a = New('MRGP_FlyingBlood');
+		Let a = MRGP_FlyingBlood(Level.SpawnVisualThinker('MRGP_FlyingBlood'));
 		a.Init();
 		if(a.bDestroyed)Return Null;
 		a.Pos = Pos;
 		a.Vel = Vel;
 		a.Col = Col;
 		a.Gravity = Gravity;
-		a.Scale = Scale;
+		
+		a.StartScale = Scale;
+		if(!a.Texture){
+			Switch(MRGoreParts_ParticlesTexture)
+			{
+				Case 1:a.Texture = Texman.CheckForTexture("GParMst");Break;
+				Case 2:a.Texture = Texman.CheckForTexture("glpart2");Break;
+				Case 3:a.Texture = Texman.CheckForTexture("GParMst2");Break;
+				Case 0:
+					Switch(gl_particles_style){
+						Case 2:
+							a.Texture = Texman.CheckForTexture("GParMst1");//Smooth
+							Break;
+						Case 1:
+							a.Texture = Texman.CheckForTexture("glpart2");//Round
+							Break;
+						Default:
+							a.Texture = Texman.CheckForTexture("GParMst2");//Square
+							Break;
+					}
+					Break;
+			}
+		}
+		
+		Vector2 Size = Texman.GetScaledSize(a.Texture);
+		
+		if(Size.X<1||Size.Y<1){a.Destroy();Return Null;}
+		
+		Double Bigger = Size.X;
+		if(Bigger<Size.Y)Bigger = Size.Y;
+		if(Bigger>1)Bigger *= 2;
+						
+		a.Scale /= Bigger;
+		a.BaseScale /= Bigger;
+		a.Scale *= a.StartScale;
+		
+		a.BaseOffset = Size*-.5;
+		a.Offset = (a.BaseOffset.X*a.Scale.X, a.BaseOffset.Y*a.Scale.Y);
+		a.ClearScale = a.StartScale;
+		a.StartScale *= MRGoreParts_Size;
+		
+		a.Alpha = MRGoreParts_Alpha;
+		if(MRGoreParts_LowAlpha)a.Alpha = 1;
 		if(Flags&SGPF_Fuzzy)a.RenderStyle = STYLE_Shadow;
+		a.SetRenderStyle(a.RenderStyle);
+		if(Flags&SPF_FullBright)Flags |= SPF_FullBright;
 		a.NoFreeze = MRGoreParts_NoFreeze;
 		Return a;
 	}
@@ -79,8 +124,14 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 		Handler.Streams.Push(Self);
+		For(int i=0;i<Handler.Streams.Size()-MRGoreParts_MaxFlyingBlood;i++){
+			if(Handler.Streams[i])Handler.Streams[i].Destroy();
+		}
+		if(bDestroyed)Return;
 		Gravity = .4;
-		Scale = 3;
+		StartScale = 3;
+		BaseScale = 1;
+		Scale = (1,1);
 		Fov = CVar.FindCVar("FOV").GetFloat();
 	}
 	
@@ -93,12 +144,14 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 	
 	Override Void Tick()
 	{
+		Super.Tick();
+		
 		if(Level.IsFrozen() && !NoFreeze)Return;
 		
 		Age++;
 		if(Age>35*3){Destroy();Return;}
 		
-		Let Draw = MRGPartsCheckDraw();
+		Bool Draw = MRGPartsCheckDraw();
 		
 		Double Angle = VectorAngle(Vel.X, Vel.Y);
 		Double Pitch = -atan2(Vel.Z, Vel.XY.Length());
@@ -116,9 +169,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
 			Landed = true;
 		}
-		
-		CurSector = LevelLocals.PointInSector(Pos.XY+Vel.XY);
-		
+				
 		if(CurSector){
 			if(CurSector.CenterFloor()>=Pos.Z){HitSurface(TRACE_HitFloor, Null, (Pos.XY, CurSector.CenterFloor()));Landed = true;}
 			else if(CurSector.CenterCeiling()<=Pos.Z){HitSurface(TRACE_HitCeiling, Null, (Pos.XY, CurSector.CenterCeiling()));Landed = true;}
@@ -129,9 +180,9 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 				Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
 				Vector3 PPos = (Pos.XY, CurSector.CenterFloor()+1);
-				PPos.XY += (CFRandom(-Scale, Scale), CFRandom(-Scale, Scale));
+				PPos.XY += (CFRandom(-ClearScale, ClearScale), CFRandom(-ClearScale, ClearScale));
 				
-				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size);
+				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*StartScale);
 					
 				if(a){
 					a.SetRenderStyle(RenderStyle);
@@ -148,20 +199,20 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		
 		if(Landed){Destroy();Return;}
 		
-		Prev = Pos;
-		Pos += Vel;
+		Vel.Z -= Gravity;
 		
 		if(Draw){
+			Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
+			SColor = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
+		
 			DrawTrail();
 		}
-		
-		Vel.Z -= Gravity;
 	}
 	
 	Virtual Void DrawTrail()
 	{
 		int Glow = 0;
-		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		if(Flags&SPF_FullBright)Glow = SPF_FULLBRIGHT;
 		Float Brightnes = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 		
 		Color CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
@@ -170,17 +221,13 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 		if(Players[ConsolePlayer].Camera){
 			Vector3 Dif = Level.Vec3Diff(Pos, Players[ConsolePlayer].Camera.Pos);
 			Dist *= Max(1, 1+(Dif.Length()-80)*.0015*MRGoreParts_Distance);
-			if(Scale>1)Dist/=Scale;
+			if(ClearScale>1)Dist/=ClearScale;
 		}
 		
-		Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
-		Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
-		
-		MRGParts.SpawnParticle(TempCol, Glow, RenderStyle, 1, Scale*MRGoreParts_Size*Dist, 0, Pos, Vel, Alpha:MRGoreParts_Alpha, SizeStep:0);
-		
+		Scale = (BaseScale, BaseScale)*StartScale*Dist;
 		
 		Vector3 Dif = Level.Vec3Diff(Pos, Prev);
-		For(float i=0;i<Dif.Length();i+=Max(.5, Scale*.5*Max(1, Dist*.01)))
+		For(float i=0;i<Dif.Length();i+=Max(.5, ClearScale*.5*Max(1, Dist*.01)))
 		{
 			Float Step = i;
 			Step /= Dif.Length();
@@ -188,11 +235,11 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 			Float Brightes = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 			CurCol = Color(int(Col.R*Brightnes), int(Col.G*Brightnes), int(Col.B*Brightnes));
 			
-			Float Rand = CFRandom(-Scale*MRGoreParts_Size*.1, Scale*MRGoreParts_Size*.1);
+			Float Rand = CFRandom(-ClearScale*.1, ClearScale*.1);
 			
-			MRGParts.SpawnParticle(CurCol, Glow, RenderStyle, 20, Scale*MRGoreParts_Size*Dist,
-				0, Pos + (Dif.X*Step+Vel.X*.5+Rand, Dif.Y*Step+Vel.Y*.5+Rand, Dif.Z*Step+Vel.Z*.5+Rand), Accel:(0,0,-Gravity*.5), Alpha:MRGoreParts_Alpha,
-					SizeStep:-Scale*MRGoreParts_Size*.9*.05);
+			MRGParts.SpawnParticle(CurCol, Glow|SPF_REPLACE, RenderStyle, 20, StartScale*Dist,
+				0, Prev + (Dif.X*Step+Vel.X*.5+Rand, Dif.Y*Step+Vel.Y*.5+Rand, Dif.Z*Step+Vel.Z*.5+Rand), Accel:(0,0,-Gravity*.5), Alpha:MRGoreParts_Alpha,
+					SizeStep:-(19./StartScale*Dist));
 		}
 	}
 	
@@ -214,9 +261,9 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, 1.5);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					int Life = CRandom(15, 21);
-					Float Size = CFRandom(.2, .5)*Scale*MRGoreParts_Size;
+					Float Size = CFRandom(.2, .5)*StartScale;
 										
-					MRGParts.SpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0, HitPos - (0,0,i),
+					MRGParts.SpawnParticle(TempCol, Glow|SPF_REPLACE, RenderStyle, Life, Size, 0, HitPos - (0,0,i),
 						-Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*2),
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/(Life-1)));
 				}
@@ -244,7 +291,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.2, .6)*StartScale, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -264,9 +311,9 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
 					int Life = CRandom(15, 21);
-					Float Size = CFRandom(.2, .5)*Scale*MRGoreParts_Size;
+					Float Size = CFRandom(.2, .5)*StartScale;
 					
-					MRGParts.SpawnParticle(TempCol, Glow, RenderStyle, Life, Size, 0,
+					MRGParts.SpawnParticle(TempCol, Glow|SPF_REPLACE, RenderStyle, Life, Size, 0,
 						HitPos - (0,0,i), -Vel*CFRandom(.2, .4)+(Actor.AngleToVector(Angle-90+CRandom(-50, 50), 2), Sin(CRandom(0, 50))*Ofst*2),
 						(0,0,-.4), MRGoreParts_Alpha, 0, -(Size/(Life-1)));
 				}
@@ -277,7 +324,7 @@ Class MRGP_FlyingBlood: MRGP_Thinker//Quake gibs blood stream (basically client 
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*Scale*MRGoreParts_Size, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.2, .6)*StartScale, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -441,6 +488,11 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		int Roll = 0;
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Float Size = MRGoreParts_Size;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		For(float i1=0;i1<Mult;i1++)
 		{
 			Double Ang = CRandom(0, 360);
@@ -450,23 +502,23 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
-			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+Vel.Z*1.5))+CFRandom(-.05, .05);
+			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+Vel.Z*1.5))+CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= VelDist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
 			if(Water)Vel *= .5;
 			
-			Float Life = Min(45, 10/Strn.Length())/MRGoreParts_Speed*LifeM;
+			Float Life = Min(45, 10/Strn.Length())/Speed*LifeM;
 			if(Water)Life *= 2;
 			
-			Double Size = CFRandom(.9, 2)*Dist*Scale*MRGoreParts_Size;
+			Double Size = CFRandom(.9, 2)*Dist*Scale*Size;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
-			Accel.Z -= MRGoreParts_Gravity*.1;
+			Accel.Z -= Gravity*.1;
 			
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
@@ -479,7 +531,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 3))
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Offset + Ofst*CFRandom(.3, .7) + (0,0,5), Glow|NoFreeze, Vel, Accel, Size, Fuzzy, DistFactor:Dist);
 					
-				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, Alph, Fade, ReSize, 180);
 			}
 			Particles++;
@@ -545,6 +597,11 @@ Class MRGP_Effect_Mist: MRGP_Effect
 				Break;
 		}
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Float Size = MRGoreParts_Size;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		For(int i=0;i<Amnt;i++)
 		{
 			Vector2 HorzStrn = (CFRandom(-.2, .2), CFRandom(-.2, .2));
@@ -553,23 +610,23 @@ Class MRGP_Effect_Mist: MRGP_Effect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
-			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+Vel.Z))+CFRandom(-.05, .05);
+			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+Vel.Z))+CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= VelDist;
 			Vel += mo.Vel*moVel;
 			
 			if(Water)Vel *=.5;
 			
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
-			Accel.Z -= MRGoreParts_Gravity*.01;
+			Accel.Z -= Gravity*.01;
 			
-			Float Life = (Min(50, 11/Strn.Length())*LifeM)/MRGoreParts_Speed;
+			Float Life = (Min(50, 11/Strn.Length())*LifeM)/Speed;
 			if(Water)Life = Min(90, Life*2);
 			
-			Double Size = Scale*MRGoreParts_Size*(abs(HorzStrn.Length()*20))*Dist;
+			Double Size = Scale*Size*(abs(HorzStrn.Length()*20))*Dist;
 			if(Flags&SGPF_NoVel)Size = Scale*Dist;
 			
 			Double PAlpha = CFRandom(.2, .4);
@@ -580,7 +637,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 					Offset.X,Offset.Y,5+Offset.Z,
 					Vel.X,Vel.Y,Vel.Z,
 					Accel.X,Accel.Y,Accel.Z,
-					PAlpha, -(Life/PAlpha), Size*MRGoreParts_Speed*.1*(Water?.5:1),
+					PAlpha, -(Life/PAlpha), Size*Speed*.1*(Water?.5:1),
 					180
 				);
 			
@@ -645,6 +702,10 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		int Roll = 0;
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		For(float j=.1;j<1.1;j+=Step)
 		{
 			Double Ang = CRandom(0, 360);
@@ -661,12 +722,12 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 			Accel.XY += Actor.AngleToVector(Angle+90, -Strn.Y*.1);
 			Accel.XY += Actor.AngleToVector(Angle, -Strn.Z)*Sin(Pitch);
 			
-			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+(Vel.Z+Accel.Z)*Cos(Abs(Pitch)*.5)));
+			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+(Vel.Z+Accel.Z)*Cos(Abs(Pitch)*.5)));
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= VelDist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
@@ -683,14 +744,14 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 6)){
-					Accel.Z -= ((j-.1)*.015)*(2+MRGoreParts_Gravity*4);
-					Accel.Z = Max(-MRGoreParts_Gravity*4, Accel.Z);
+					Accel.Z -= ((j-.1)*.015)*(2+Gravity*4);
+					Accel.Z = Max(-Gravity*4, Accel.Z);
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*j + Offset + (0,0,5), Glow|NoFreeze, Vel, Accel, (Size+j*3)*CFRandom(.9, 1.1), Fuzzy, ReSize, DistFactor:Dist);
 				}
-				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
-					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+MRGoreParts_Gravity*4), Alph, Fade, ReSize, 180);
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+Gravity*4), Alph, Fade, ReSize, 180);
 			}
-			Life-=.5/MRGoreParts_Speed*LifeM;
+			Life-=.5/Speed*LifeM;
 			
 			Particles++;
 		}
@@ -746,6 +807,11 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		int Roll = 0;
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
+		Float Alpha = MRGoreParts_Alpha;
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);
 		For(float j=.1;j<1.1;j+=Step)
 		{
@@ -759,7 +825,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= VelDist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
@@ -776,15 +842,15 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			
 			if(Water){Vel *= .5;Accel *= .5;}
 			
-			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, (Strn.Z/(.3*j)+.75)*2));
+			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, (Strn.Z/(.3*j)+.75)*2));
 			Bright += CFRandom(-.05, .05);
 			
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			if(!(Flags&SGPF_TEST))
-				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
-					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+MRGoreParts_Gravity*4), MRGoreParts_Alpha, -1, ((Size+j*3)/(Life-1))*.05, 180);
-			Life-=.5/MRGoreParts_Speed*LifeM;
+				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
+					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+Gravity*4), Alpha, -1, ((Size+j*3)/(Life-1))*.05, 180);
+			Life-=.5/Speed*LifeM;
 			
 			Particles++;
 		}
@@ -852,6 +918,10 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		int Roll = 0;
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
 		{
 			Double Ang = (j+CFRandom(-1.5, 1.5))*Cos(Roll1);
@@ -861,17 +931,17 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 			
 			Vector3 Vel = (Actor.AngleToVector(Ang, Forw)*Cos(Abs(Pit)), (-Sin(Pit)*(1.-abs(j/(CircleLength/2))))*Forw);
 			
-			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+.1+Vel.Z*2));
+			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+.1+Vel.Z*2));
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= Scale;
 			Vel *= VelDist;
 			Vel += mo.Vel*moVel;
 			
-			Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
+			Double AccelZ = CFRandom(-.001,.001)-.01*Gravity+Vel.Z*.01;
 			
 			if(Water){Vel *= .5;AccelZ *= .5;}
 			
@@ -887,11 +957,11 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 					}
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 				}
-				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 			}
 
-			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Speed;
 			
 			Particles++;
 		}
@@ -956,6 +1026,10 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		int Roll = 0;
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		int Skip = -CRandom(6, 10);
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
 		{
@@ -971,17 +1045,17 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 			
 			Vector3 Vel = (Actor.AngleToVector(Ang, Forw)*Cos(Abs(Pit)), (-Sin(Pit)*(1.-abs(j/(CircleLength/2))))*Forw);
 			
-			Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+.1+Vel.Z*2));
+			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+.1+Vel.Z*2));
 			Bright += CFRandom(-.05, .05);
 			Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= Scale;
 			Vel *= VelDist;
 			Vel += mo.Vel*moVel;
 			
-			Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
+			Double AccelZ = CFRandom(-.001,.001)-.01*Gravity+Vel.Z*.01;
 			
 			if(Water){Vel *= .5;AccelZ *= .5;}
 			
@@ -997,11 +1071,11 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 					}
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 				}
-				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 			}
 
-			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Speed;
 			
 			Particles++;
 		}
@@ -1055,19 +1129,25 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		int Roll = 0;
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Float Siz = MRGoreParts_Size;
+		Double Gravity = MRGoreParts_Gravity;
+		Float Amnt = MRGoreParts_Amount;
+		
 		For(int i=StartLine;i<MaxLines;i++)
 		{
 			Double TempPitch = Pitch-CFRandom(5, 10)+CFRandom(-30, 30);
 			Double TempAngle = Angle + CFRandom(-30, 30);
 			Double Forw = .4;
-			Double Size = CFRandom(2.4, 2.7)*MRGoreParts_Size*Dist;
-			Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
+			Double Size = CFRandom(2.4, 2.7)*Siz*Dist;
+			Float Life = CFRandom(30, 34)/Speed*LifeM;
 			if(Water)Life *= 2;
 			Double StartLife = Life;
 			
 			Double Roll1 = CRandom(175, 360);
 			
-			Double CircleLength = CRandom(120, 360*Min(1, MRGoreParts_Amount));
+			Double CircleLength = CRandom(120, 360*Min(1, Amnt));
 			Float Step = Max(.2, (Size*.75*Max(1, Dist*.1)/Amount)*2);
 			
 			Let Alph = MRGoreParts_Alpha;
@@ -1089,17 +1169,17 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 				
 				Vector3 Vel = (Actor.AngleToVector(Ang, Forw)*Cos(Abs(Pit)), (-Sin(Pit)*(1.-abs(j/(CircleLength/2))))*Forw);
 				
-				Float Bright = Max(MRGoreParts_Brightness*.5, Min(MRGoreParts_Brightness*1.5, MRGoreParts_Brightness+.1+Vel.Z*2));
+				Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+.1+Vel.Z*2));
 				Bright += CFRandom(-.05, .05);
 				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 				
 				Vel += Force;
-				Vel *= MRGoreParts_Speed;
+				Vel *= Speed;
 				Vel *= Scale;
 				Vel *= VelDist;
 				Vel += mo.Vel*moVel;
 				
-				Double AccelZ = CFRandom(-.001,.001)-.01*MRGoreParts_Gravity+Vel.Z*.01;
+				Double AccelZ = CFRandom(-.001,.001)-.01*Gravity+Vel.Z*.01;
 				
 				if(Water){Vel *= .5;AccelZ *= .5;}
 				
@@ -1115,11 +1195,11 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 						}
 						MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.01),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 					}
-					else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
+					else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, Size*CFRandom(.9, 1.1), 0, Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale,
 						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 				}
 				
-				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/MRGoreParts_Speed;
+				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Speed;
 				
 				Particles++;
 			}
@@ -1280,6 +1360,11 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			Cols[i] = Clamp(Cols[i]*1.15, Cols[i]+20, Cols[Highest]*.9);
 		}
 		
+		Float Brightness = MRGoreParts_Brightness;
+		Double Speed = MRGoreParts_Speed;
+		Float Siz = MRGoreParts_Size;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		For(float i1=0;i1<Mult;i1++)
 		{
 			Double Ang = CRandom(0, 360);
@@ -1289,11 +1374,11 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
-			Float Bright = MRGoreParts_Brightness*CFRandom(1, 1.2);
+			Float Bright = Brightness*CFRandom(1, 1.2);
 			Color ColTmp = Color(int(Cols[0]*Bright), int(Cols[1]*Bright), int(Cols[2]*Bright));
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= Dist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
@@ -1303,7 +1388,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			Float Life = 70/Max(1, LifeM);
 			if(Water)Life *= 2;
 			
-			Double Size = CFRandom(1, 4)*Dist*Scale*MRGoreParts_Size;
+			Double Size = CFRandom(1, 4)*Dist*Scale*Siz;
 			
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
@@ -1311,7 +1396,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			Vector3 Pos = mo.Pos + (Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z);
 			
 			if(!(Flags&SGPF_TEST)){
-				MRGP_Gib.SpawnGib("GParM"..CRandom(0, 6), ColTmp, Pos, Glow|SPF_Roll, Vel, (0,0,-MRGoreParts_Gravity*.2), Size, Fuzzy, 0);
+				MRGP_Gib.SpawnGib("GParM"..CRandom(0, 6), ColTmp, Pos, Glow|SPF_Roll, Vel, (0,0,-Gravity*.2), Size, Fuzzy, 0);
 					
 			}
 			Particles++;
@@ -1359,6 +1444,10 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 		
 		Float Mult = Max(1, (CRandom(1, 3))/Max(1, Dist*.1)*Amount);
 		
+		Double Speed = MRGoreParts_Speed;
+		Float Siz = MRGoreParts_Size;
+		Double Gravity = MRGoreParts_Gravity;
+		
 		For(float i1=0;i1<Mult;i1++)
 		{
 			Double Ang = CRandom(0, 360);
@@ -1369,21 +1458,21 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
 			
 			Vel += Force;
-			Vel *= MRGoreParts_Speed;
+			Vel *= Speed;
 			Vel *= VelDist;
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
-			Float Life = CFRandom(25, 35)/MRGoreParts_Speed*LifeM;
-			Double Size = CFRandom(.7, .8)*Dist*MRGoreParts_Size*Scale;
+			Float Life = CFRandom(25, 35)/Speed*LifeM;
+			Double Size = CFRandom(.7, .8)*Dist*Siz*Scale;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
-			Accel.Z -= MRGoreParts_Gravity;
+			Accel.Z -= Gravity;
 			
 			Color ColTmp = Color(255,CRandom(180, 255),CRandom(0, 80));
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
 			
-			if(!(Flags&SGPF_TEST))mo.A_SpawnParticle(ColTmp, SPF_FULLBRIGHT|NoFreeze, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
+			if(!(Flags&SGPF_TEST))mo.A_SpawnParticle(ColTmp, SPF_FULLBRIGHT|NoFreeze|SPF_REPLACE, Life, Size, 0, Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z,
 				Vel.X, Vel.Y, Vel.Z, Accel.X, Accel.Y, Accel.Z, 1, 0, -(Size/(Life-1)));
 			
 			Particles++;

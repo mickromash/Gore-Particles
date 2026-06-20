@@ -118,7 +118,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			
 			//Dripping blood
 			Return;
-			//if(!MRGoreParts_DeathSpots)Return;
+
 			if(CRandom(0, 10)>4)Return;
 			
 			Bool Drop = false;
@@ -141,7 +141,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 					Let a = MRGP_Droplet.SpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
 					Drop = true;
 				}
-				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0), CRandom(29, 40), Size*1.3, 0, 1,0,PosY*.9+5,
+				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0)|SPF_REPLACE, CRandom(29, 40), Size*1.3, 0, 1,0,PosY*.9+5,
 						Vel.X,Vel.Y,Vel.Z, 0,0,-1, 1, 0, -Size/40);
 			}
 			
@@ -254,7 +254,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 					if(CRandom(0, 10)>3)Continue;
 										
 					if(InDist){
-						MRGParts.SpawnParticle(Colors[i], Glow, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
+						MRGParts.SpawnParticle(Colors[i], Glow|SPF_REPLACE, RenderStyle, 70, Sizes[i], 0, (RandX[i],RandY[i],CurPos), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[i]/70.));
 					}
 					RandX.Delete(i);RandY.Delete(i);Colors.Delete(i);Sizes.Delete(i);
 				}
@@ -333,7 +333,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		}
 		else {
 			MRGParts.StartSoundAt((RandX[Rand], RandY[Rand], CurSector.CenterFloor()), Handler.DripSound, CHAN_AUTO, Volume:CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_DripSndVol, attenuation:ATTN_STATIC);
-			MRGParts.SpawnParticle(Colors[Rand], Glow, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
+			MRGParts.SpawnParticle(Colors[Rand], Glow|SPF_REPLACE, RenderStyle, 50, Sizes[Rand], 0, (RandX[Rand],RandY[Rand],PosZ), Accel:(0,0,-CFRandom(.3, .8)), Alpha:MRGoreParts_Alpha, SizeStep:-(Sizes[Rand]/50.));
 		}
 		RandX.Delete(Rand);RandY.Delete(Rand);Colors.Delete(Rand);Sizes.Delete(Rand);
 	}
@@ -831,7 +831,7 @@ Class MRGP_Droplet: VisualThinker
 			Color Col = Color(int(SColor.R*Bright), int(SColor.G*Bright), int(SColor.B*Bright));
 			Float Life = CRandom(7, 10);
 			Float Scal = StartScale*CFRandom(.2, .4);
-			MRGParts.SpawnParticle(Col, Glow, RenderStyle, Life, Scal, 0, Pos,
+			MRGParts.SpawnParticle(Col, Glow|SPF_REPLACE, RenderStyle, Life, Scal, 0, Pos,
 				TempDir*CFRandom(.8, 1.1), (0,0,-.4), SizeStep:-(Scal/Life));
 		}
 	}

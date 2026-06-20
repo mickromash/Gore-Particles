@@ -103,13 +103,6 @@ Class MRGP_Handler: EventHandler
 	
 	Void ThinkersTick()
 	{
-		For(int i=0;i<Streams.Size()-MRGoreParts_MaxFlyingBlood;i++){
-			if(Streams[i])Streams[i].Destroy();
-		}
-		For(int i=0;i<Streams.Size();i++){
-			if(Streams[i])Streams[i].Tick();
-		}
-		
 		For(int i=0;i<GibsTime.Size();i++){//Not a thinker actually, but who cares
 			GibsTime[i]++;
 			if(GibsTime[i]>(MRGP_GibbingTime/MRGoreParts_Speed)){GibsTime.Delete(i);i--;}
@@ -235,7 +228,7 @@ Class MRGP_Handler: EventHandler
 			if(mo is HDBld)
 			{
 				Double Alph = CFRandom(.8, 1);
-				mo.A_SpawnParticle(Col, 0, 100, CRandom(2, 3), 0, 0,0,1,
+				mo.A_SpawnParticle(Col, SPF_REPLACE, 100, CRandom(2, 3), 0, 0,0,1,
 					0,0,0, 0,0,0, Alph, Alph/100.);
 				if(MRGoreParts_OnlyModsBlood)mo.Destroy();
 				mo.A_SetRenderStyle(mo.Alpha, STYLE_NONE);
@@ -264,7 +257,7 @@ Class MRGP_Handler: EventHandler
 			For(Int i=CRandom(0, 3);i<9*MRGoreParts_Amount;i++)
 			{
 				Float Bright = MRGoreParts_Brightness*CFrandom(.8, 1.5);
-				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel|Glow, 25, CFRandom(1.5, 2.5)*MRGoreParts_Size, mo.AngleTo(Players[ConsolePlayer].Camera),
+				mo.A_SpawnParticle(Color(int(col.r*Bright), int(col.g*Bright), int(col.b*Bright)), SPF_RelVel|Glow|SPF_REPLACE, 25, CFRandom(1.5, 2.5)*MRGoreParts_Size, mo.AngleTo(Players[ConsolePlayer].Camera),
 					Xoff:CFRandom(-1.5, 1.5),CFRandom(-1.5, 1.5),CFRandom(4, 7), .1*MRGoreParts_Speed,0,.5*MRGoreParts_Speed, 0,0, -.05*MRGoreParts_Size*MRGoreParts_Speed);
 			}
 		}
