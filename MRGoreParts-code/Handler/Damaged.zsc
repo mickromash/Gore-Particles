@@ -284,7 +284,7 @@ Extend Class MRGP_Handler
 			Vector3 Pos = (Actor.AngleToVector(e.Thing.Angle + CFRandom(-90, 90), e.Thing.Radius*.7), CRandom(e.Thing.Height*.25, e.Thing.Height*.7));
 			
 			For(int i=CRandom(0, 2);i<4;i++)
-				e.Thing.A_SpawnParticle(Col, Glow?SPF_FULLBRIGHT:0, 20, CFRandom(2, 3), 0, Pos.X,Pos.Y,Pos.Z+.1*i,
+				e.Thing.A_SpawnParticle(Col, (Glow?SPF_FULLBRIGHT:0)|SPF_REPLACE, 20, CFRandom(2, 3), 0, Pos.X,Pos.Y,Pos.Z+.1*i,
 					0,0,0, 0,0,-.3);
 			MRGP_Effect.SpawnEffect('MRGP_Effect_SimpleSplash', e.Thing, Glow, e.DamageAngle, 0, Col, 1, .6, 1, Pos);
 		}
@@ -356,7 +356,7 @@ Extend Class MRGP_Handler
 					Let a = MRGP_Droplet.SpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
 					Drop = true;
 				}
-				e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
+				e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow|SPF_REPLACE, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
 						0,0,CFRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
 			}
 		}
