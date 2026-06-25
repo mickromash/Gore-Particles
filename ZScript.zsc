@@ -3,6 +3,7 @@ Version "4.10"//Getting rid of translationdId errors
 Const MRGP_MaxWounds = 15;//Max wounds per entity
 Const MRGP_DistanceMult = 2.;//Effects scaling by distance
 Const MRGP_GibbingTime = 60.;
+Const MRGP_MaxGibPieces = 200;
 
 enum MRGPartsSpawnFlags{
 	MRSPF_SMOKE = 1,

@@ -75,6 +75,7 @@ Class MRGP_Handler: EventHandler
 	
 	Array<Object> Thinkers;//Misc. thinkers that listed to be removed on mod uninstallation
 	Array<MRGP_FlyingBlood> Streams;
+	Array<MRGP_Gib> GibPieces;
 	
 	Array<MRGP_Spot> Spots;
 	Void UpdateSpots(MRGP_Spot a)//Removes old spots if the limit is reached and pushes new one in the list
@@ -124,6 +125,10 @@ Class MRGP_Handler: EventHandler
 	
 	Void ThinkersClear()
 	{
+		For(int i=0;i<GibPieces.Size();i++){
+			if(GibPieces[i])GibPieces[i].Destroy();
+		}
+		
 		For(int i=0;i<Streams.Size();i++){
 			if(Streams[i])Streams[i].Destroy();
 		}
