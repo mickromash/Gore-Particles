@@ -49,9 +49,10 @@ Class MRGP_DeathThinker: MRGP_Thinker
 {
 	Color Bld;
 	Bool Sos, Artery, Draw;
-	Float Mid, RandAngle, DamageZ;
+	Float Mid, RandAngle, DamageZ, Freq;
 	Actor Owner;
 	int Age, Fuzzy, Glow;
+	MRGP_Effect Effect;
 		
 	Override Void PostBeginPlay()
 	{
@@ -61,6 +62,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		MRGParts.StartSound(Owner, Handler.SpraySound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_SpraySndVol);
 		if(MRGoreParts_FuzzyBlood && (Owner.GetRenderStyle() == STYLE_OptFuzzy||Owner.GetRenderStyle() == STYLE_Fuzzy))Fuzzy = SGPF_Fuzzy;
 		RandAngle = CRandom(5, 30);
+		Freq = MRGoreParts_DyingFreq;
 	}
 	
 	Override Void OnDestroy()
@@ -111,11 +113,13 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,PosY*.9), Bld, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
 			MRGParts.StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 		}
-		if(Age<CRandom(-40, 60))
+		if(Age%Max(1, int(Age*.2/Freq))==0)//Age<CRandom((-140+Artery*100)/Freq, 60))
 		{
-			if(Handler.Effects.Size()>0)
-				Handler.Effects[CRandom(0, Handler.Effects.Size()-1)].DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5));
+			Float Strn = Age;
+			Strn = 1.2-Min(.6, Strn/80);
 			
+			if(Effect)
+				Effect.DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5), Speed:Strn);
 			//Dripping blood
 			Return;
 
@@ -607,9 +611,14 @@ Class MRGP_Droplet: VisualThinker
 	
 	Override Void OnDestroy()
 	{
+		Unlist();
+		Super.OnDestroy();
+	}
+	
+	Virtual Void Unlist()
+	{
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(Handler && Handler.Thinkers.Find(Self)<Handler.Thinkers.Size())Handler.Thinkers.Delete(Handler.Thinkers.Find(Self));
-		Super.OnDestroy();
 	}
 	
 	Override Void PostBeginPlay()
