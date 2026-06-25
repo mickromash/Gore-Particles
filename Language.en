@@ -64,6 +64,8 @@ MRGoreParts_EffectsList = "Random effects list";
 MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effect will appear on impact\nType same effect multiple times to increase its spawn chance";
 MRGoreParts_AlwaysEffectsList = "Constant effects list";
 MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these effects will appear on impact";
+MRGoreParts_DyingEffectsList = "Dying effects list";
+MRGoreParts_DyingEffectsListTip = "\cgDying effects list\cb - Dying monster will be spawning on of these effects";
 MRGoreParts_EffectsUpdated = "Effects list updated";
 MRGoreParts_ListCopied = "Effects list copied";
 MRGoreParts_EffectsListMenuParticles = " particles";
@@ -137,6 +139,7 @@ MRGoreParts_LiteDistance = "Lighter distance check";
 MRGoreParts_LiteDistanceText = "Increases performance by ignoring portals";
 
 MRGoreParts_MaxDying = "Maximum bleeding deaths at the same time";
+MRGoreParts_DyingFreq = "Dying bleeding frequency";
 MRGoreParts_MaxGibing = "Maximum gibbing at the same time";
 MRGoreParts_FloorSplash = "Floor splash on gibbing";
 MRGoreParts_Crush = "Maximum remains of crushed corpses";

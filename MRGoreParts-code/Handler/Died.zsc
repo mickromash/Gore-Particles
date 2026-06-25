@@ -146,6 +146,7 @@ Extend Class MRGP_Handler
 			a.PostBeginPlay();
 			a.Bld = Col;
 			a.Artery = Max(0, CRandom(-5, 2));
+			a.Effect = DyingEffects[CRandom(0, DyingEffects.Size()-1)];
 			a.DamageZ = -1;
 			if(e.Inflictor && e.Inflictor is 'BulletPuff')a.DamageZ = e.Inflictor.Pos.Z-e.Thing.Pos.Z;
 			

@@ -182,7 +182,7 @@ Class MRGP_FlyingBlood: VisualThinker//Quake gibs blood stream
 				Vector3 PPos = (Pos.XY, CurSector.CenterFloor()+1);
 				PPos.XY += (CFRandom(-ClearScale, ClearScale), CFRandom(-ClearScale, ClearScale));
 				
-				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.6, 1.1)*StartScale);
+				Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.5, .9)*ClearScale);
 					
 				if(a){
 					a.SetRenderStyle(RenderStyle);
@@ -291,7 +291,7 @@ Class MRGP_FlyingBlood: VisualThinker//Quake gibs blood stream
 						else Height = BackSector.CenterFloor()-PPos.Z;
 					}
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.2, .6)*StartScale, 1, 0, Height, Plane, BackSector);
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, PPos, MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.2, .6)*ClearScale, 1, 0, Height, Plane, BackSector);
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -324,7 +324,7 @@ Class MRGP_FlyingBlood: VisualThinker//Quake gibs blood stream
 					Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 					Color TempCol = Color(int(Col.R*Bright),int(Col.G*Bright),int(Col.B*Bright));
 					
-					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.2, .6)*StartScale, 1, (Ofst>0?1:2));
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, HitPos + (CFRandom(-3, 3), CFRandom(-3, 3), Ofst), MRGoreParts_SpotsTime*35, 0, 0, CFRandom(.2, .6)*ClearScale, 1, (Ofst>0?1:2));
 					
 					if(a){
 						a.SetRenderStyle(RenderStyle);
@@ -386,7 +386,7 @@ enum MRGP_EffectFlags{
 Class MRGP_Effect play abstract
 {
 	Virtual int DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, 
-		Vector3 Offset = (0,0,0), Double LifeM = 1, Vector3 Force = (0,0,0), Double MoVel = 0, Double Spread = -1)
+		Vector3 Offset = (0,0,0), Double LifeM = 1, Vector3 Force = (0,0,0), Double MoVel = 0, Double Spread = -1, Double Speed = 1)
 	{Return 0;}
 	/*
 		mo - actor that spawns particles
@@ -402,6 +402,7 @@ Class MRGP_Effect play abstract
 		Force - additional velocity
 		MoVel - multiplies actor velocity that will be added to particles
 		Spread - splash spread multiplier
+		Speed - velocity multiplier
 	*/
 	Static Void SpawnEffect(Class<Object> Effect, Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Vector3 Force = (0,0,0), Double MoVel = 0, Double Spread = -1)
 	{
@@ -447,7 +448,7 @@ Class MRGP_Effect play abstract
 
 Class MRGP_Effect_SimpleSplash: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -489,7 +490,8 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Float Size = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		
@@ -513,7 +515,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			
 			if(Water)Vel *= .5;
 			
-			Float Life = Min(45, 10/Strn.Length())/Speed*LifeM;
+			Float Life = Min(45, 10/Strn.Length())/TimeM*LifeM;
 			if(Water)Life *= 2;
 			
 			Double Size = CFRandom(.9, 2)*Dist*Scale*Size;
@@ -550,7 +552,7 @@ Class MRGP_Effect_Sprays: MRGP_Effect
 
 Class MRGP_Effect_Mist: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -598,7 +600,8 @@ Class MRGP_Effect_Mist: MRGP_Effect
 		}
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Float Size = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		
@@ -623,7 +626,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			Accel.Z -= Gravity*.01;
 			
-			Float Life = (Min(50, 11/Strn.Length())*LifeM)/Speed;
+			Float Life = (Min(50, 11/Strn.Length())*LifeM)/TimeM;
 			if(Water)Life = Min(90, Life*2);
 			
 			Double Size = Scale*Size*(abs(HorzStrn.Length()*20))*Dist;
@@ -637,7 +640,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 					Offset.X,Offset.Y,5+Offset.Z,
 					Vel.X,Vel.Y,Vel.Z,
 					Accel.X,Accel.Y,Accel.Z,
-					PAlpha, -(Life/PAlpha), Size*Speed*.1*(Water?.5:1),
+					PAlpha, -(Life/PAlpha), Size*TimeM*.1*(Water?.5:1),
 					180
 				);
 			
@@ -653,7 +656,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 
 Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -703,7 +706,8 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
 		
 		For(float j=.1;j<1.1;j+=Step)
@@ -751,7 +755,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+Gravity*4), Alph, Fade, ReSize, 180);
 			}
-			Life-=.5/Speed*LifeM;
+			Life-=.5/TimeM*LifeM;
 			
 			Particles++;
 		}
@@ -764,7 +768,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 
 Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -809,7 +813,8 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		
 		Float Alpha = MRGoreParts_Alpha;
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
 		
 		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);
@@ -850,7 +855,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			if(!(Flags&SGPF_TEST))
 				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+Gravity*4), Alpha, -1, ((Size+j*3)/(Life-1))*.05, 180);
-			Life-=.5/Speed*LifeM;
+			Life-=.5/TimeM*LifeM;
 			
 			Particles++;
 		}
@@ -864,7 +869,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 
 Class MRGP_Effect_CurveLine: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -919,7 +924,8 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
 		
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
@@ -961,7 +967,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 			}
 
-			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Speed;
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/TimeM;
 			
 			Particles++;
 		}
@@ -974,7 +980,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 
 Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1027,7 +1033,8 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
 		
 		int Skip = -CRandom(6, 10);
@@ -1075,7 +1082,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 			}
 
-			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Speed;
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/TimeM;
 			
 			Particles++;
 		}
@@ -1088,7 +1095,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 
 Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1130,7 +1137,8 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		Float Amnt = MRGoreParts_Amount;
@@ -1141,7 +1149,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 			Double TempAngle = Angle + CFRandom(-30, 30);
 			Double Forw = .4;
 			Double Size = CFRandom(2.4, 2.7)*Siz*Dist;
-			Float Life = CFRandom(30, 34)/Speed*LifeM;
+			Float Life = CFRandom(30, 34)/TimeM*LifeM;
 			if(Water)Life *= 2;
 			Double StartLife = Life;
 			
@@ -1199,7 +1207,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 				}
 				
-				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/Speed;
+				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/TimeM;
 				
 				Particles++;
 			}
@@ -1292,6 +1300,12 @@ Class MRGP_Gib: MRGP_Droplet
 		
 	Static MRGP_Gib SpawnGib(String Texture = "GPARM0", Color Col=Color(255,255,255), Vector3 Pos=(0,0,0), int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
 	{
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
+		if(!Handler)Return Null;
+		
+		if(Handler.GibPieces.Size()>MRGP_MaxGibPieces)Return Null;
+		
+		
 		Let Gib = MRGP_Gib(level.SpawnVisualThinker('MRGP_Gib'));
 		if(!Gib)Return Null;
 		
@@ -1309,12 +1323,20 @@ Class MRGP_Gib: MRGP_Droplet
 		Gib.Fade = Fade;
 		Gib.Texture = Texman.CheckForTexture(Texture);
 		
+		Handler.GibPieces.Push(Gib);
+		
 		Return Gib;
+	}
+		
+	Override Void Unlist()
+	{
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
+		if(Handler)Handler.GibPieces.Delete(Handler.GibPieces.Find(Self));
 	}
 }
 Class MRGP_Effect_MeatSplash: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1361,7 +1383,8 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		}
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Double Speed = MRGoreParts_Speed;
+		Float TimeM = MRGoreParts_Speed;
+		Speed *= TimeM;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		
@@ -1410,7 +1433,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 
 Class MRGP_Effect_Sparks: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1444,7 +1467,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 		
 		Float Mult = Max(1, (CRandom(1, 3))/Max(1, Dist*.1)*Amount);
 		
-		Double Speed = MRGoreParts_Speed;
+		Speed *= MRGoreParts_Speed;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		

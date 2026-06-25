@@ -4,7 +4,7 @@
 
 Extend Class MRGP_Handler
 {
-	Array<MRGP_Effect> Effects, AlwaysEffects;
+	Array<MRGP_Effect> Effects, AlwaysEffects, DyingEffects;
 	
 	Void UpdateEffects()
 	{
@@ -29,7 +29,7 @@ Extend Class MRGP_Handler
 		}
 		
 		AlwaysEffects.Clear();
-
+		
 		TempStr = CVar.FindCVar("MRGoreParts_AlwaysEffectsList").GetString();
 				
 		TempStr.Substitute("  ", " ");
@@ -46,12 +46,32 @@ Extend Class MRGP_Handler
 			if(Akhtung>700)Break;
 		}
 		
+		DyingEffects.Clear();
+		
+		TempStr = CVar.FindCVar("MRGoreParts_DyingEffectsList").GetString();
+				
+		TempStr.Substitute("  ", " ");
+		
+		Akhtung = 0;
+		While(TempStr.Length()>0)
+		{
+			String Num;
+			if(TempStr.IndexOf(" ")>-1){Num = TempStr.Left(TempStr.IndexOf(" "));TempStr = TempStr.Mid(TempStr.IndexOf(" ")+1);}
+			else {Num = TempStr;TempStr = "";}
+			
+			if(Num.ToInt()>=0 && Num.ToInt()<Handler.Effects.Size())DyingEffects.Push(Handler.Effects[Num.ToInt()]);
+			Akhtung++;
+			if(Akhtung>700)Break;
+		}
+		
 		if(!MRGoreParts_Debug)Return;
 		
 		Console.Printf("\cdRandom effects:");
 		For(int i=0;i<Effects.Size();i++)Console.Printf("\cg"..i.."\c- "..Effects[i].GetName().." ("..Effects[i].GetClassName()..")");
 		Console.Printf("\cdAlways effects:");
 		For(int i=0;i<AlwaysEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..AlwaysEffects[i].GetName().." ("..AlwaysEffects[i].GetClassName()..")");
+		Console.Printf("\cdDying effects:");
+		For(int i=0;i<DyingEffects.Size();i++)Console.Printf("\cg"..i.."\c- "..DyingEffects[i].GetName().." ("..DyingEffects[i].GetClassName()..")");
 	}
 	
 	Void UpdateEffectsData()//Updates effects information for effects menu

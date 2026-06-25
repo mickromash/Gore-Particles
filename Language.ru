@@ -63,6 +63,8 @@ MRGoreParts_EffectsList = "Список случайных эффектов";
 MRGoreParts_EffectsListTip = "\cgСписок случайных эффектов\cb - Один из этих эффектов появится при уроне\nВведите один и тот же эффект несколько раз для повышения вероятности его появления";
 MRGoreParts_AlwaysEffectsList = "Список обязательных эффектов";
 MRGoreParts_AlwaysEffectsListTip = "\cgСписок обязательных эффектов\cb - каждый из этих эффектов появится при уроне";
+MRGoreParts_DyingEffectsList = "Список посмертных эффектов";
+MRGoreParts_DyingEffectsListTip = "\cgСписок посмертных эффектов\cb - на умирающем монстре будет появляться один из этих эффектов";
 MRGoreParts_EffectsUpdated = "Список эффектов обновлён";
 MRGoreParts_ListCopied = "Список эффектов скопирован";
 MRGoreParts_EffectsListMenuParticles = " частиц";
@@ -135,6 +137,7 @@ MRGoreParts_LiteDistance = "Простой рассчёт расстояния";
 MRGoreParts_LiteDistanceText = "Облегчает нагрузку, ценой игнорирования порталов";
 
 MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
+MRGoreParts_DyingFreq = "Сила посмертных кровотечений";
 MRGoreParts_MaxGibing = "Максимум джибсов";
 MRGoreParts_FloorSplash = "Растекающиеся останки";
 MRGoreParts_Crush = "Максимум раздавленных останков";

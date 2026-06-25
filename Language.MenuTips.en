@@ -47,6 +47,7 @@ MRGoreParts_NoFreezeTip = "Particles won't be affected by time freeze.";
 MRGoreParts_EffectsListMenuTip = "Here you can configure what particle effects will or will not appear.";
 
 MRGoreParts_MaxDyingTip = "Maximum amount of monsters with dying splashes at once. When the limit is reached, the longest dying monster will stop spawn splashes. Big amount will affect performance a lot.";
+MRGoreParts_DyingFreqTip = "Controls how frequently blood effects will spawn on dying monsters.";
 MRGoreParts_MaxGibingTip = "Maximum gibbing effects. When the limit is reached, new gibbing effects won't appear. Big amount will affect performance a lot.";
 MRGoreParts_FloorSplashTip = "Wave of blood on the floor appearing on gibbing. May cause lags, especially on mobile devices.";
 MRGoreParts_CrushTip = "Maximum crushed monsters remains. When the limit is reached, the longest remains will fall from the ceiling. Big amount will affect performance extremely.";
