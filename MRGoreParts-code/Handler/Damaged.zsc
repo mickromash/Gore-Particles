@@ -227,10 +227,10 @@ Extend Class MRGP_Handler
 			Return;
 		}
 		
-		if(MRGoreParts_BlacklistOn)
+		/*if(MRGoreParts_BlacklistOn)
 			For(int i=0;i<BlackList.Size();i++){
 				if(e.Thing is BlackList[i]){SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);Return;}
-			}
+			}*/
 		
 		/*if(MRGoreParts_Debug){
 			String Damage = "";
