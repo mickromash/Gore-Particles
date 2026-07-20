@@ -1386,7 +1386,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		Float TimeM = MRGoreParts_Speed;
 		Speed *= TimeM;
 		Float Siz = MRGoreParts_Size;
-		Double Gravity = MRGoreParts_Gravity;
+		Double Gravity = 1;
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
