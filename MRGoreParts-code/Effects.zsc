@@ -458,7 +458,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		
 		Float Dist = MRGP_DistanceMult;
 		Float VelDist = Dist;
@@ -494,6 +494,8 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		Speed *= TimeM;
 		Float Size = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
+		
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
@@ -516,18 +518,22 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			if(Water)Vel *= .5;
 			
 			Float Life = Min(45, 10/Strn.Length())/TimeM*LifeM;
-			if(Water)Life *= 2;
 			
 			Double Size = CFRandom(.9, 2)*Dist*Scale*Size;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			Accel.Z -= Gravity*.1;
-			
+						
 			Vector3 Ofst = Vel;
 			Ofst *= Mult/(i1+1);
 			
 			Float ReSize, Fade;
 			ReSize = -(Size/(Life-1));
 			if(!LowAlpha){Fade = -1; ReSize *= .4;}
+			if(Water){
+				Alph *= .5;
+				Fade = Alph/(Life-1);
+				Resize = Size*.25;
+			}
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 3))
@@ -561,7 +567,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		
 		Float Dist = MRGP_DistanceMult;
 		Float VelDist = Dist;
@@ -666,7 +672,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		if(Water)Amount *= .5;
 		
 		Float Dist = MRGP_DistanceMult;
@@ -709,6 +715,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		Float TimeM = MRGoreParts_Speed;
 		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
 		
 		For(float j=.1;j<1.1;j+=Step)
 		{
@@ -744,7 +751,13 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 			
 			Float ReSize, Fade;
 			ReSize = -((Size+j*3)/(Life-1));
-			if(!LowAlpha){Fade = -1; ReSize *= .4;}
+			if(!LowAlpha && !Water){Fade = -1; ReSize *= .4;}
+			
+			if(Water){
+				Alph *= .5;
+				Fade = Alpha/(Life-1);
+				Resize = Size*.25;
+			}
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 6)){
@@ -777,7 +790,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		if(Water)Amount *= .5;
 		
 		Float Dist = MRGP_DistanceMult;
@@ -816,6 +829,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		Float TimeM = MRGoreParts_Speed;
 		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
 		
 		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);
 		For(float j=.1;j<1.1;j+=Step)
@@ -845,7 +859,10 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			Accel *= VelDist;
 			Accel *= Scale;
 			
-			if(Water){Vel *= .5;Accel *= .5;}
+			if(Water){
+				Vel *= .5;
+				Alpha *= .5;
+			}
 			
 			Float Bright = Max(Brightness*.5, Min(Brightness*1.5, (Strn.Z/(.3*j)+.75)*2));
 			Bright += CFRandom(-.05, .05);
@@ -854,7 +871,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			
 			if(!(Flags&SGPF_TEST))
 				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
-					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+Gravity*4), Alpha, -1, ((Size+j*3)/(Life-1))*.05, 180);
+					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+Gravity*4), Alpha, -1, ((Size+j*3)/(Life-1))*.05+(Size*.5*Water), 180);
 			Life-=.5/TimeM*LifeM;
 			
 			Particles++;
@@ -884,7 +901,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		if(Water)Amount *= .5;
 		
 		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
@@ -927,6 +944,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		Float TimeM = MRGoreParts_Speed;
 		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
 		
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
 		{
@@ -953,13 +971,17 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 			
 			Float ReSize, Fade;
 			ReSize = -(Size/(Life-1));
-			if(!LowAlpha){Fade = -1; ReSize *= .4;}
+			if(!LowAlpha){Fade = Alph/(Life-1); ReSize *= .4;}
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 9)){
 					Vector3 PPos = (Offset.X+CFRandom(-.5,.5)*Scale,Offset.Y+CFRandom(-.5,.5)*Scale,Offset.Z+CFRandom(-.5,.5)*Scale);
-					if(!LowAlpha){
+					if(!LowAlpha || Water){
 						Fade = Alph/(Life-1);
+					}
+					if(Water){
+						Resize = Size*.25;
+						Alph *= .5;
 					}
 					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + PPos, Glow|NoFreeze, Vel, (CFRandom(-.01,.00),CFRandom(-.01,.01),AccelZ), Size*CFRandom(.9, 1.1), Fuzzy, ReSize, Alph, Fade, Dist);
 				}
@@ -995,7 +1017,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		if(Water)Amount *= .5;
 		
 		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
@@ -1036,6 +1058,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		Float TimeM = MRGoreParts_Speed;
 		Speed *= TimeM;
 		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
 		
 		int Skip = -CRandom(6, 10);
 		For(Double j=-CircleLength/2;j<CircleLength/2;j+=Step)
@@ -1069,6 +1092,12 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 			Float ReSize, Fade;
 			ReSize = -(Size/(Life-1));
 			if(!LowAlpha){Fade = -1; ReSize *= .4;}
+			
+			if(Water){
+				Alph *= .5;
+				Fade = Alph/(Life-1);
+				Resize = Size*.25;
+			}
 			
 			if(!(Flags&SGPF_TEST)){
 				if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 9)){
@@ -1111,7 +1140,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		if(Water)Amount *= .5;
 		
 		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
@@ -1141,6 +1170,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		Speed *= TimeM;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
 		Float Amnt = MRGoreParts_Amount;
 		
 		For(int i=StartLine;i<MaxLines;i++)
@@ -1194,6 +1224,12 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 				Float ReSize, Fade;
 				ReSize = -(Size/(Life-1));
 				if(!LowAlpha){Fade = -1; ReSize *= .4;}
+				
+				if(Water){
+					Alph *= .5;
+					Fade = Alph/(Life-1);
+					Resize = Size*.25;
+				}
 				
 				if(!(Flags&SGPF_TEST)){
 					if(Flags&SGPF_Spots && !Water && CheckSpot(Particles, 9*(MaxLines-StartLine))){
@@ -1346,7 +1382,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		
 		int Particles;
 		
-		Bool Water = mo.WaterLevel>2;
+		Bool Water = mo.WaterLevel>1;
 		
 		Float Dist = MRGP_DistanceMult;
 		
@@ -1387,6 +1423,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		Speed *= TimeM;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = 1;
+		if(Water)Gravity *= .25;
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
@@ -1439,7 +1476,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 		
 		if(!MRGoreParts_Draw)Return 0;
 		
-		if(mo.Waterlevel>2)
+		if(mo.Waterlevel>1)
 		{
 			int Rand = CRandom(170, 200);
 			MRGP_Effect.SpawnEffect('MRGP_Effect_Mist', mo, Flags, Angle, Pitch, Color(Rand,Rand,Rand), Amount, Scale, Alpha, Offset, LifeM, Force, MoVel);
