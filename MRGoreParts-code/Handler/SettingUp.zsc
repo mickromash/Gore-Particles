@@ -128,9 +128,9 @@ Extend Class MRGP_Handler
 			if(TempLump==-1)Break;
 			else {LumpNum = TempLump;Files.Push(Wads.ReadLump(LumpNum));}
 		}
-		
+				
 		For(int i=0;i<Files.Size();i++){
-			String Lump = Wads.ReadLump(LumpNum);
+			String Lump = Files[i];
 
 			int Akhtung;
 			While(Lump.IndexOf("(")>-1)
@@ -166,12 +166,13 @@ Extend Class MRGP_Handler
 				Lump = Lump.Mid(Lump.IndexOf("\n")+1);
 				
 				Akhtung++;
-				if(Akhtung>700)Break;
+				if(Akhtung>10000)Break;
 			}
 		}
 		
 		if(MRGoreParts_Debug){
-			Console.Printf("\cdBlood color override:");
+			if(LumpName == "MRPRTCOLS")Console.Printf("\cdBlood color override:");
+			else Console.Printf("\cdGib colors:");
 			Actor Monst;
 			Color Col;
 			Map<String, Color> Arr;

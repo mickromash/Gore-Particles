@@ -1,0 +1,16 @@
+//HDest
+Balor (121 100 77)//Tron
+Necromancer (197 167 137)//Vile
+PainMonster (125 35 35)//Baron
+Boner (200, 200, 200)//Revenant
+SatanRobo (121 100 77)//Cyber
+Babuin (87 53 27)
+FighterImp (87 53 27)
+HealerImp (157 103 51)
+MageImp (87 53 27)
+Knave (140 109 91)//Knight
+Mancubus (121 100 77)
+Putto (87 53 27)
+NinjaPirate (150 60 60)//Demon
+Spiderdemon (121 100 77)
+Yokai (0, 0, 0)
