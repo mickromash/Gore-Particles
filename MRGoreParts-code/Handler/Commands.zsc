@@ -112,7 +112,7 @@ Extend Class MRGP_Handler
 			For(i=0;i<Spots.Size();i++){if(Spots[i])Spots[i].Destroy();}
 			Spots.Clear();
 			
-			Console.Printf(String.Format(StringTable.Localize("$MRGoreParts_Event_ClearSpots"), i));
+			Console.Printf(StringTable.Localize("$MRGoreParts_Event_ClearSpots"), i);
 			Return;
 		}
 		if(e.name ~== "MRGoreParts_ClearWounds"){
@@ -121,7 +121,7 @@ Extend Class MRGP_Handler
 			Wounds.Clear();
 			Wounded.Clear();
 			
-			Console.Printf(String.Format(StringTable.Localize("$MRGoreParts_Event_ClearWounds"), i));
+			Console.Printf(StringTable.Localize("$MRGoreParts_Event_ClearWounds"), i);
 			Return;
 		}
 		if(e.name ~== "MRGoreParts_ClearCrushed"){
@@ -130,7 +130,7 @@ Extend Class MRGP_Handler
 			Crushed.Clear();
 			
 			
-			Console.Printf(String.Format(StringTable.Localize("$MRGoreParts_Event_ClearCrushed"), i));
+			Console.Printf(StringTable.Localize("$MRGoreParts_Event_ClearCrushed"), i);
 			Return;
 		}
 		
