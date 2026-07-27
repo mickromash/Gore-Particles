@@ -232,15 +232,15 @@ Extend Class MRGP_Handler
 				if(e.Thing is BlackList[i]){SpawnNoBlood(e.Thing, e.Inflictor, e.DamageAngle);Return;}
 			}*/
 		
-		/*if(MRGoreParts_Debug){
+		if(MRGoreParts_Debug>1){
 			String Damage = "";
 			if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
 			if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
 			if(e.DamageFlags&DMG_INFLICTOR_IS_PUFF)Damage = Damage.."IsPuff|";
 			Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
-			if(e.DamageSource)Console.Printf("Source: "..e.DamageSource.GetClassName().." "..e.DamageSource.Pos);
-			if(e.Inflictor && e.Inflictor!=e.DamageSource)Console.Printf("Inflictor: "..e.Inflictor.GetClassName().." "..e.Inflictor.Pos);
-		}*/
+			Console.Printf("Source: "..(e.DamageSource?e.DamageSource.GetClassName().." "..e.DamageSource.Pos:""));
+			Console.Printf("Inflictor: "..(!e.Inflictor?"":(e.Inflictor==e.DamageSource?"same":e.Inflictor.GetClassName().." "..e.Inflictor.Pos)));
+		}
 		
 		String HDest = 'HDOperator';
 		if((Class<Actor>)(HDest))
