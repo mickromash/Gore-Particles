@@ -1,0 +1,6 @@
+DoomImp (87 53 27)
+Demon (150 60 60)
+Cacodemon (141 0 0)
+BaronOfHell (125 35 35)
+Cyberdemon (121 100 77)
+SpiderMastermind (121 100 77)

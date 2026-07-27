@@ -14,7 +14,8 @@ Extend Class MRGP_Handler
 			Return;
 		}
 		if(e.name ~== "MRGP_UpdateColors"){
-			SetUpColors();
+			SetUpColors("MRPRTCOL", BldCols, BldFlags);
+			SetUpColors("MRPRGCOL", GibCols, GibFlags);
 			Return;
 		}
 		if(e.name ~== "MRGP_UpdateBlacklist"){

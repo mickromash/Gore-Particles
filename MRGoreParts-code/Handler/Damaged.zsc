@@ -316,10 +316,10 @@ Extend Class MRGP_Handler
 		
 		
 		if(Effects.Size()>0)
-			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst));
+			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst), Master:e.Thing);
 		For(int i=0;i<AlwaysEffects.Size();i++)
 		{
-			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst));
+			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst), Master:e.Thing);
 		}
 		
 		if(CRandom(0, 50)>40)MRGParts.StartSound(e.Inflictor, DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);

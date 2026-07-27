@@ -89,7 +89,8 @@ Extend Class MRGP_Handler
 	{
 		Let Handler = MRGP_StaticHandler(StaticEventHandler.Find("MRGP_StaticHandler"));
 		if(!Handler){Console.printf("Gore-Particles:\cg Error! Static Handler wasn't found.");Destroy();Return;}
-		SetUpColors();
+		SetUpColors("MRPRTCOL", BldCols, BldFlags);
+		SetUpColors("MRPRGCOL", GibCols, GibFlags);
 		SetUpBlacklist();
 		SetUpSounds();
 		SetUpBloodRemove();
@@ -98,6 +99,8 @@ Extend Class MRGP_Handler
 	
 	Map<String, Color> BldCols;//(Vanilla) monsters that supposed to have different blood color
 	Map<String, int> BldFlags;
+	Map<String, Color> GibCols;
+	Map<String, int> GibFlags;
 	/*
 		MRPRTCOL (MickRomash's gore PaRTicle COLours) lump stores information
 		about blood colours for specific monster classes
@@ -113,14 +116,15 @@ Extend Class MRGP_Handler
 		(check filter folder)
 	*/
 	
-	Void SetUpColors()
+	Void SetUpColors(String LumpName, in out Map<String, Color> ArrCols, in out Map<String, int> ArrFlags)
 	{
-		BldCols.Clear();
+		ArrCols.Clear();
+		ArrFlags.Clear();
 		Array<String> Files;
 		int LumpNum = 0;
 		While(LumpNum>-1)
 		{
-			int TempLump = Wads.FindLump("MRPRTCOL", LumpNum+1);
+			int TempLump = Wads.FindLump(LumpName, LumpNum+1);
 			if(TempLump==-1)Break;
 			else {LumpNum = TempLump;Files.Push(Wads.ReadLump(LumpNum));}
 		}
@@ -146,14 +150,14 @@ Extend Class MRGP_Handler
 				}
 
 				if((Class<Actor>)(Monster)){
-					BldCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
+					ArrCols.Insert(Monster, Color(Vals[0],Vals[1],Vals[2]));
 				
 					While(Cols.Indexof("+")>-1){
 						int Flags;
 						if(Cols.IndexOf("+glow")>-1){
 							Flags|=GPBCF_Glow;
 						}
-						BldFlags.Insert(Monster, Flags);
+						ArrFlags.Insert(Monster, Flags);
 						Break;
 					}
 				}
@@ -170,12 +174,14 @@ Extend Class MRGP_Handler
 			Console.Printf("\cdBlood color override:");
 			Actor Monst;
 			Color Col;
+			Map<String, Color> Arr;
+			Arr.Copy(ArrCols);
 			
-			Foreach(Monst , Col : BldCols)
+			Foreach(Monst , Col : Arr)
 			{
 				String Str = Monst.." "..Col;
-				if(BldFlags.CheckKey(Monst)){
-					int Flags = BldFlags.Get(Monst);
+				if(ArrFlags.CheckKey(Monst)){
+					int Flags = ArrFlags.Get(Monst);
 					if(Flags&GPBCF_Glow)Str = Str.." glow";
 				}
 				Console.Printf(Str);

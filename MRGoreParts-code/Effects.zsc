@@ -386,7 +386,7 @@ enum MRGP_EffectFlags{
 Class MRGP_Effect play abstract
 {
 	Virtual int DoParticleEffect(Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, 
-		Vector3 Offset = (0,0,0), Double LifeM = 1, Vector3 Force = (0,0,0), Double MoVel = 0, Double Spread = -1, Double Speed = 1)
+		Vector3 Offset = (0,0,0), Double LifeM = 1, Vector3 Force = (0,0,0), Double MoVel = 0, Double Spread = -1, Double Speed = 1, Actor Master = Null)
 	{Return 0;}
 	/*
 		mo - actor that spawns particles
@@ -403,6 +403,7 @@ Class MRGP_Effect play abstract
 		MoVel - multiplies actor velocity that will be added to particles
 		Spread - splash spread multiplier
 		Speed - velocity multiplier
+		Master - the bleeding actor
 	*/
 	Static Void SpawnEffect(Class<Object> Effect, Actor mo, int Flags = 0, Double Angle = 0, Double Pitch = 0, Color Col = 0, double Amount = 1, Double Scale = 1, Double Alpha = 1, Vector3 Offset = (0,0,0), Double LifeM = 1, Vector3 Force = (0,0,0), Double MoVel = 0, Double Spread = -1)
 	{
@@ -448,7 +449,7 @@ Class MRGP_Effect play abstract
 
 Class MRGP_Effect_SimpleSplash: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -558,7 +559,7 @@ Class MRGP_Effect_Sprays: MRGP_Effect
 
 Class MRGP_Effect_Mist: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -662,7 +663,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 
 Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -781,7 +782,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 
 Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -886,7 +887,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 
 Class MRGP_Effect_CurveLine: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1002,7 +1003,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 
 Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1124,7 +1125,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 
 Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
@@ -1372,13 +1373,19 @@ Class MRGP_Gib: MRGP_Droplet
 }
 Class MRGP_Effect_MeatSplash: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
 		if(!MRGoreParts_Draw)Return 0;
 		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
 		if(Amount<=0)Return 0;
+		
+		Color SecondCol = Col;
+		
+		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
+		if(!Handler)Return 0;
+		if(Handler.GibCols.CheckKey(Master.GetClassName()))SecondCol = Handler.GibCols.Get(Master.GetClassName());
 		
 		int Particles;
 		
@@ -1436,6 +1443,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			
 			Float Bright = Brightness*CFRandom(1, 1.2);
 			Color ColTmp = Color(int(Cols[0]*Bright), int(Cols[1]*Bright), int(Cols[2]*Bright));
+			if(CRandom(0, 1))ColTmp = Color(int(SecondCol.r*Bright),int(SecondCol.g*Bright),int(SecondCol.b*Bright));
 			
 			Vel += Force;
 			Vel *= Speed;
@@ -1470,7 +1478,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 
 Class MRGP_Effect_Sparks: MRGP_Effect
 {
-	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed)
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
 	{
 		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
 		
