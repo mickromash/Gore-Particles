@@ -228,6 +228,7 @@ Class MRGP_Handler: EventHandler
 		}
 		
 		String HDBld = 'HDBloodTrailFloor';
+		if(!((Class<Actor>)(HDBld)))String HDBld = 'HDFXBloodTrailFloor';
 		if((Class<Actor>)(HDBld))
 		{
 			if(mo is HDBld)
