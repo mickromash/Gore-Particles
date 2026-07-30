@@ -160,7 +160,7 @@ Extend Class MRGP_Handler
 		Float TempGrav = .3;
 		
 		For(int i=CRandom(0, 3);i<5;i++)
-			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,TempGrav);
+			mo.A_SpawnParticle(Col, 0, 20, CFRandom(3, 4), 0, CFRandom(-.5,.5),CFRandom(-.5,.5),.1*i, mo.Vel.X,mo.Vel.Y,0, 0,0,-TempGrav);
 		
 		int Delay = 1;
 		For(float i=mo.Pos.Z;i>mo.floorZ;i-=TempGrav)
