@@ -110,7 +110,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 		{
 			Float Strn = CRandom(3, 5);
 			Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-RandAngle, RandAngle), Strn)*Max(.1, Cos(Pitch)), -Sin(Pitch)*Strn);
-			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,PosY*.9), Bld, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
+			MRGP_FlyingBlood.Create(Owner.Pos+(0,0,PosY*.9), Bld, Fuzzy|Glow, Scale:CFRandom(1, 2), Vel:Vel);
 			MRGParts.StartSoundAt(Owner.Pos+(0,0,y), Handler.SpraySound, CHAN_AUTO, Volume: CFRandom(.1, .2)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 		}
 		if(Age%Max(1, int(Age*.2/Freq))==0)//Age<CRandom((-140+Artery*100)/Freq, 60))

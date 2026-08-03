@@ -66,7 +66,7 @@ Class MRGP_FlyingBlood: VisualThinker//Quake gibs blood stream
 		if(a.bDestroyed)Return Null;
 		a.Pos = Pos;
 		a.Vel = Vel;
-		a.Col = Col;
+		a.SColor = a.Col = Col;
 		a.Gravity = Gravity;
 		
 		a.StartScale = Scale;
@@ -115,6 +115,7 @@ Class MRGP_FlyingBlood: VisualThinker//Quake gibs blood stream
 		a.SetRenderStyle(a.RenderStyle);
 		if(Flags&SPF_FullBright)Flags |= SPF_FullBright;
 		a.NoFreeze = MRGoreParts_NoFreeze;
+				
 		Return a;
 	}
 	
@@ -1385,7 +1386,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler)Return 0;
-		if(Handler.GibCols.CheckKey(Master.GetClassName()))SecondCol = Handler.GibCols.Get(Master.GetClassName());
+		if(Master && Handler.GibCols.CheckKey(Master.GetClassName()))SecondCol = Handler.GibCols.Get(Master.GetClassName());
 		
 		int Particles;
 		
