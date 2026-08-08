@@ -347,6 +347,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 		Float Mid = CurSector.CenterCeiling()-CurSector.CenterFloor();
 		Float CurPos = PrevZ;
 		Float VelZ = PosZ-PrevZ;
+		CurPos += VelZ;
 		if(PosZ<PrevZ)CurPos = PosZ;
 		if(PosZ==PrevZ){CurPos = PosZ;VelZ=0;}
 		
