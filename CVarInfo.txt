@@ -8,7 +8,7 @@ server bool MRGoreParts_BloodTypes = false;//Include blood written in monsters b
 nosave bool MRGoreParts_Quake2 = true;//Quake puff like blood, replacing vanilla blood actor
 
 nosave bool MRGoreParts_NoBloodMonsters = false;//Spawn blood on monsters with +NOBLOOD flag
-nosave string MRGoreParts_Blacklist = "LostSoul, Revenant";
+nosave string MRGoreParts_Blacklist = "LostSoul Revenant";
 nosave bool MRGoreParts_BlacklistOn = true;
 nosave bool MRGoreParts_NoBloodMist = true;//Spawn dust for non bleeding things
 nosave color MRGoreParts_NoBloodMistColor = "70 70 70";//Color of dust

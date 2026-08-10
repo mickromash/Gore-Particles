@@ -190,39 +190,26 @@ Extend Class MRGP_Handler
 		}
 	}
 	
-	Array< Class <Actor> > BlackList;//List of monsters that shouldn't bleed
+	Array<String> BlackList;//List of monsters that shouldn't bleed
 	
 	Void SetUpBlackList()
 	{
 		BlackList.Clear();
 		String BList = MRGoreParts_BlackList;
-		BList.Substitute(" ", "");
-		int Akhtung;
-		While(BList.Length()>2)
-		{
-			String Monst;
-			if(BList.IndexOf(",")>-1)
-			{
-				Monst = BList.Left(BList.IndexOf(","));
-				BList = BList.Mid(BList.IndexOf(",")+1);
-			}
-			else 
-			{
-				Monst = BList;
-				Blist = "";
-			}
-			
-			
-			Class<Actor> MonstCls = Monst;
-			if(MonstCls)BlackList.Push(MonstCls);
-			
-			Akhtung++;
-			if(Akhtung>700)Break;
+		if(BList.Mid(Blist.Length()-1) != " ")CVar.FindCVar("MRGoreParts_BlackList").SetString(MRGoreParts_Blacklist.." ");
+		BList.Replace(",", "");
+		
+		BList.Split(Blacklist, " ", TOK_SKIPEMPTY);
+		
+		For(int i=0;i<Blacklist.Size();i++){
+			if((Class<Actor>)(Blacklist[i]))Continue;
+			Blacklist.Delete(i);
+			i--;
 		}
 		
 		if(MRGoreParts_Debug){
 			Console.Printf("\cdBlacklist:");
-			For(int i=0;i<BlackList.Size();i++)Console.Printf("\cg"..BlackList[i].GetClassName());
+			For(int i=0;i<BlackList.Size();i++)Console.Printf("\cg"..BlackList[i]);
 			Console.Printf("\cd===================");
 		}
 	}

@@ -118,7 +118,7 @@ Extend Class MRGP_Handler
 		if(!MRGoreParts_Draw)Return;
 		
 		if(!e.Thing||!(e.Thing.bIsMonster || e.Thing is 'PlayerPawn')||(e.Thing.bNoBlood && !MRGoreParts_NoBloodMonsters)||
-			(BlackList.Find(e.Thing.GetClass())!=BlackList.Size()&&MRGoreParts_BlacklistOn) )Return;
+			(BlackList.Find(e.Thing.GetClassName())!=BlackList.Size()&&MRGoreParts_BlacklistOn) )Return;
 		
 		if(MRGoreParts_BlacklistOn)For(int i=0;i<BlackList.Size();i++){if(e.Thing is BlackList[i])Return;}
 		
