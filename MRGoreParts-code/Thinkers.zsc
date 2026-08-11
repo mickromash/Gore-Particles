@@ -470,7 +470,7 @@ Class MRGP_Spot: VisualThinker
 	
 	Void FollowStained()
 	{
-		if(!Stained || !Players[ConsolePlayer].Camera){Destroy();Return;}
+		if(!Stained){Destroy();Return;}
 						
 		TextureID Sprt;
 		if(LastState != Stained.CurState){
@@ -495,8 +495,9 @@ Class MRGP_Spot: VisualThinker
 			LastState = Stained.CurState;
 		}
 		else {
-			Angle = -Players[ConsolePlayer].Camera.AngleTo(Stained)+Stained.Angle+90;
-			Angle = int((Angle-22.5)/45)*45;
+			Angle = -(Players[ConsolePlayer].Camera.AngleTo(Stained)+22.5)+Stained.Angle;
+			if(Angle>0)Angle += 45;
+			Angle = int(Angle/45)*45;
 		}
 		
 		Pos = Stained.Pos;
@@ -799,15 +800,15 @@ Class MRGP_Droplet: VisualThinker
 					
 					Home.X *= abs(Cos(Actor.DeltaAngle(HitActor.Angle, MRGP_FlyingBlood.AngleToVector2(HitActor.Pos.XY, HitPos.XY))));
 					Home.Y *= abs(Sin(Actor.DeltaAngle(HitActor.Angle, MRGP_FlyingBlood.AngleToVector2(HitActor.Pos.XY, HitPos.XY))));
-
-					Home.Z = -Dif.Z+5;
-					Home.Z = Min(.9, Home.Z/HitActor.Height);
 					
 					if(Home.X>0)Home.X = Min(Home.X, HitActor.Radius);
 					else Home.X = Max(Home.X, -HitActor.Radius);
 					
 					if(Home.Y>0)Home.Y = Min(Home.Y, HitActor.Radius);
 					else Home.Y = Max(Home.Y, -HitActor.Radius);
+					
+					Home.Z = -Dif.Z+5;
+					Home.Z = Min(.9-(Home.XY.Length()/Max(1, HitActor.Radius)*.3), Home.Z/HitActor.Height);
 					
 					
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
