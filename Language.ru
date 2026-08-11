@@ -109,6 +109,7 @@ MRGoreParts_SoundSpeed = "Скорость звука";
 MRGoreParts_SpotsMenu = "Настройки пятен";
 ////{
 MRGoreParts_FloorSpots = "Пятна на поверхностях";
+MRGoreParts_ActorSpots = "Пятна на объектах";
 MRGoreParts_EffectsSpots = "Пятна от эффектов";
 MRGoreParts_WoundsSpots = "Пятна от крови из ран";
 MRGoreParts_DeathSpots = "Пятна от посмертных кровотечений";

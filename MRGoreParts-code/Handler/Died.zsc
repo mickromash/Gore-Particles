@@ -107,7 +107,7 @@ Extend Class MRGP_Handler
 				
 				Float Bright = MRGoreParts_Brightness*CFRandom(.9, 1.5);
 				Color ColTemp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
-				Let a = MRGP_Droplet.SpawnDrop(ColTemp, Pos, Glow, Vel, (0,0,-.5), CFRandom(3, 6), Fuzzy?STYLE_Shadow:STYLE_Normal);
+				Let a = MRGP_Droplet.SpawnDrop(ColTemp, Pos, Glow, Vel, (0,0,-.5), CFRandom(3, 6), Fuzzy?STYLE_Shadow:STYLE_Normal, Master:mo);
 			}
 		}
 	}

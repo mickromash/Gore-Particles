@@ -110,6 +110,7 @@ MRGoreParts_SoundSpeed = "Sound speed";
 MRGoreParts_SpotsMenu = "Spots settings";
 ////{
 MRGoreParts_FloorSpots = "Spots on surfaces";
+MRGoreParts_ActorSpots = "Spots on actors";
 MRGoreParts_EffectsSpots = "Spots by effects";
 MRGoreParts_WoundsSpots = "Spots by bleeding wounds";
 MRGoreParts_DeathSpots = "Spots by dying bleeding";

@@ -119,7 +119,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			Strn = 1.2-Min(.6, Strn/80);
 			
 			if(Effect)
-				Effect.DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5), Speed:Strn);
+				Effect.DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5), Speed:Strn, Master:Owner);
 			//Dripping blood
 			Return;
 
@@ -142,7 +142,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color ColTmp = Color(int(Bld.R*Bright), int(Bld.G*Bright), int(Bld.B*Bright));
 				if(!Drop){//Spot
-					Let a = MRGP_Droplet.SpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL);
+					Let a = MRGP_Droplet.SpawnDrop(ColTmp, Home, Glow?SPF_FULLBRIGHT:0, Vel, (0,0,-1), RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL, Master:Owner);
 					Drop = true;
 				}
 				Owner.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, SPF_RELPOS|(Glow?SPF_FULLBRIGHT:0)|SPF_REPLACE, CRandom(29, 40), Size*1.3, 0, 1,0,PosY*.9+5,
@@ -369,13 +369,18 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 
 Class MRGP_Spot: VisualThinker
 {
-	int Surface;//0 - Wall, 1 - Floor, 2 - Ceiling
+	int Surface;//0 - Wall, 1 - Floor, 2 - Ceiling, 3 - Actor
 	Bool FromCeiling;//In case spot placed on a wall of a sector that is originates from the ceiling
 	int Life, Age, Delay, Sliding;
 	Double Height, StartScale, StartAlpha;
 	Sector LinkedSector;
 	Bool NoAlpha, PlaySound, InArray, ClearScale, Drip, Fallin, OnLiquid;
 	Vector2 BaseOffset;
+	
+	Actor Stained;
+	Vector3 ActOffset;
+	Double LastZ;
+	State LastState;
 	
 	Override Void Tick()
 	{
@@ -412,6 +417,11 @@ Class MRGP_Spot: VisualThinker
 		}
 		
 		Offset = BaseOffset*Scale.X;
+		
+		if(Surface>2){
+			FollowStained();
+			Return;
+		}
 		
 		if(Drip && !Fallin && CRandom(0, 100)==1)Fallin = true;
 		
@@ -458,6 +468,44 @@ Class MRGP_Spot: VisualThinker
 		Age++;
 	}
 	
+	Void FollowStained()
+	{
+		if(!Stained || !Players[ConsolePlayer].Camera){Destroy();Return;}
+						
+		TextureID Sprt;
+		if(LastState != Stained.CurState){
+			Sprt = Stained.CurState.GetSpriteTexture(0);
+		
+			if(!Sprt.IsValid())Return;
+		}
+				
+		Double Angle;
+		Double Forw = ActOffset.X;
+		Float Z = ActOffset.Z*Stained.Height;
+		
+		if((Stained.Health<1 && !MRGoreParts_Voxel) || Sprt == Stained.CurState.GetSpriteTexture(2)){
+			Angle = Players[ConsolePlayer].Camera.Angle+180;
+			Forw = 1;
+			
+			if(LastState == Stained.CurState)Z = LastZ;
+			else Z = LastZ = Texman.CheckRealHeight(Sprt);
+			
+			Z = ActOffset.Z*Z*Stained.Scale.Y;
+			
+			LastState = Stained.CurState;
+		}
+		else {
+			Angle = -Players[ConsolePlayer].Camera.AngleTo(Stained)+Stained.Angle+90;
+			Angle = int((Angle-22.5)/45)*45;
+		}
+		
+		Pos = Stained.Pos;
+		Pos += (Actor.AngleToVector(Angle, Forw), Z);
+		Pos.XY += Actor.AngleToVector(Angle+90, ActOffset.Y);
+		
+		Vel = Stained.Vel;
+	}
+	
 	Override Void PostBeginPlay()
 	{
 		if(!Texture)Switch(MRGoreParts_SpotsStyle){
@@ -483,15 +531,18 @@ Class MRGP_Spot: VisualThinker
 		
 		NoAlpha = MRGoreParts_LowAlpha;
 		
-		Fallin = false;
+		if(!Stained){
 		
-		Sliding = CRandom(1, 10)*35;
-		
-		if(CurSector && Surface>0){
-			OnLiquid = CheckLiquid(Self, StartScale, Surface);
-			if(OnLiquid){
-				Remove();
-				Return;
+			Fallin = false;
+			
+			Sliding = CRandom(1, 10)*35;
+			
+			if(CurSector && Surface>0){
+				OnLiquid = CheckLiquid(Self, StartScale, Surface);
+				if(OnLiquid){
+					Remove();
+					Return;
+				}
 			}
 		}
 		
@@ -533,7 +584,7 @@ Class MRGP_Spot: VisualThinker
 	}
 	
 	Static MRGP_Spot MRGSpawnSpot(Color Col, Vector3 Pos, int Life = 1, int Delay = 0, Bool PlaySound = 0, Double Scale = 1, Double Alpha = 1,
-		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null, int RenderStyle = STYLE_NORMAL)
+		int Surface = 1, Double Height = 0, Bool FromCeiling = 0, Sector LinkedSector = Null, int RenderStyle = STYLE_NORMAL, Actor Stained=Null)
 	{
 		if(!MRGoreParts_FloorSpots)Return Null;
 		
@@ -544,17 +595,24 @@ Class MRGP_Spot: VisualThinker
 		Spot.SColor = Col;
 		Spot.Life = Life;
 		Spot.Delay = Delay;
+		Spot.Stained = Stained;
+		Spot.PlaySound = PlaySound;
+		Spot.StartScale = Scale;
+		Spot.StartAlpha = Alpha;
+		Spot.SetRenderStyle(RenderStyle);
+		Spot.CurSector = LevelLocals.PointInSector(Pos.XY);
+		if(Spot.Stained){
+			Spot.ActOffset = Pos;
+			Spot.Surface = 3;
+			Return Spot;
+		}
+		
 		Spot.Surface = Surface;
 		if(Surface<1)Spot.Flags |= SPF_NO_XY_BILLBOARD;
 		//if(MRGoreParts_FullBright)Spot.Flags |= SPF_FULLBRIGHT;
 		Spot.Height = Height;
 		Spot.FromCeiling = FromCeiling;
 		Spot.LinkedSector = LinkedSector;
-		Spot.PlaySound = PlaySound;
-		Spot.StartScale = Scale;
-		Spot.StartAlpha = Alpha;
-		Spot.SetRenderStyle(RenderStyle);
-		Spot.CurSector = LevelLocals.PointInSector(Pos.XY);
 		
 		if(Spot.CurSector){//Check if spot is placed on the skybox
 			TextureId Pic;
@@ -605,6 +663,7 @@ Class MRGP_Droplet: VisualThinker
 		Return b-a;
 	}
 	
+	Thinker Master;
 	Double StartScale, Resize, Fade, ImageScale, DistFactor;
 	int RenderStyle;
 	Vector3 Accel;
@@ -690,12 +749,13 @@ Class MRGP_Droplet: VisualThinker
 		int HitSurface;
 		
 		let tracer = new('MRGP_SightTracer');
-
+		
+		tracer.CheckActor = Master;
 		tracer.CheckSurface = true;
-		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 2, 0, Line.ML_BLOCKEVERYTHING, true);
+		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 2, 0, Line.ML_BLOCKEVERYTHING, !Master);
 		
 		if(Tracer.HitType!=TRACE_HitNone){
-			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos);
+			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos, Actor(Tracer.CheckActor));
 			Landed = true;
 		}
 				
@@ -711,7 +771,7 @@ Class MRGP_Droplet: VisualThinker
 		Vel += Accel;
 	}
 	
-	Virtual Void HitSurface(int HitType, Line HitLine=Null, Vector3 HitPos=(0,0,0))
+	Virtual Void HitSurface(int HitType, Line HitLine=Null, Vector3 HitPos=(0,0,0), Actor HitActor=Null)
 	{
 		if(!MRGoreParts_FloorSpots)Return;
 		int Ofst = -1;
@@ -724,7 +784,46 @@ Class MRGP_Droplet: VisualThinker
 		
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 		Switch(HitType){
-		
+			Case TRACE_HitActor:
+				if(!HitActor || HitActor == Master)Return;
+				
+				{
+					Vector3 Dif = LevelLocals.Vec3Diff(HitPos, HitActor.Pos);
+					
+					Vector3 Home = (0, 0, 0);
+					
+					Home.Y -= Dif.X*Cos(HitActor.Angle-90) + Dif.Y*Sin(HitActor.Angle-90);
+					Home.X -= Dif.X*Cos(HitActor.Angle) + Dif.Y*Sin(HitActor.Angle);
+					
+					Home.XY *= .75;
+					
+					Home.X *= abs(Cos(Actor.DeltaAngle(HitActor.Angle, MRGP_FlyingBlood.AngleToVector2(HitActor.Pos.XY, HitPos.XY))));
+					Home.Y *= abs(Sin(Actor.DeltaAngle(HitActor.Angle, MRGP_FlyingBlood.AngleToVector2(HitActor.Pos.XY, HitPos.XY))));
+
+					Home.Z = -Dif.Z+5;
+					Home.Z = Min(.9, Home.Z/HitActor.Height);
+					
+					if(Home.X>0)Home.X = Min(Home.X, HitActor.Radius);
+					else Home.X = Max(Home.X, -HitActor.Radius);
+					
+					if(Home.Y>0)Home.Y = Min(Home.Y, HitActor.Radius);
+					else Home.Y = Max(Home.Y, -HitActor.Radius);
+					
+					
+					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
+					
+					Let a = MRGP_Spot.MRGSpawnSpot(TempCol, Home, MRGoreParts_SpotsTime*35, 0, 0, Scale.X/ImageScale/DistFactor, 1, Stained:HitActor);
+						
+					if(a){
+						a.SetRenderStyle(RenderStyle);
+						a.Flags = Glow;
+						a.InArray = true;
+						//a.ClearScale = true;
+						Handler.UpdateSpots(a);
+					}
+				}
+				
+				Return;
 			Case TRACE_HitWall:
 				{
 					Let PPos = HitPos;
@@ -846,7 +945,7 @@ Class MRGP_Droplet: VisualThinker
 		}
 	}
 	
-	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0, Double DistFactor=1)
+	Static MRGP_Droplet SpawnDrop(Color Col, Vector3 Pos, int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0, Double DistFactor=1, Thinker Master=Null)
 	{
 		Let Drop = MRGP_Droplet(level.SpawnVisualThinker('MRGP_Droplet'));
 		if(!Drop)Return Null;
@@ -864,6 +963,11 @@ Class MRGP_Droplet: VisualThinker
 		Drop.Fade = Fade;
 		Drop.DistFactor = DistFactor;
 		
+		if(!Master)Master = Drop;
+		if(!MRGoreParts_ActorSpots)Master = Null;
+		
+		Drop.Master = Master;
+				
 		Return Drop;
 	}
 }

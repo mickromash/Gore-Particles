@@ -69,6 +69,7 @@ MRGoreParts_SoundSpeedTip = "Gore sounds temp and pitch will be affected by i_ti
 //Spots menu
 MRGoreParts_SpotsMenuTip = "Here you can configure particles leaved on the surface.";
 MRGoreParts_FloorSpotsTip = "Blood spots on the walls, celling and floor. Made via 'VisualThinker's and not listed in particles limit. Big amount of spots will affect performance.";
+MRGoreParts_ActorSpotsTip = "Blood spots will also stain actors (decorations, monsters, players etc).";
 MRGoreParts_EffectsSpotsTip = "Spots leaved by damage effects. Got big performance impact.";
 MRGoreParts_DeathSpotsTip = "Spots leaved by dying monsters. Got even bigger performance impact";
 MRGoreParts_SpotsFrequencyTip = "Frequency of spots spawn. The biggre the value, the more spots will be lived by effects. Increasing or lowering the value will affect performance.";

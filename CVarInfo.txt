@@ -67,6 +67,7 @@ nosave bool MRGoreParts_SoundSpeed = true;
 
 //Spots
 nosave bool MRGoreParts_FloorSpots = true;//Not only floor actually
+nosave bool MRGoreParts_ActorSpots = false;//Spots on actors
 nosave bool MRGoreParts_WoundsSpots = false;//Floor spots leaved by bleeding wounds
 nosave bool MRGoreParts_EffectsSpots = false;
 nosave bool MRGoreParts_DeathSpots = true;//Spots leaved by dying splashes
