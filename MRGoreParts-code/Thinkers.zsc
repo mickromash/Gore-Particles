@@ -470,7 +470,7 @@ Class MRGP_Spot: VisualThinker
 	
 	Void FollowStained()
 	{
-		if(!Stained){Destroy();Return;}
+		if(!Stained || (Inventory(Stained) && Inventory(Stained).Owner)){Destroy();Return;}
 						
 		TextureID Sprt;
 		if(LastState != Stained.CurState){
