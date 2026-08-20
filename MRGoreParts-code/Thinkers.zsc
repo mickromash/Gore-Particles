@@ -473,7 +473,7 @@ Class MRGP_Spot: VisualThinker
 		if(!Stained || (Inventory(Stained) && Inventory(Stained).Owner)){Destroy();Return;}
 						
 		TextureID Sprt;
-		if(LastState != Stained.CurState){
+		if(LastState != Stained.CurState || !Sprt.IsValid()){
 			Sprt = Stained.CurState.GetSpriteTexture(0);
 		
 			if(!Sprt.IsValid())Return;
