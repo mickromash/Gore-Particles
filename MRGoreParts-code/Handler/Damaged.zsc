@@ -295,12 +295,15 @@ Extend Class MRGP_Handler
 
 		if(MRGParts.Distance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
 		
+		Float Speed = 1;
+		Float Dist = e.DamageSource.Distance2D(e.Thing)-e.DamageSource.Radius-e.Thing.Radius;
+		if(Dist<50)Speed = Dist/50;
 		
 		if(Effects.Size()>0)
-			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst), Master:e.Thing);
+			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst), Speed:Speed, Master:e.Thing);
 		For(int i=0;i<AlwaysEffects.Size();i++)
 		{
-			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst), Master:e.Thing);
+			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst), Speed:Speed, Master:e.Thing);
 		}
 		
 		if(CRandom(0, 50)>40)MRGParts.StartSound(e.Inflictor, DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
