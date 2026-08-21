@@ -976,7 +976,7 @@ Class MRGP_Droplet: VisualThinker
 Class MRGP_SpreadingBlood: VisualThinker
 {
 	int Life, Age;
-	Double StartScale, IntendetScale, StartAlpha;
+	Double StartScale, IntendetScale, StartAlpha, LastFloorZ;
 	Bool NoAlpha, ClearScale, OnLiquid;
 	Vector2 Moving, BaseOffset;
 	Sector LastSector, CurCurSector;
@@ -1001,8 +1001,14 @@ Class MRGP_SpreadingBlood: VisualThinker
 		
 		if(CurSector){
 			if(CurSector.CenterFloor()<Pos.Z-Scale.X-1){
-				if(LastSector && LastSector.CenterFloor()>=Pos.Z+1)Vel.Z = -.5*Scal;
-				else if(Vel.Z>-5)Vel.Z += -.5;
+				if(CurCurSector == CurSector){
+					Vel.Z = CurSector.CenterFloor()-LastFloorZ;
+					Pos.Z = CurSector.CenterFloor()+Scale.X-Vel.Z;
+				}
+				else {
+					if(LastSector && LastSector.CenterFloor()>=Pos.Z+1)Vel.Z = -.5*Scal;
+					else if(Vel.Z>-5)Vel.Z += -.5;
+				}
 			}
 			if(CurSector.CenterFloor()>Pos.Z+1 || !Level.IsPointInLevel(Pos+Vel))Vel *= 0;
 			else {
@@ -1017,6 +1023,7 @@ Class MRGP_SpreadingBlood: VisualThinker
 		
 		if(CurCurSector!=CurSector)LastSector=CurCurSector;
 		CurCurSector = CurSector;
+		LastFloorZ = CurSector.CenterFloor();
 		
 		Age++;
 	}
