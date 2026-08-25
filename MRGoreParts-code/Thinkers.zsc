@@ -756,8 +756,10 @@ Class MRGP_Droplet: VisualThinker
 		tracer.Trace(Pos, Level.PointInSector(Pos.XY), dir, 2, 0, Line.ML_BLOCKEVERYTHING, !Master);
 		
 		if(Tracer.HitType!=TRACE_HitNone){
-			HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos, Actor(Tracer.CheckActor));
-			Landed = true;
+			if(!(Tracer.HitType == TRACE_HitActor && (!Actor(Tracer.CheckActor) || Tracer.CheckActor == Master))){
+				HitSurface(Tracer.HitType, Tracer.HitLine, Tracer.HitPos, Actor(Tracer.CheckActor));
+				Landed = true;
+			}
 		}
 				
 		if(CurSector){
@@ -786,8 +788,6 @@ Class MRGP_Droplet: VisualThinker
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
 		Switch(HitType){
 			Case TRACE_HitActor:
-				if(!HitActor || HitActor == Master)Return;
-				
 				{
 					Vector3 Dif = LevelLocals.Vec3Diff(HitPos, HitActor.Pos);
 					
@@ -801,15 +801,14 @@ Class MRGP_Droplet: VisualThinker
 					Home.X *= abs(Cos(Actor.DeltaAngle(HitActor.Angle, MRGP_FlyingBlood.AngleToVector2(HitActor.Pos.XY, HitPos.XY))));
 					Home.Y *= abs(Sin(Actor.DeltaAngle(HitActor.Angle, MRGP_FlyingBlood.AngleToVector2(HitActor.Pos.XY, HitPos.XY))));
 					
-					if(Home.X>0)Home.X = Min(Home.X, HitActor.Radius);
-					else Home.X = Max(Home.X, -HitActor.Radius);
-					
-					if(Home.Y>0)Home.Y = Min(Home.Y, HitActor.Radius);
-					else Home.Y = Max(Home.Y, -HitActor.Radius);
+					Home.X = Clamp(Home.X, -HitActor.Radius, HitActor.Radius);
+					Home.Y = Clamp(Home.Y, -HitActor.Radius, HitActor.Radius);
 					
 					Home.Z = -Dif.Z+5;
-					Home.Z = Min(.9-(Home.XY.Length()/Max(1, HitActor.Radius)*.3), Home.Z/HitActor.Height);
 					
+					if(Home.Z>HitActor.Height*.45)Home.Z = Min(.9, Home.Z/(HitActor.Height*.9)*(Home.Z/(HitActor.Height*.9)));
+					else Home.Z = Min(.9, Home.Z/(HitActor.Height*.9));
+										
 					
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
 					

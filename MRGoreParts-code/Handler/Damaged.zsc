@@ -84,12 +84,8 @@ Extend Class MRGP_Handler
 			Home.Z = -Dif.Z+5;
 			Home.Z = Min(1, Home.Z/Thing.Height);
 			
-			if(Home.X>0)Home.X = Min(Home.X, Thing.Radius);
-			else Home.X = Max(Home.X, -Thing.Radius);
-			
-			if(Home.Y>0)Home.Y = Min(Home.Y, Thing.Radius);
-			else Home.Y = Max(Home.Y, -Thing.Radius);
-			
+			Home.X = Clamp(Home.X, -Thing.Radius, Thing.Radius);
+			Home.Y = Clamp(Home.Y, -Thing.Radius, Thing.Radius);
 			
 			
 			Bool Replace = true;//Check wounds limit
@@ -296,8 +292,8 @@ Extend Class MRGP_Handler
 		if(MRGParts.Distance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
 		
 		Float Speed = 1;
-		Float Dist = e.DamageSource.Distance2D(e.Thing)-e.DamageSource.Radius-e.Thing.Radius;
-		if(Dist<50)Speed = Dist/50;
+		//Float Dist = e.DamageSource.Distance2D(e.Thing)-e.DamageSource.Radius-e.Thing.Radius;
+		//if(Dist<50)Speed = Dist/50;
 		
 		if(Effects.Size()>0)
 			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst), Speed:Speed, Master:e.Thing);
