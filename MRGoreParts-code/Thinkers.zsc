@@ -806,8 +806,8 @@ Class MRGP_Droplet: VisualThinker
 					
 					Home.Z = -Dif.Z+5;
 					
-					if(Home.Z>HitActor.Height*.45)Home.Z = Min(.9, Home.Z/(HitActor.Height*.9)*(Home.Z/(HitActor.Height*.9)));
-					else Home.Z = Min(.9, Home.Z/(HitActor.Height*.9));
+					Home.Z = Min(.9, Home.Z/(HitActor.Height*.9));
+					if(Home.Z>.45)Home.XY *= 1-(Home.Z/.9-.5);
 										
 					
 					Color TempCol = Color(int(SColor.R*.9), int(SColor.G*.9), int(SColor.B*.9));
