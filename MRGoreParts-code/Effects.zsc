@@ -355,6 +355,8 @@ class MRGP_SightTracer : LineTracer
 		{
 			case TRACE_HitActor:
 				if(CheckActor && results.HitActor != CheckActor && Results.HitActor != Players[ConsolePlayer].Camera){
+					Let Act = results.HitActor;
+					if(!Inventory(Act) && !Act.bSolid && !Act.bIsMonster && !PlayerPawn(Act))Return TRACE_Skip;
 					CheckActor = results.HitActor;
 					HitType = Results.HitType;
 					HitPOs = Results.HitPos;
@@ -501,8 +503,8 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Float Size = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		if(Water)Gravity *= .25;
@@ -528,7 +530,7 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 			
 			if(Water)Vel *= .5;
 			
-			Float Life = Min(45, 10/Strn.Length())/TimeM*LifeM;
+			Float Life = Min(45, 10/Strn.Length())*TimeM*LifeM;
 			
 			Double Size = CFRandom(.9, 2)*Dist*Scale*Size;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
@@ -562,8 +564,123 @@ Class MRGP_Effect_SimpleSplash: MRGP_Effect
 	Override int GetID(){Return 0;}
 }
 
-Class MRGP_Effect_Sprays: MRGP_Effect
+Class MRGP_Effect_Sprays: MRGP_Effect//Inspered by WET (2009)
 {
+	Override int DoParticleEffect(Actor mo, int Flags, Double Angle, Double Pitch, Color Col, double Amount, Double Scale, Double Alpha, Vector3 Offset, Double LifeM, Vector3 Force, Double MoVel, Double Spread, Double Speed, Actor Master)
+	{
+		if(!mo||!Players[ConsolePlayer].Camera)Return 0;
+		
+		if(!MRGoreParts_Draw)Return 0;
+		if(!(Flags&SGPF_FixAmount))Amount *= MRGoreParts_Amount;
+		if(Amount<=0)Return 0;
+		
+		int Particles;
+		
+		Bool Water = mo.WaterLevel>1;
+		if(Water)Amount *= .5;
+		
+		Float Dist = MRGP_DistanceMult;
+		Float VelDist = Dist;
+		
+		if(Flags&SGPF_NODIST)VelDist = Dist = 1;
+		else
+		{
+			Dist *= Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_Distance);
+			if(Scale>1)Dist/=Scale;
+			
+			VelDist = Max(1, 1+(MRGParts.Distance3D(mo, Players[ConsolePlayer].Camera)-80)*.0015*MRGoreParts_VelDistance);
+		}
+		
+		int Glow = 0;
+		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
+		int Fuzzy = STYLE_NONE;
+		if(Flags&SGPF_Fuzzy)Fuzzy = STYLE_Shadow;
+		int NoFreeze = 0;
+		if(MRGoreParts_NoFreeze)NoFreeze = SPF_NOTIMEFREEZE;
+		
+		Pitch -= CFRandom(10, 15);
+		//Angle += CRandom(-30, 30);
+		Double Forw = CFRandom(5, 7);
+		Vector3 Strn;
+		Double Size = CFRandom(.3, .4)*MRGoreParts_Size*Dist;
+		Float Life = CFRandom(14, 20)*MRGoreParts_Speed*LifeM;
+		if(Water)Life *= 2;
+		
+		Float Step = Max(.01, .1*Max(1, Dist*.1)/Amount);
+		
+		Float Mult = (CRandom(1, 3)*2+1)/Max(1, Dist*.1)*Amount;
+		if(Water)Mult = Max(1, Mult*.5);
+		
+		Let Alph = MRGoreParts_Alpha;
+		Let LowAlpha = MRGoreParts_LowAlpha;
+		
+		TextureID ParTex = MRGParts.PartTexture();
+		int Roll = 0;
+		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
+		
+		Float Brightness = MRGoreParts_Brightness;
+		Speed *= MRGoreParts_Speed;
+		Double Gravity = MRGoreParts_Gravity;
+		if(Water)Gravity *= .25;
+		
+		For(int i=0;i<Mult;i++)
+		{
+			Double Ang = CRandom(0, 360);
+			Strn.X = Forw*CFRandom(.9, 1.1);
+			Strn.Y = -Cos(Ang)*CFRandom(.1, .7);
+			Strn.Z = -Sin(Ang)*CFRandom(.1, .7);
+			Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z -Sin(Pitch)*Strn.X);
+			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
+			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+						
+			Vel += Force;
+			Vel *= Speed;
+			Vel *= VelDist;
+			Vel *= Scale;
+			Vel += mo.Vel*moVel;
+						
+			if(Water)Vel *= .5;
+			
+			Float ReSize, Fade;
+			ReSize = -(Size/(Life-1));
+			if(!LowAlpha && !Water){Fade = -1; ReSize *= .4;}
+			
+			if(Water){
+				Alph *= .5;
+				Fade = Alpha/(Life-1);
+				Resize = Size*.25;
+			}
+			
+			float Drop = 0;
+			
+			if(!(Flags&SGPF_TEST)){
+				if(Flags&SGPF_Spots && !Water && CheckSpot(i, 1)){
+					Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+(Vel.Z)*Cos(Abs(Pitch)*.5)));
+					Bright += CFRandom(-.05, .05);
+					Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+					
+					Drop = .1;
+					Double Grav = -(.1+.01)*(Gravity*1.5);
+					MRGP_Droplet.SpawnDrop(ColTmp, mo.Pos + Vel*.9 + Offset + (0,0,5), Glow|NoFreeze, Vel*.5, (0,0,Grav), (Size*4)*CFRandom(.9, 1.1), Fuzzy, Resize, DistFactor:Dist, Master: Master);
+				}
+			}
+			
+			For(float k=.1;k<1-Drop;k+=Step){
+				Float Bright = Max(Brightness*.5, Min(Brightness*1.5, Brightness+(Vel.Z*k)*Cos(Abs(Pitch)*.5)));
+				Bright += CFRandom(-.05, .05);
+				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
+				
+				if(!(Flags&SGPF_TEST)){
+					mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size*3)*CFRandom(.9, 1.1), 0, Vel.X*k+Offset.X, Vel.Y*k+Offset.Y, 5+Vel.Z*k+Offset.Z,
+						Vel.X, Vel.Y, Vel.Z, 0,0,-(.1+k*.01)*(Gravity*3), Alph, Fade, ReSize, 180);
+				}
+				Particles++;
+			}
+		}
+		
+		Return Particles;
+	}
+	
 	Override int GetID(){Return 1;}
 }
 
@@ -617,8 +734,8 @@ Class MRGP_Effect_Mist: MRGP_Effect
 		}
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Float Size = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		
@@ -643,7 +760,7 @@ Class MRGP_Effect_Mist: MRGP_Effect
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			Accel.Z -= Gravity*.01;
 			
-			Float Life = (Min(50, 11/Strn.Length())*LifeM)/TimeM;
+			Float Life = (Min(50, 11/Strn.Length())*LifeM)*TimeM;
 			if(Water)Life = Min(90, Life*2);
 			
 			Double Size = Scale*Size*(abs(HorzStrn.Length()*20))*Dist;
@@ -710,7 +827,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		Double Forw = CFRandom(1.4, 3);
 		Vector3 Strn;
 		Double Size = CFRandom(1.2, 1.6)*MRGoreParts_Size*Dist;
-		Float Life = CFRandom(35, 40)/MRGoreParts_Speed*LifeM;
+		Float Life = CFRandom(35, 40)*MRGoreParts_Life*LifeM;
 		if(Water)Life *= 2;
 		
 		Float Step = Max(.001, .05*Max(1, Dist*.1)/Amount);
@@ -723,8 +840,8 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Double Gravity = MRGoreParts_Gravity;
 		if(Water)Gravity *= .25;
 		
@@ -779,7 +896,7 @@ Class MRGP_Effect_BeautifulSpray: MRGP_Effect
 				else mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.015)*(1+Gravity*4), Alph, Fade, ReSize, 180);
 			}
-			Life-=.5/TimeM*LifeM;
+			Life-=.5*TimeM*LifeM;
 			
 			Particles++;
 		}
@@ -828,7 +945,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		Double Forw = CFRandom(1.4, 3);
 		Vector3 Strn;
 		Double Size = CFRandom(1.2, 1.6)*MRGoreParts_Size*Dist;
-		Float Life = CFRandom(35, 40)/MRGoreParts_Speed*LifeM;
+		Float Life = CFRandom(35, 40)*MRGoreParts_Life*LifeM;
 		if(Water)Life *= 2;
 		
 		TextureID ParTex = MRGParts.PartTexture();
@@ -837,8 +954,8 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 		
 		Float Alpha = MRGoreParts_Alpha;
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Double Gravity = MRGoreParts_Gravity;
 		if(Water)Gravity *= .25;
 		
@@ -883,7 +1000,7 @@ Class MRGP_Effect_BeautifulSprayGrowing: MRGP_Effect
 			if(!(Flags&SGPF_TEST))
 				mo.A_SpawnParticleEx(ColTmp, ParTex, Fuzzy, Glow|NoFreeze|Roll|SPF_REPLACE, Life+5, (Size+j*3)*CFRandom(.9, 1.1), 0, Vel.X*j+Offset.X, Vel.Y*j+Offset.Y, 5+Vel.Z*j+Offset.Z,
 					Vel.X, Vel.Y, Vel.Z, Accel.X,Accel.Y,Accel.Z-((j-.1)*.01)*(1+Gravity*4), Alpha, -1, ((Size+j*3)/(Life-1))*.05+(Size*.5*Water), 180);
-			Life-=.5/TimeM*LifeM;
+			Life-=.5*TimeM*LifeM;
 			
 			Particles++;
 		}
@@ -935,7 +1052,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		//Angle += CRandom(-15, 15);
 		Double Forw = .4;//CFRandom(.01, .2);
 		Double Size = CFRandom(3.4, 3.7)*MRGoreParts_Size*Dist;
-		Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
+		Float Life = CFRandom(30, 34)*MRGoreParts_Life*LifeM;
 		if(Water)Life *= 2;
 		Double StartLife = Life;
 		
@@ -952,8 +1069,8 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Double Gravity = MRGoreParts_Gravity;
 		if(Water)Gravity *= .25;
 		
@@ -1000,7 +1117,7 @@ Class MRGP_Effect_CurveLine: MRGP_Effect
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 			}
 
-			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/TimeM;
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))*TimeM;
 			
 			Particles++;
 		}
@@ -1049,7 +1166,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		Pitch -= CFRandom(5, 10);
 		Double Forw = .4;
 		Double Size = CFRandom(3.4, 3.7)*MRGoreParts_Size*Dist;
-		Float Life = CFRandom(30, 34)/MRGoreParts_Speed*LifeM;
+		Float Life = CFRandom(30, 34)*MRGoreParts_Life*LifeM;
 		if(Water)Life *= 2;
 		Double StartLife = Life;
 		
@@ -1066,8 +1183,8 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Double Gravity = MRGoreParts_Gravity;
 		if(Water)Gravity *= .25;
 		
@@ -1122,7 +1239,7 @@ Class MRGP_Effect_CurveLineTorn: MRGP_Effect
 					Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 			}
 
-			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/TimeM;
+			Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))*TimeM;
 			
 			Particles++;
 		}
@@ -1177,8 +1294,8 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 		if(MRGoreParts_ParticlesTexture==4)Roll = SPF_ROLL;
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
 		if(Water)Gravity *= .25;
@@ -1190,7 +1307,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 			Double TempAngle = Angle + CFRandom(-30, 30);
 			Double Forw = .4;
 			Double Size = CFRandom(2.4, 2.7)*Siz*Dist;
-			Float Life = CFRandom(30, 34)/TimeM*LifeM;
+			Float Life = CFRandom(30, 34)*TimeM*LifeM;
 			if(Water)Life *= 2;
 			Double StartLife = Life;
 			
@@ -1254,7 +1371,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 						Vel.X,Vel.Y,Vel.Z, CFRandom(-.001,.001),CFRandom(-.001,.001),AccelZ, Alph, Fade, ReSize, 180);
 				}
 				
-				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))/TimeM;
+				Life -= (StartLife/(CircleLength/(Size*.75/Amount))*CFRandom(0, .8))*TimeM;
 				
 				Particles++;
 			}
@@ -1436,8 +1553,8 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		}
 		
 		Float Brightness = MRGoreParts_Brightness;
-		Float TimeM = MRGoreParts_Speed;
-		Speed *= TimeM;
+		Float TimeM = MRGoreParts_Life;
+		Speed *= MRGoreParts_Speed;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = 1;
 		if(Water)Gravity *= .25;
@@ -1521,7 +1638,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 		}
 		
 		Float Mult = Max(1, (CRandom(1, 3))/Max(1, Dist*.1)*Amount);
-		
+		Float TimeM = MRGoreParts_Life;
 		Speed *= MRGoreParts_Speed;
 		Float Siz = MRGoreParts_Size;
 		Double Gravity = MRGoreParts_Gravity;
@@ -1541,7 +1658,7 @@ Class MRGP_Effect_Sparks: MRGP_Effect
 			Vel *= Scale;
 			Vel += mo.Vel*moVel;
 			
-			Float Life = CFRandom(25, 35)/Speed*LifeM;
+			Float Life = CFRandom(25, 35)*TimeM*LifeM;
 			Double Size = CFRandom(.7, .8)*Dist*Siz*Scale;
 			Vector3 Accel = -Vel*CFRandom(.004, .01);
 			Accel.Z -= Gravity;
