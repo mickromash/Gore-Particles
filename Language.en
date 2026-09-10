@@ -42,7 +42,8 @@ MRGoreParts_VelDistance = "Particles velocity scale by distance";
 MRGoreParts_LowAlpha = "Minimize alpha channel usage";
 
 MRGoreParts_ExitWound = "Exit wounds";
-MRGoreParts_Speed = "Particles speed/lifetime";
+MRGoreParts_Speed = "Particles speed";
+MRGoreParts_Life = "Particles lifetime";
 MRGoreParts_Gravity = "Particles gravity";
 MRGoreParts_DripOnImpact = "Dripping blood on impact";
 MRGoreParts_Quake2 = "Quake puff style blood";

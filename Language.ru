@@ -42,7 +42,8 @@ MRGoreParts_VelDistance = "Увеличение скорости частиц н
 MRGoreParts_LowAlpha = "Минимизировать использование альфа канала";
 
 MRGoreParts_ExitWound = "Сквозные ранения";
-MRGoreParts_Speed = "Скорость/время жизни частиц";
+MRGoreParts_Speed = "Скорость частиц";
+MRGoreParts_Life = "Время жизни частиц";
 MRGoreParts_Gravity = "Вес частц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_Quake2 = "Капли крови из Quake";
