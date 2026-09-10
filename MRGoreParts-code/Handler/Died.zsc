@@ -141,6 +141,7 @@ Extend Class MRGP_Handler
 		}
 		else if(MRGoreParts_MaxDying>0)
 		{
+			if(DyingEffects.Size()<1)Return;
 			Let a = New('MRGP_DeathThinker');
 			a.Owner = e.Thing;
 			a.PostBeginPlay();
