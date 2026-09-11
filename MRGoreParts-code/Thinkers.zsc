@@ -119,7 +119,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			Strn = 1.2-Min(.6, Strn/80);
 			
 			if(Effect)
-				Effect.DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5), Speed:Strn, Master:Owner);
+				Effect.DoParticleEffect(Owner, Fuzzy|Glow|(MRGoreParts_DeathSpots?SGPF_Spots:0), Angle+CFRandom(-RandAngle, RandAngle), Pitch, Bld, 1, 1.5, 1, (0,0,PosY*.9-Owner.FloorClip), Force:(Owner.Vel.X*.5, Owner.Vel.Y*.5, Owner.Vel.Z*.5), Speed:Strn, Master:Owner);
 			//Dripping blood
 			Return;
 
@@ -128,7 +128,7 @@ Class MRGP_DeathThinker: MRGP_Thinker
 			Bool Drop = false;
 			Vector3 Home = Owner.Pos;
 			Home.XY += Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera), 1);
-			Home.Z += PosY*.9+5;
+			Home.Z += PosY*.9+5-Owner.FloorClip;
 			
 			Vector3 Vel;
 			Vel.XY = Actor.AngleToVector(Owner.AngleTo(Players[ConsolePlayer].Camera)+CFRandom(-40, 40), CFRandom(2, 4));
