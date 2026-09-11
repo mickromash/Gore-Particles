@@ -500,7 +500,7 @@ Class MRGP_Spot: VisualThinker
 			Angle = int(Angle/45)*45;
 		}
 		
-		Pos = Stained.Pos;
+		Pos = Stained.Pos + (0,0,-Stained.FloorClip);
 		Pos += (Actor.AngleToVector(Angle, Forw), Z);
 		Pos.XY += Actor.AngleToVector(Angle+90, ActOffset.Y);
 		
