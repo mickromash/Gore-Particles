@@ -11,6 +11,7 @@
 Class MRGP_Thinker: Object play
 {
 	MRGP_Handler Handler;
+	Bool Freeze;
 		
 	Static Bool MRGPartsCheckDraw(Actor mo=null, float dist=0)
 	{
@@ -32,7 +33,7 @@ Class MRGP_Thinker: Object play
 	Bool TickCheck()
 	{
 		if(!MRGoreParts_Draw){Destroy();Return false;}
-		if(Level.isFrozen() && !MRGoreParts_NoFreeze)Return false;
+		if(Freeze && Level.isFrozen())Return false;
 		Return true;
 	}
 		
@@ -40,6 +41,7 @@ Class MRGP_Thinker: Object play
 	
 	Virtual Void PostBeginPlay()
 	{
+		Freeze = !MRGoreParts_NoFreeze;
 		Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler){Console.Printf("Gore-Particles:\cg Error! Event Handler wasn't found.");Destroy();Return;}
 	}
@@ -369,6 +371,7 @@ Class MRGP_CrushedThinker: MRGP_Thinker
 
 Class MRGP_Spot: VisualThinker
 {
+	Bool Freeze;
 	int Surface;//0 - Wall, 1 - Floor, 2 - Ceiling, 3 - Actor
 	Bool FromCeiling;//In case spot placed on a wall of a sector that is originates from the ceiling
 	int Life, Age, Delay, Sliding;
@@ -509,6 +512,7 @@ Class MRGP_Spot: VisualThinker
 	
 	Override Void PostBeginPlay()
 	{
+		Freeze = !MRGoreParts_NoFreeze;
 		if(!Texture)Switch(MRGoreParts_SpotsStyle){
 			Case 2:
 				Texture = Texman.CheckForTexture("GParMst1");//Smooth
@@ -664,6 +668,7 @@ Class MRGP_Droplet: VisualThinker
 		Return b-a;
 	}
 	
+	Bool Freeze;
 	Thinker Master;
 	Double StartScale, Resize, Fade, ImageScale, DistFactor;
 	int RenderStyle;
@@ -684,6 +689,7 @@ Class MRGP_Droplet: VisualThinker
 	
 	Override Void PostBeginPlay()
 	{
+		Freeze = !MRGoreParts_NoFreeze;
 		ImageScale = 1;
 		if(!Texture){
 			Switch(MRGoreParts_ParticlesTexture)
@@ -735,7 +741,7 @@ Class MRGP_Droplet: VisualThinker
 	
 	Virtual Void DoTick()
 	{
-		if(Level.IsFrozen())Return;
+		if(Freeze && Level.IsFrozen())Return;
 		
 		Scale.X += Resize*ImageScale;
 		Scale.Y += Resize*ImageScale;
