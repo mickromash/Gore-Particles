@@ -95,7 +95,7 @@ OptionMenu "MRGoreParts_EffectsMenu"
 	MRGPToolTip "$MRGoreParts_AmountTip_(Double)"
 	Slider "$MRGoreParts_Size", "MRGoreParts_Size", .1, 5, .1
 	MRGPToolTip "$MRGoreParts_SizeTip_(Double)"
-	Slider "$MRGoreParts_Distance", "MRGoreParts_Distance", 0, 10, .2
+	Slider "$MRGoreParts_Distance", "MRGoreParts_Distance", 0, 10, .1
 	MRGPToolTip "$MRGoreParts_DistanceTip_(Double)"
 	Slider "$MRGoreParts_VelDistance", "MRGoreParts_VelDistance", 0, 10, .2
 	MRGPToolTip "$MRGoreParts_VelDistanceTip_(Double)"
