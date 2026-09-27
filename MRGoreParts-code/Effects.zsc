@@ -1592,12 +1592,10 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 		
 		For(float i1=0;i1<Mult;i1++)
 		{
-			Double Ang = CRandom(0, 360);
-			Double Leng = CFRandom(0, .3);
-			Vector3 Strn = (CFRandom(.5, 1), Cos(Ang)*Leng, Sin(Ang)*Leng);
-			Vector3 Vel = (Actor.AngleToVector(Angle, Strn.X)*Cos(Abs(Pitch)), Abs(Cos(Pitch))*Strn.Z + -Sin(Pitch)*Strn.X);
-			Vel.XY += Actor.AngleToVector(Angle+90, Strn.Y);
-			Vel.XY += Actor.AngleToVector(Angle, Strn.Z)*Sin(Pitch);
+			Vector3 Dir = (CFRandom(.3, .4), CFRandom(-.3, .3), CFRandom(.2, .3));
+			Vector3 Vel = (Actor.AngleToVector(Angle, Dir.X)*Cos(Abs(Pitch)), -Sin(Pitch)*Dir.X);
+			Vel += (Actor.AngleToVector(Angle, Dir.Z)*Sin(Pitch), Cos(Abs(Pitch))*Dir.Z);
+			Vel.XY += Actor.AngleToVector(Angle+90, Dir.Y);
 			
 			Float Bright = Brightness*CFRandom(1, 1.2);
 			Color ColTmp = Color(int(Cols[0]*Bright), int(Cols[1]*Bright), int(Cols[2]*Bright));
