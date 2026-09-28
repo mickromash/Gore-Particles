@@ -1,4 +1,4 @@
-[ru]
+﻿[ru]
 
 MRGoreParts_Settings = "\cg✺\c- Настроить кровавые частицы";
 
@@ -27,9 +27,9 @@ MRGoreParts_Blacklist = "Чёрный список монстров:";
 MRGoreParts_BlacklistOn = "Чёрный список монстров:";
 MRGoreParts_UpdateBlacklist = "Применить чёрный список";
 MRGoreParts_NoBloodMonsters = "Включить кровь для монстров с флагом \"+NOBLOOD\"";
-MRGoreParts_NoBloodMist = "Спец. эффекты для безкровных";
+MRGoreParts_NoBloodMist = "Спец. эффекты для бескровных";
 MRGoreParts_NoBloodMistColor = "Цвет эффектов";
-MRGoreParts_NoBloodSndVol = "Громкость попадания по безкровным";
+MRGoreParts_NoBloodSndVol = "Громкость попадания по бескровным";
 ////}
 
 MRGoreParts_EffectsMenu = "Настройки эффектов";
@@ -44,7 +44,7 @@ MRGoreParts_LowAlpha = "Минимизировать использование 
 MRGoreParts_ExitWound = "Сквозные ранения";
 MRGoreParts_Speed = "Скорость частиц";
 MRGoreParts_Life = "Время жизни частиц";
-MRGoreParts_Gravity = "Вес частц";
+MRGoreParts_Gravity = "Вес частиц";
 MRGoreParts_DripOnImpact = "Падающая кровь при уроне";
 MRGoreParts_Quake2 = "Капли крови из Quake";
 MRGoreParts_DrawFlyingBlood = "Струи крови (как в Quake)";
@@ -59,7 +59,7 @@ MRGoreParts_EffectsListMenuControls1 = " \cv[ESC]\c-: Отменить изме�
 MRGoreParts_EffectsListMenuControls2 = "\cv[Ctrl + C]\c- или \cv[F6]\c-: Скопировать список, \cv[Ctrl + V]\c- или \cv[F9]\c-: Вставить список. Скопированный список сохраняется в память";
 MRGoreParts_AllEffectsList = "\czid эффектов";
 MRGoreParts_IncludedEffectsList = "\cbВключённые эффекты";
-MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- или \cvКолёсико мыши\c-: листать список\nЭффекты помеченные \cf\"*\"\c- используют афльфа канал";
+MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- или \cvКолёсико мыши\c-: листать список\nЭффекты помеченные \cf\"*\"\c- используют альфа канал";
 MRGoreParts_EffectsList = "Список случайных эффектов";
 MRGoreParts_EffectsListTip = "\cgСписок случайных эффектов\cb - Один из этих эффектов появится при уроне\nВведите один и тот же эффект несколько раз для повышения вероятности его появления";
 MRGoreParts_AlwaysEffectsList = "Список обязательных эффектов";
@@ -72,7 +72,7 @@ MRGoreParts_EffectsListMenuParticles = " частиц";
 MRGoreParts_EffectsListMenuNoParticles = "(начните игру чтобы узнать кол-во частиц)";
 ////}
 
-MRGoreParts_AppearanceMenu = "Внейшний вид крови/Звук";
+MRGoreParts_AppearanceMenu = "Внешний вид крови/Звук";
 ////{
 MRGoreParts_ParticlesTexture = "Текстура кровавых частиц";
 MRGoreParts_ParticlesTexture0 = "Такая же как у остальных частиц";
@@ -133,9 +133,9 @@ MRGoreParts_CorpseWounds2 = "Раны и капающая кровь";
 MRGoreParts_Voxel = "3D враги";
 ////}
 
-MRGP_Recs = "Показать рекоммендованные настройки";
+MRGP_Recs = "Показать рекомендованные настройки";
 
-MRGoreParts_LiteDistance = "Простой рассчёт расстояния";
+MRGoreParts_LiteDistance = "Простой расчёт расстояния";
 MRGoreParts_LiteDistanceText = "Облегчает нагрузку, ценой игнорирования порталов";
 
 MRGoreParts_MaxDying = "Максимум посмертных кровотечений";
@@ -190,7 +190,7 @@ MRGoreParts_Event_Help_UpdateEffects = "\c-- Обновить настроенн
 MRGoreParts_Event_Help_ClearWounds = "\c-- Удалить раны на текущей карте.\n";
 MRGoreParts_Event_Help_ClearSpots = "\c-- Удалить пятна на текущей карте.\n";
 MRGoreParts_Event_Help_ClearCrushed = "\c-- Удалить останки раздавленных монстров с текущей карты.\n";
-MRGoreParts_Event_Help_PrintEffects = "\c-- Вывести все id теги и именна классов эффектов.\n";
+MRGoreParts_Event_Help_PrintEffects = "\c-- Вывести все id теги и имена классов эффектов.\n";
 MRGoreParts_Event_Help_DemoEffect = "\cvid гор.угол верт.угол \c-- Создать эффект.\n";
 MRGoreParts_Event_Help_DemoRandomEffect = "\cvangle pitch \c-- Создать эффект из случайного списка.\n";
 MRGoreParts_Event_Help_DemoAlwaysEffect = "\cvangle pitch \c-- Создать эффекты из обязательного списка.\n";
