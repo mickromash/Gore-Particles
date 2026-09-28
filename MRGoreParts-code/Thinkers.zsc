@@ -773,7 +773,7 @@ Class MRGP_Droplet: VisualThinker
 			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;HitSurface = 2;}
 		}
 		
-		if(Landed){Splash(Tracer.HitLine, HitSurface);Destroy();Return;}
+		if(Landed){Splash(Tracer.HitLine, HitSurface, SColor);Destroy();Return;}
 		
 		Pos += Vel;
 		
@@ -886,7 +886,7 @@ Class MRGP_Droplet: VisualThinker
 		}
 	}
 	
-	Void Splash(Line HitWall = Null, int Surface = 0)
+	Void Splash(Line HitWall = Null, int Surface = 0, Color Clr = Color(255,255,255))
 	{
 		int Glow = 0;
 		if(MRGoreParts_FullBright)Glow = SPF_FULLBRIGHT;
@@ -943,7 +943,7 @@ Class MRGP_Droplet: VisualThinker
 			Vector3 TempDir = (Actor.AngleToVector(CRandom(WallAng[0], WallAng[1]), Strngt)*Cos(Pit), Strngt*Sin(Pit));
 			
 			Float Bright = CFRandom(1, 1.5);
-			Color Col = Color(int(SColor.R*Bright), int(SColor.G*Bright), int(SColor.B*Bright));
+			Color Col = Color(int(Clr.R*Bright), int(Clr.G*Bright), int(Clr.B*Bright));
 			Float Life = CRandom(7, 10);
 			Float Scal = StartScale*CFRandom(.2, .4);
 			MRGParts.SpawnParticle(Col, Glow|SPF_REPLACE, RenderStyle, Life, Scal, 0, Pos,

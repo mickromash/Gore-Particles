@@ -1413,6 +1413,8 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 
 Class MRGP_Gib: MRGP_Droplet
 {
+	Color BloodColor;
+	Bool Landed;
 	int Age;
 	Override Void DoTick()
 	{
@@ -1444,9 +1446,16 @@ Class MRGP_Gib: MRGP_Droplet
 		if(CurSector){
 			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=abs(Vel.Z)){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;HitSurface = 1;}
 			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;HitSurface = 2;}
+			if(Pos.Z <= CurSector.CenterFloor()+2 && !Self.Landed){
+				if(MRGP_Spot.CheckLiquid(Self, StartScale)){
+					Destroy();
+					Return;
+				}
+				Self.Landed = true;
+			}
 		}
 		
-		if(Landed)Splash(Tracer.HitLine, HitSurface);
+		if(Landed)Splash(Tracer.HitLine, HitSurface, BloodColor);
 		
 		Pos += Vel;
 		
@@ -1489,8 +1498,8 @@ Class MRGP_Gib: MRGP_Droplet
 				Break;
 		}
 	}
-		
-	Static MRGP_Gib SpawnGib(String Texture = "GPARM0", Color Col=Color(255,255,255), Vector3 Pos=(0,0,0), int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
+			
+	Static MRGP_Gib SpawnGib(String Texture = "GPARM0", Color Col=Color(255,255,255), Color BloodColor=Color(255,0,0), Vector3 Pos=(0,0,0), int Flags=0, Vector3 Vel = (0,0,0), Vector3 Accel = (0,0,-.5), Double Scale = 3, int RenderStyle = STYLE_NORMAL, Double Resize=-.1, Double Alpha=1, Double Fade=0)
 	{
 		Let Handler = MRGP_Handler(EventHandler.Find("MRGP_Handler"));
 		if(!Handler)Return Null;
@@ -1505,6 +1514,7 @@ Class MRGP_Gib: MRGP_Droplet
 		Gib.Vel = Vel;
 		Gib.Accel = Accel;
 		Gib.SColor = Col;
+		Gib.BloodColor = BloodColor;
 		Gib.Flags = SPF_ROLL|SPF_ROLLCENTER;
 		if(Flags&GPBCF_Glow)Gib.Flags |= SPF_FULLBRIGHT;
 		Gib.StartScale = Scale;
@@ -1620,7 +1630,7 @@ Class MRGP_Effect_MeatSplash: MRGP_Effect
 			Vector3 Pos = mo.Pos + (Ofst.X*CFRandom(.3, .7)+Offset.X,Ofst.Y*CFRandom(.3, .7)+Offset.Y,5+Ofst.Z*CFRandom(.3, .7)+Offset.Z);
 			
 			if(!(Flags&SGPF_TEST)){
-				MRGP_Gib.SpawnGib("GParM"..CRandom(0, 6), ColTmp, Pos, Glow|SPF_Roll, Vel, (0,0,-Gravity*.2), Size, Fuzzy, 0);
+				MRGP_Gib.SpawnGib("GParM"..CRandom(0, 6), ColTmp, Col, Pos, Glow|SPF_Roll, Vel, (0,0,-Gravity*.2), Size, Fuzzy, 0);
 					
 			}
 			Particles++;
