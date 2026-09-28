@@ -1,4 +1,4 @@
-[eng enu default en]
+﻿[eng enu default en]
 
 MRGoreParts_Settings = "\cg✺\c- Configure Particle gore";
 
@@ -57,12 +57,12 @@ MRGoreParts_NoFreeze = "Don't freeze particles";
 MRGoreParts_EffectsListMenu = "Configure included effects";
 MRGoreParts_EffectsListGuide = "\cfType effects ids separating them with spacebar";
 MRGoreParts_EffectsListMenuControls1 = "\cv[ESC]\c-: Reset Changes   \cv[ENTER]\c-: Save Changes   \cv[R]\c-: Reset to Default   \cv[BackSpace]\c-: Erase the list";
-MRGoreParts_EffectsListMenuControls2 = "\cv[Ctrl + C]\c- or \cv[F6]\c-: Copy the list   \cv[Ctrl + V]\c- or \cv[F9]\c-: Paste the list. Coppied list will be saved in the storage.";
+MRGoreParts_EffectsListMenuControls2 = "\cv[Ctrl + C]\c- or \cv[F6]\c-: Copy the list   \cv[Ctrl + V]\c- or \cv[F9]\c-: Paste the list. Copied list will be saved in the storage.";
 MRGoreParts_AllEffectsList = "\czAll effects ids";
 MRGoreParts_IncludedEffectsList = "\cbIncluded effects";
 MRGoreParts_EffectsListListControls = "\cv[F1]\c-: %s\n\cv[PgDown]\c-/\cv[PgUp]\c- or \cvMouse wheel\c-: scroll the list\nEffects marked with \cf\"*\"\c- utilize alpha channel";
 MRGoreParts_EffectsList = "Random effects list";
-MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effect will appear on impact\nType same effect multiple times to increase its spawn chance";
+MRGoreParts_EffectsListTip = "\cgRandom effects list\cb - One of these effects will appear on impact\nType same effect multiple times to increase its spawn chance";
 MRGoreParts_AlwaysEffectsList = "Constant effects list";
 MRGoreParts_AlwaysEffectsListTip = "\cgConstant effects list\cb - Each of these effects will appear on impact";
 MRGoreParts_DyingEffectsList = "Dying effects list";
@@ -160,7 +160,7 @@ MRGoreParts_CheckLimitOffset = "Indicator offset";
 
 MRGoreParts_Uninstall = "Uninstall";
 MRGoreParts_UninstallPromt = "Remove the mod so the saved game could be loaded without it?";
-MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully unistalled.";
+MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully uninstalled.";
 
 MRGoreParts_AllParticlesAmount = "All particles amount";
 //}
