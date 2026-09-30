@@ -423,6 +423,7 @@ Class MRGP_Spot: VisualThinker
 		
 		if(Surface>2){
 			FollowStained();
+			Age++;
 			Return;
 		}
 		
