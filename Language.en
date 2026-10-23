@@ -165,9 +165,9 @@ MRGoreParts_Uninstalled = "Gore-Particles: \cdMod successfully uninstalled.";
 MRGoreParts_AllParticlesAmount = "All particles amount";
 //}
 
-MRGoreParts_Ui_RecS = "\cgParticle Gore\cd Recommended settings:";
-MRGoreParts_Ui_RecSDone = "All setting done right.";
-MRGoreParts_Ui_RecSSound = "\cucheck readme for sound pack link.";
+MR_GoreParticlesUi_RecS = "\cgParticle Gore\cd Recommended settings:";
+MR_GoreParticlesUi_RecSDone = "All setting done right.";
+MR_GoreParticlesUi_RecSSound = "\cucheck readme for sound pack link.";
 
 //Effect names
 MRGP_Effect_SimpleSplash = "Round blood splash";
