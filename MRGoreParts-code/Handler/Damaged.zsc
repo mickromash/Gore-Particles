@@ -214,10 +214,13 @@ Extend Class MRGP_Handler
 			if(e.DamageFlags&DMG_EXPLOSION)Damage = Damage.."Explosion|";
 			if(e.DamageFlags&DMG_USEANGLE)Damage = Damage.."Use_Angle|";
 			if(e.DamageFlags&DMG_INFLICTOR_IS_PUFF)Damage = Damage.."IsPuff|";
-			Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
-			Console.Printf("Source: "..(e.DamageSource?e.DamageSource.GetClassName().." "..e.DamageSource.Pos:""));
-			Console.Printf("Inflictor: "..(!e.Inflictor?"":(e.Inflictor==e.DamageSource?"same":e.Inflictor.GetClassName().." "..e.Inflictor.Pos)));
+			Console.Printf("\cv"..e.Thing.GetClassName().."\c- damaged!");
+			Console.Printf("Damage: "..e.Damage.." \cg\""..e.DamageType.."\"\c- Flags: \cd"..Damage);
+			Console.Printf("Source: \cv"..(e.DamageSource?e.DamageSource.GetClassName().." "..e.DamageSource.Pos:""));
+			Console.Printf("Inflictor: \cv"..(!e.Inflictor?"":(e.Inflictor==e.DamageSource?"\c-same":e.Inflictor.GetClassName().." "..e.Inflictor.Pos)).."\n");
 		}
+		
+		Bool Crush = e.DamageType == 'Crush';
 		
 		String HDest = 'HDOperator';
 		if((Class<Actor>)(HDest))
@@ -266,64 +269,69 @@ Extend Class MRGP_Handler
 			MRGP_Effect.SpawnEffect('MRGP_Effect_SimpleSplash', e.Thing, Glow, e.DamageAngle, 0, Col, 1, .6, 1, Pos);
 		}
 		
-		if(!e.Inflictor)Return;
+		//if(!e.Inflictor)Return;
 
 		//Console.Printf("\cdHealth: \c-"..e.Thing.Health.." \cgDamage: \c-"..e.Damage);
 		//Console.Printf("Damage: "..e.DamageType.." Flags: "..Damage);
 		
-		if(MRGoreParts_Wounds && !PlayerPawn(e.Thing) && (Wounded.Find(e.Thing)!=Wounded.Size() || Wounded.Size()<MRGoreParts_MaxWounded) && e.DamageType != 'bleedout' && CRandom(0, 10)>4)
+		if(e.Inflictor && MRGoreParts_Wounds && !PlayerPawn(e.Thing) && (Wounded.Find(e.Thing)!=Wounded.Size() || Wounded.Size()<MRGoreParts_MaxWounded) && e.DamageType != 'bleedout' && CRandom(0, 10)>4)
 		{
 			SpawnWound(e.Thing, e.Inflictor, e.DamageSource, Col);
 		}
 		
-		if(e.Inflictor == e.Thing)Return;
+		if(e.Inflictor == e.Thing && !Crush)Return;
 		
-		if(!e.DamageSource)Return;
+		if(!e.DamageSource && !Crush)Return;
 		
 		//Spawn effects
 		Double Pitch = 0;
-		if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
-		else if(e.DamageSource)Pitch = e.Inflictor.PitchTo(e.DamageSource, 0, e.DamageSource.Height*.9);
+		if(!Crush){
+			if(e.DamageSource && e.DamageSource.Player)Pitch = e.Inflictor.PitchTo(e.DamageSource, 5, e.DamageSource.Player.ViewZ-e.DamageSource.Pos.Z);
+			else if(e.DamageSource)Pitch = e.Inflictor.PitchTo(e.DamageSource, 0, e.DamageSource.Height*.9);
+		}
 		
-		Let Spot = e.Inflictor;
+		Let Spot = e.Thing;
+		if(!Crush)Spot = e.Inflictor;
 		Double VOfst = 0;
-		Double DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
+		Double DifZ;
+		if(Spot)DifZ = Dif(Spot.Pos.Z, e.Thing.pos.Z+e.Thing.Height*.5);
 
-		if(MRGParts.Distance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
+		if(Crush || MRGParts.Distance2D(e.Inflictor, e.Thing)>e.Thing.Radius*1.5||DifZ>e.Thing.Height*.5){Spot = e.Thing;VOfst = e.Thing.Height*.5;}
+		if(Crush)VOfst = Min(Spot.CurSector.CenterCeiling() - Spot.Pos.Z - 2, Spot.Height*CFRandom(.2, 1.1));
 		
 		Float Speed = 1;
 		//Float Dist = e.DamageSource.Distance2D(e.Thing)-e.DamageSource.Radius-e.Thing.Radius;
 		//if(Dist<50)Speed = Dist/50;
 		
+		Vector2 XYOfst = (0,0);
+		Double Angle;
+		if(Spot != e.Thing)Angle = Spot.AngleTo(e.DamageSource);
+		else Angle = CRandom(0, 360);
+		
+		if(Crush)XYOfst = Actor.AngleToVector(Angle, CFRandom(0, .4)*Spot.Radius);
+		
 		if(Effects.Size()>0)
-			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, offset:(0,0,VOfst), Speed:Speed, Master:e.Thing);
+			Effects[CRandom(0, Effects.Size()-1)].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Angle, Pitch, Col, offset:(XYOfst, VOfst), Speed:Speed, Master:e.Thing);
 		For(int i=0;i<AlwaysEffects.Size();i++)
 		{
-			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Spot.AngleTo(e.DamageSource), Pitch, Col, Offset:(0,0,VOfst), Speed:Speed, Master:e.Thing);
+			AlwaysEffects[i].DoParticleEffect(Spot, Fuzzy|Glow|SGPF_Spots, Angle, Pitch, Col, Offset:(XYOfst, VOfst), Speed:Speed, Master:e.Thing);
 		}
 		
-		if(CRandom(0, 50)>40)MRGParts.StartSound(e.Inflictor, DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
-		MRGParts.StartSound(e.Inflictor, HitSound, CHAN_AUTO, Volume:MRGoreParts_HitSndVol*MRGoreParts_SndVol);
+		if(CRandom(0, 50)>40)MRGParts.StartSound(Spot, DripSound, CHAN_AUTO, Volume:MRGoreParts_SndVol*MRGoreParts_DripSndVol);
+		MRGParts.StartSound(Spot, HitSound, CHAN_AUTO, Volume:MRGoreParts_HitSndVol*MRGoreParts_SndVol);
 
 
 		if(MRGoreParts_DrawFlyingBlood && CFRandom(0, 1)<MRGoreParts_FlyingBloodChance)
 		{
 			Float Strn = CRandom(4, 6);
 			Float Pitch = -CRandom(0, 60);
-			Vector3 Vel = (Actor.AngleToVector(e.Inflictor.AngleTo(e.DamageSource)+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
-			MRGP_FlyingBlood.Create(e.Inflictor.Pos, Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
-			MRGParts.StartSoundAt(e.Inflictor.Pos, SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
+			Vector3 Vel = (Actor.AngleToVector(Angle+CRandom(-50, 50), Strn)*Cos(Pitch), -Sin(Pitch)*Strn);
+			MRGP_FlyingBlood.Create(Spot.Pos + (XYOfst, VOfst), Col, Fuzzy|Glow, Scale:4*CFRandom(1, 2), Vel:Vel);
+			MRGParts.StartSoundAt(Spot.Pos + (XYOfst, VOfst), SpraySound, CHAN_AUTO, Volume: CFRandom(.2, .3)*MRGoreParts_SndVol*MRGoreParts_SpraySndVol, Pitch: CFrandom(1.1, 1.2));
 		}
 		//Dripping blood
-		if(MRGPartsCheckDraw(e.Inflictor) && MRGoreParts_DripOnImpact){
+		if(MRGPartsCheckDraw(Spot) && MRGoreParts_DripOnImpact){
 			Bool Drop = false;
-			Vector3 Home = LevelLocals.Vec3Diff(e.Thing.Pos, e.Inflictor.Pos);
-
-			Home.X *= Abs(Cos(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
-			Home.Y *= Abs(Sin(Actor.DeltaAngle(e.Thing.Angle, e.Thing.AngleTo(e.Inflictor))));
-			Home.Z += 5;
-			Home.XY *= CFRandom(.5, 1);
-			Home.XY += (CFRandom(-1, 1), CFRandom(-1, 1));
 						
 			For(int i=CRandom(0, 3)*Amount;i<6*Amount;i++){
 				Float Dist = 1;
@@ -333,14 +341,14 @@ Extend Class MRGP_Handler
 				Float Bright = MRGoreParts_Brightness*CFrandom(.5, .9);
 				Color ColTmp = Color(int(Col.R*Bright), int(Col.G*Bright), int(Col.B*Bright));
 				if(!Drop){//Spot
-					Let a = MRGP_Droplet.SpawnDrop(ColTmp, e.Thing.Pos + Home, Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL, Master:e.Thing);
+					Let a = MRGP_Droplet.SpawnDrop(ColTmp, Spot.Pos + (XYOfst, VOfst), Glow, RenderStyle:Fuzzy?STYLE_Shadow:STYLE_NORMAL, Master:Spot);
 					Drop = true;
 				}
-				e.Thing.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow|SPF_REPLACE, CRandom(29, 40), Size*1.3, 0, Home.X,Home.Y,Home.Z,
+				Spot.A_SpawnParticleEx(ColTmp, Texman.CheckForTexture("glpart"), Fuzzy?STYLE_Shadow:STYLE_NORMAL, Glow|SPF_REPLACE, CRandom(29, 40), Size*1.3, 0, XYOfst.X,XYOfst.Y,VOfst,
 						0,0,CFRandom(0, 1), 0,0,-.2, 1, 0, -Size/40);
 			}
 		}
 		
-		if(MRGoreParts_ExitWound)SpawnExitBlood(e.Thing, e.Inflictor, e.DamageSource, e.Damage, Col, Fuzzy|Glow|SGPF_Spots);
+		if(Spot != e.Thing && MRGoreParts_ExitWound)SpawnExitBlood(e.Thing, e.Inflictor, e.DamageSource, e.Damage, Col, Fuzzy|Glow|SGPF_Spots);
 	}
 }
