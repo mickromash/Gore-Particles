@@ -556,7 +556,7 @@ Class MRGP_Spot: VisualThinker
 		if(Handler)Handler.Thinkers.Push(Self);
 	}
 	
-	Static Bool CheckLiquid(VisualThinker Who, Double Scale, int Surface = 1)
+	Static Bool CheckLiquid(VisualThinker Who, Double Scale, int Surface = 1, Bool NoVapor = false)
 	{
 		Let Pic = Who.CurSector.GetTexture(Surface-1);
 
@@ -579,7 +579,7 @@ Class MRGP_Spot: VisualThinker
 		
 		if(!IsLiquid)Return false;
 		
-		if(Who.CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
+		if(!NoVapor && Who.CurSector.DamageAmount>0){//Hot floor, evaporate leaving stim 
 			MRGParts.SpawnParticle(Who.SColor, MRSPF_SMOKE, 0, 35, Scale*3, 0, Who.Pos, (CFRandom(-.1, .1), CFRandom(-.1, .1), CFRandom(.3, .6)), (0,0,0), .9, .05, .25);
 			MRGParts.StartSoundAt(Who.Pos, "Gibs/AcidBurn", CHAN_AUTO, Volume:CFRandom(.02, .04), pitch:CFRandom(1.7, 1.9));
 			Who.Destroy();

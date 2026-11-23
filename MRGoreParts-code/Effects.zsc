@@ -1417,6 +1417,7 @@ Class MRGP_Effect_CurveLinesSplash: MRGP_Effect
 
 Class MRGP_Gib: MRGP_Droplet
 {
+	Sector LastSector;
 	Color BloodColor;
 	Bool Landed;
 	int Age;
@@ -1451,7 +1452,8 @@ Class MRGP_Gib: MRGP_Droplet
 			if(abs(Diff(Pos.Z, CurSector.CenterFloor()))<=abs(Vel.Z)){HitSurface(TRACE_HitFloor, HitPos: (Pos.XY, CurSector.CenterFloor()));Landed = true;HitSurface = 1;}
 			if(abs(Diff(Pos.Z, CurSector.CenterCeiling()))<=abs(Vel.Z)){HitSurface(TRACE_HitCeiling, HitPos: (Pos.XY, CurSector.CenterCeiling()));Landed = true;HitSurface = 2;}
 			if(Pos.Z <= CurSector.CenterFloor()+2 && !Self.Landed){
-				if(MRGP_Spot.CheckLiquid(Self, StartScale)){
+				if(MRGP_Spot.CheckLiquid(Self, StartScale, 1, true)){
+					Splash(Clr:BloodColor);
 					Destroy();
 					Return;
 				}
@@ -1469,7 +1471,17 @@ Class MRGP_Gib: MRGP_Droplet
 		
 		if(CurSector && Pos.Z <= CurSector.CenterFloor()+2){Pos.Z = CurSector.CenterFloor()+2;Vel.XY *= .8;Vel.Z = 0;Landed = true;}
 		
-		if(Landed)Age = Max(Age, 1);
+		if(Landed){
+			Age = Max(Age, 1);
+			if(LastSector != CurSector){
+				if(MRGP_Spot.CheckLiquid(Self, StartScale, 1, true)){
+					Splash(Clr:BloodColor);
+					Destroy();
+					Return;
+				}
+			}
+			LastSector = CurSector;
+		}
 		
 		if(Age>140)Fade = Max(Fade, .1);
 		else if(Age>0)Age++;
